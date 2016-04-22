@@ -2,8 +2,10 @@
 - hosts: localhost
   roles:
     - roles/homebrew
+    - roles/percona-server
     - roles/nginx
     - roles/php55
+    - roles/redis
     - roles/nodejs
     - roles/dnsmasq
     - roles/compass

@@ -5,6 +5,9 @@
   changed_when: false
   always_run: true
 
+- name: "Creates ~/Library/LaunchAgents"
+  file: path={{ ansible_env.HOME }}/Library/LaunchAgents state=directory
+
 - name: Setup homebrew install path.
   file:
     path: "{{ homebrew_install_path }}"

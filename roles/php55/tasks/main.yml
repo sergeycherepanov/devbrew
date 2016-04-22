@@ -16,3 +16,7 @@
   file: path={{ www_dir }}/dev/info state=directory
 - name: "Create info.dev host"
   template: src=index.php dest={{ www_dir }}/dev/info/index.php owner={{ www_user }} group={{ www_group }}
+# - name: "Copy the daemon configuration file into place."
+#   shell: "cp $(brew list php55 | grep /homebrew.mxcl.php55.plist$) {{ ansible_env.HOME }}/Library/LaunchAgents/homebrew.mxcl.php55.plist"
+# - name: "Start PHP55 automatically."
+#   shell: "launchctl load -w {{ ansible_env.HOME }}/Library/LaunchAgents/homebrew.mxcl.php55.plist"

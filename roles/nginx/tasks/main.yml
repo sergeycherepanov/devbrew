@@ -2,10 +2,16 @@
 - name: "Creates www directory"
   file: path={{ www_dir }} state=directory
 - name: "Installing Nginx"
-  homebrew: "name={{ item }} state=present"
-  with_items:
-    - nginx
+  homebrew: "name=nginx state=present"
 - name: "Creates nginx.conf"
   template: src=nginx.conf.j2 dest={{ homebrew_install_path }}/etc/nginx/nginx.conf owner={{ www_user }} group={{ www_group }}
 - name: "Creates servers/default.conf"
   template: src=servers/default.conf.j2 dest={{ homebrew_install_path }}/etc/nginx/servers/default.conf owner={{ www_user }} group={{ www_group }}
+# - name: "Copy the daemon configuration file into place."
+#   shell: "cp $(brew list nginx | grep /homebrew.mxcl.nginx.plist$) /Library/LaunchDaemons/"
+#   become: yes
+#   become_method: sudo
+# - name: "Start Nginx automatically."
+#   shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.nginx.plist"
+#   become: yes
+#   become_method: sudo

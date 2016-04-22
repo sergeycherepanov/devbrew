@@ -1,9 +1,9 @@
 user  {{ www_user }} {{ www_group }};
 worker_processes auto;
 
-error_log logs/error.log;
-error_log logs/error.log  notice;
-error_log logs/error.log  info;
+error_log {{ homebrew_install_path }}/var/log/nginx/error.log;
+error_log {{ homebrew_install_path }}/var/log/nginx/error.log  notice;
+error_log {{ homebrew_install_path }}/var/log/nginx/error.log  info;
 
 events {
     worker_connections  1024;

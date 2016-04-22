@@ -19,11 +19,11 @@
   shell: "echo 'nameserver 127.0.0.1' > /etc/resolver/loc"
   become: yes
   become_method: sudo
-- name: "Copy the daemon configuration file into place."
-  shell: "cp $(brew list dnsmasq | grep /homebrew.mxcl.dnsmasq.plist$) /Library/LaunchDaemons/"
-  become: yes
-  become_method: sudo
-- name: "Start Dnsmasq automatically."
-  shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist"
-  become: yes
-  become_method: sudo
+# - name: "Copy the daemon configuration file into place."
+#   shell: "cp $(brew list dnsmasq | grep /homebrew.mxcl.dnsmasq.plist$) /Library/LaunchDaemons/"
+#   become: yes
+#   become_method: sudo
+# - name: "Start Dnsmasq automatically."
+#   shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist"
+#   become: yes
+#   become_method: sudo
