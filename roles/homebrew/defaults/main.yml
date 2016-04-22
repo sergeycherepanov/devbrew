@@ -7,6 +7,8 @@ homebrew_installed_packages:
   - pv
   - htop
   - mc
+  - wget
+  - mtr
 
 homebrew_upgrade_all_packages: no
 
@@ -22,6 +24,15 @@ homebrew_cask_apps:
   - google-chrome
   - skype
   - tunnelblick
+  - phpstorm
+  - vlc
+  - slack
+  - transmission
+  - teamviewer
+  - dropbox
+  - bittorrent-sync
+  - virtualbox
+  - vagrant
 
 homebrew_cask_appdir: /Applications
 
