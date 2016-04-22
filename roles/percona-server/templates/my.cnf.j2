@@ -59,7 +59,7 @@ wait_timeout = 300
 join_buffer_size = 8M
 # This replaces the startup script and checks MyISAM tables if needed
 # the first time they are touched
-myisam-recover         = BACKUP
+# myisam-recover         = BACKUP
 #max_connections        = 100
 #table_cache            = 64
 #thread_concurrency     = 10
@@ -121,7 +121,7 @@ innodb_log_buffer_size = 256M
 innodb_flush_log_at_trx_commit = 2
 innodb_file_per_table = 1
 innodb_buffer_pool_size = 256M
-innodb_additional_mem_pool_size = 32M
+# innodb_additional_mem_pool_size = 32M
 
 lower_case_table_names=2
 

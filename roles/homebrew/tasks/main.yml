@@ -19,8 +19,8 @@
   become: yes
   become_method: sudo
 
-- name: Ensure homebrew is installed.
-  unarchive: src=https://github.com/Homebrew/brew/tarball/master dest={{ homebrew_install_path }} copy=no
+- name: Ensure Homebrew.
+  shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ homebrew_install_path }}"
 
 - name: Ensure proper permissions on homebrew_brew_bin_path dirs.
   file:

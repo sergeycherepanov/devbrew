@@ -10,4 +10,4 @@ echo ""
 xcode-select --install
 sudo easy_install pip
 sudo pip install ansible --quiet
-ansible-playbook -i "localhost," -c local "$DIR/main.yml"
+ansible-playbook --ask-sudo-pass -i "localhost," -c local "$DIR/main.yml"
