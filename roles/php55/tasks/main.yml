@@ -14,6 +14,8 @@
   template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.5/php.ini owner={{ www_user }} group={{ www_group }}
 - name: "Creates {{ www_dir }}/dev/info directory"
   file: path={{ www_dir }}/dev/info state=directory
+- name: "Creates {{ ansible_env.HOME }}/mail directory"
+  file: path={{ ansible_env.HOME }}/mail state=directory
 - name: "Create info.dev host"
   template: src=index.php dest={{ www_dir }}/dev/info/index.php owner={{ www_user }} group={{ www_group }}
 # - name: "Copy the daemon configuration file into place."
