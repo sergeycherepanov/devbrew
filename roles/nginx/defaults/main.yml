@@ -1,0 +1,4 @@
+---
+www_dir: "{{ ansible_env.HOME }}/www"
+www_user: "{{ ansible_env.USER }}"
+www_group: "staff"

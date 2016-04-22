@@ -1,0 +1,10 @@
+#!/bin/sh 
+dir="{{ ansible_env.HOME }}/mail"
+[[ -d $dir ]] || mkdir -p $dir
+date=`date \+\%Y\%m\%d\%H\%M\%N` 
+name="$dir/$date.eml"
+while read line 
+do 
+echo $line >> $name 
+done 
+chmod 666 $name

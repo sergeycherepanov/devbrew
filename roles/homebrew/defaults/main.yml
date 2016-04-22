@@ -1,0 +1,29 @@
+---
+homebrew_install_path: /usr/local
+homebrew_brew_bin_path: /usr/local/bin
+
+homebrew_installed_packages:
+  - ssh-copy-id
+  - pv
+  - htop
+  - mc
+
+homebrew_upgrade_all_packages: no
+
+homebrew_taps:
+  - caskroom/cask
+
+homebrew_cask_apps:
+  - launchrocket
+  - sequel-pro
+  - iterm2
+  - keka
+  - atom
+  - google-chrome
+  - skype
+  - tunnelblick
+
+homebrew_cask_appdir: /Applications
+
+homebrew_use_brewfile: true
+homebrew_brewfile_dir: '~'

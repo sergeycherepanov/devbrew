@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  roles:
+    - roles/homebrew
+    - roles/nginx
+    - roles/php55
+    - roles/nodejs
+    - roles/dnsmasq
+    - roles/compass
+    - roles/less
+    - roles/composer

@@ -1,0 +1,29 @@
+---
+- name: "Installing DNSMASQ"
+  homebrew: "name=dnsmasq state=present"
+- name: "Truncate configuration file"
+  shell: "echo '' > {{ homebrew_install_path }}/etc/dnsmasq.conf"
+- name: "Adding *.dev zone to configuration file"
+  shell: "echo 'address=/dev/127.0.0.1' >> {{ homebrew_install_path }}/etc/dnsmasq.conf"
+- name: "Adding *.loc zone to configuration file"
+  shell: "echo 'address=/loc/127.0.0.1' >> {{ homebrew_install_path }}/etc/dnsmasq.conf"
+- name: "Creates /etc/resolver directory"
+  file: path=/etc/resolver state=directory
+  become: yes
+  become_method: sudo
+- name: "Configure *.dev resolver"
+  shell: "echo 'nameserver 127.0.0.1' > /etc/resolver/dev"
+  become: yes
+  become_method: sudo
+- name: "Configure *.loc resolver"
+  shell: "echo 'nameserver 127.0.0.1' > /etc/resolver/loc"
+  become: yes
+  become_method: sudo
+- name: "Copy the daemon configuration file into place."
+  shell: "cp $(brew list dnsmasq | grep /homebrew.mxcl.dnsmasq.plist$) /Library/LaunchDaemons/"
+  become: yes
+  become_method: sudo
+- name: "Start Dnsmasq automatically."
+  shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist"
+  become: yes
+  become_method: sudo

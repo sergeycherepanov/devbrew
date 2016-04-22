@@ -1,0 +1,5 @@
+---
+- name: "Installing Compass"
+  shell: "gem install -n /usr/local/bin compass"
+  become: yes
+  become_method: sudo

@@ -1,0 +1,18 @@
+---
+- name: Ensure php taps are tapped.
+  homebrew_tap: "tap={{ item }} state=present"
+  with_items:
+    - "homebrew/dupes"
+    - "homebrew/php"
+- name: "Installing PHP55 with fpm"
+  homebrew: "name=php55 state=present install_options=with-fpm,with-mysql,with-imap,without-apache,with-debug"
+- name: "Create fake_sendmail.sh"
+  template: src=fake_sendmail.sh.j2 dest={{ homebrew_brew_bin_path }}/fake_sendmail.sh owner={{ www_user }} group={{ www_group }} mode=0744
+- name: "Create php-fpm.conf"
+  template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/5.5/php-fpm.conf owner={{ www_user }} group={{ www_group }}
+- name: "Create php.ini"
+  template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.5/php.ini owner={{ www_user }} group={{ www_group }}
+- name: "Creates {{ www_dir }}/dev/info directory"
+  file: path={{ www_dir }}/dev/info state=directory
+- name: "Create info.dev host"
+  template: src=index.php dest={{ www_dir }}/dev/info/index.php owner={{ www_user }} group={{ www_group }}

@@ -1,0 +1,3 @@
+---
+- name: "Installing lesscss"
+  npm: "name=less global=yes state=present"
