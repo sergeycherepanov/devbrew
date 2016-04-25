@@ -8,6 +8,8 @@
   homebrew: "name=php55 state=present install_options=with-fpm,with-mysql,with-imap,without-apache,with-debug"
 - name: "Installing PHP55-MCRYPT with fpm"
   homebrew: "name=php55-mcrypt state=present install_options=build-from-source"
+- name: "Installing PHP55-INTL with fpm"
+  homebrew: "name=php55-intl state=present install_options=build-from-source"
 - name: "Create fake_sendmail.sh"
   template: src=fake_sendmail.sh.j2 dest={{ homebrew_brew_bin_path }}/fake_sendmail.sh owner={{ www_user }} group={{ www_group }} mode=0744
 - name: "Create php-fpm.conf"
