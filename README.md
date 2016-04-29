@@ -12,7 +12,7 @@ MAC OS X Dev Environment Php Mysql Nginx via Ansible
 
 сайты создать в папке www в домашней папке по принципу:
 
-~/%POOL%/%SITENAME%
+~/www/%POOL%/%SITENAME%
 
 где:
 pool - это домен первого уровня (dev или loc)
@@ -20,7 +20,7 @@ sitename - имя сайта
 
 например если имя домена хотим crm.dev, структура должна быть:
 
-~/dev/crm/
+~/www/dev/crm/
 
 *если внутри будут web или public папки то сервер будет смотреть в них* если их нет, то в корень проекта
 
