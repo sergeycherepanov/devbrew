@@ -1,27 +1,27 @@
 # dev-env-osx
 MAC OS X Dev Environment Php Mysql Nginx via Ansible
 
-1. открыть терминал
-2. выполнить: xcode-select —install (это запустит процесс установки XCODE)
-3. выполнить: cd /tmp
-4. выполнить: git clone git@github.com:SergeyCherepanov/dev-env-osx.git
-5. выполнить: dev-env-sox/run.sh (Дождаться завершения. Должно быть без красных надписей и слов Fatal)
-6. открыть Системные настройки > LaunchRocket
-7. Нажать Scan homebrew и поставить чекбокс  At Login напротив всех необходимых сервисов
-8. поставить чекбокс As Root напротив Nginx и Dnsmasq
+1. Open the terminal (just type **terminal** into spotlight)
+2. execute: xcode-select —install (it's starts XCODE installation process)
+3. execute: cd /tmp
+4. execute: git clone git@github.com:SergeyCherepanov/dev-env-osx.git
+5. execute: dev-env-sox/run.sh (Wit to finish. Should be without "Fatal" messages)
+6. open **System Preferences** > **LaunchRocket**
+7. Press Scan homebrew and choose checkbox **At Login** near all you need services
+8. Choose checkbox **As Root** for **Nginx** and **Dnsmasq**
 
-сайты создать в папке www в домашней папке по принципу:
+put folders with you web projects into www folder in your home dir:
 
 ~/www/%POOL%/%SITENAME%
 
 где:
-pool - это домен первого уровня (dev или loc)
-sitename - имя сайта
+pool - first level domain name (dev или loc)
+sitename - project name
 
-например если имя домена хотим crm.dev, структура должна быть:
+For example if *fqdn8 of project  crm.dev, directory structure must be:
 
 ~/www/dev/crm/
 
-*если внутри будут web или public папки то сервер будет смотреть в них* если их нет, то в корень проекта
+if subfolders **web** or **public** exists,server will use they as web root
 
-в папку ~/mail сбрасываются письма которые отправляет php через функцию mail
+in ~/mail directory will be drops letter what be sent via php **mail** function
