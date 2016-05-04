@@ -19,18 +19,12 @@ homebrew_cask_apps:
   - launchrocket
   - sequel-pro
   - iterm2
-  - keka
   - atom
   - google-chrome
   - skype
-  - tunnelblick
   - phpstorm
-  - vlc
-  - slack
-  - transmission
   - teamviewer
   - dropbox
-  - bittorrent-sync
   - virtualbox
   - vagrant
 
