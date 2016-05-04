@@ -17,7 +17,7 @@ where:
 pool - first level domain name (dev или loc)  
 sitename - project name  
 
-For example if *fqdn8 of project  crm.dev, directory structure must be:
+For example if **fqdn** of project  crm.dev, directory structure must be:
 
 ~/www/dev/crm/
 
