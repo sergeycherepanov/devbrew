@@ -10,13 +10,12 @@ MAC OS X Dev Environment Php Mysql Nginx via Ansible
 7. Press Scan homebrew and choose checkbox **At Login** near all you need services
 8. Choose checkbox **As Root** for **Nginx** and **Dnsmasq**
 
-put folders with you web projects into www folder in your home dir:
+put folders with you web projects into **www** folder in your home dir:
 
-~/www/%POOL%/%SITENAME%
-
-где:
-pool - first level domain name (dev или loc)
-sitename - project name
+**~/www/%pool%/%sitename%**  
+where:  
+pool - first level domain name (dev или loc)  
+sitename - project name  
 
 For example if *fqdn8 of project  crm.dev, directory structure must be:
 
