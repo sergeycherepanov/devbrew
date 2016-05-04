@@ -12,7 +12,7 @@ MAC OS X Dev Environment Php Mysql Nginx via Ansible
 
 put folders with you web projects into **www** folder in your home dir:
 
-**~/www/{pool}/{sitename}**  
+**~/www/{pool}/{sitename}/**  
 where:  
 pool - first level domain name (dev или loc)  
 sitename - project name  
