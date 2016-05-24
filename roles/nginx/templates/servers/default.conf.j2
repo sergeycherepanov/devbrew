@@ -32,7 +32,7 @@ server {
     }
 
     root   $documentRoot;
-    index  app_dev.php app.php index.php index.html;
+    index  app.php index.php index.html;
 
     if (-f $documentRoot/app.php) {
         set $cgiIndex /app.php;
