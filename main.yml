@@ -4,7 +4,10 @@
     - roles/homebrew
     - roles/percona-server
     - roles/nginx
+    - roles/fakesendmail
     - roles/php55
+    - roles/php56
+    - roles/php70
     - roles/redis
     - roles/nodejs
     - roles/dnsmasq

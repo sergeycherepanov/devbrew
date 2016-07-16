@@ -1,17 +1,17 @@
 server {
-    listen 80 default_server;
+    listen 80;
     port_in_redirect off;
     client_max_body_size 256m;
 
-    server_name ~^(?<projectName>.+)\.(?<pool>\w+?)$;
+    server_name ~^(?<project_name>.+)\.(?<pool>\w+?55)$;
     set $wwwRoot {{ www_dir }};
     autoindex off;
 
-    if ($projectName ~ ^www\.(.+)$) {
-        set $projectName $1;
+    if ($project_name ~ ^www\.(.+)$) {
+        set $project_name $1;
     }
 
-    set $projectDir $wwwRoot/$pool/$projectName;
+    set $projectDir $wwwRoot/$pool/$project_name;
 
     if (!-d $projectDir) {
         set $projectDir $wwwRoot;
