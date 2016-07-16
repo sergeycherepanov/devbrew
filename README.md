@@ -5,7 +5,7 @@ MAC OS X Dev Environment Php Mysql Nginx via Ansible
 2. execute: xcode-select —install (it's starts XCODE installation process)
 3. execute: cd /tmp
 4. execute: git clone git@github.com:SergeyCherepanov/dev-env-osx.git
-5. execute: dev-env-osx/run.sh (Wit to finish. Should be without "Fatal" messages)
+5. execute: dev-env-osx/run.sh (Wait for finish. Should be without "Fatal" messages)
 6. open **System Preferences** > **LaunchRocket**
 7. Press Scan homebrew and choose checkbox **At Login** near all you need services
 8. Choose checkbox **As Root** for **Nginx** and **Dnsmasq**
