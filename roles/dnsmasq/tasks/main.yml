@@ -1,48 +1,29 @@
 ---
 - name: "Installing DNSMASQ"
   homebrew: "name=dnsmasq state=present"
+
 - name: "Truncate configuration file"
   shell: "echo '' > {{ homebrew_install_path }}/etc/dnsmasq.conf"
-- name: "Adding *.dev55 zone to configuration file"
-  shell: "echo 'address=/dev55/127.0.0.1' >> {{ homebrew_install_path }}/etc/dnsmasq.conf"
-- name: "Adding *.dev56 zone to configuration file"
-  shell: "echo 'address=/dev56/127.0.0.1' >> {{ homebrew_install_path }}/etc/dnsmasq.conf"
-- name: "Adding *.dev70 zone to configuration file"
-  shell: "echo 'address=/dev70/127.0.0.1' >> {{ homebrew_install_path }}/etc/dnsmasq.conf"
-- name: "Adding *.loc zone to configuration file"
-  shell: "echo 'address=/loc55/127.0.0.1' >> {{ homebrew_install_path }}/etc/dnsmasq.conf"
-- name: "Adding *.loc zone to configuration file"
-  shell: "echo 'address=/loc56/127.0.0.1' >> {{ homebrew_install_path }}/etc/dnsmasq.conf"
-- name: "Adding *.loc zone to configuration file"
-  shell: "echo 'address=/loc70/127.0.0.1' >> {{ homebrew_install_path }}/etc/dnsmasq.conf"
+
 - name: "Creates /etc/resolver directory"
   file: path=/etc/resolver state=directory
   become: yes
   become_method: sudo
-- name: "Configure *.dev55 resolver"
-  shell: "echo 'nameserver 127.0.0.1' > /etc/resolver/dev55"
+
+- name: "Adding *.dev zone to dnsmasq configuration file"
+  shell: "echo 'address=/dev/127.0.0.1' >> {{ homebrew_install_path }}/etc/dnsmasq.conf"
+
+- name: "Adding *.loc zone to dnsmasq configuration file"
+  shell: "echo 'address=/loc/127.0.0.1' >> {{ homebrew_install_path }}/etc/dnsmasq.conf"
+
+- name: "Configure *.dev zone resolver"
+  shell: "echo 'nameserver 127.0.0.1' > /etc/resolver/dev"
   become: yes
-  become_method: sudo
-- name: "Configure *.dev56 resolver"
-  shell: "echo 'nameserver 127.0.0.1' > /etc/resolver/dev56"
+
+- name: "Configure *.loc zone resolver"
+  shell: "echo 'nameserver 127.0.0.1' > /etc/resolver/loc"
   become: yes
-  become_method: sudo
-- name: "Configure *.dev70 resolver"
-  shell: "echo 'nameserver 127.0.0.1' > /etc/resolver/dev70"
-  become: yes
-  become_method: sudo
-- name: "Configure *.loc55 resolver"
-  shell: "echo 'nameserver 127.0.0.1' > /etc/resolver/loc55"
-  become: yes
-  become_method: sudo
-- name: "Configure *.loc56 resolver"
-  shell: "echo 'nameserver 127.0.0.1' > /etc/resolver/loc56"
-  become: yes
-  become_method: sudo
-- name: "Configure *.loc70 resolver"
-  shell: "echo 'nameserver 127.0.0.1' > /etc/resolver/loc70"
-  become: yes
-  become_method: sudo
+
 # - name: "Copy the daemon configuration file into place."
 #   shell: "cp $(brew list dnsmasq | grep /homebrew.mxcl.dnsmasq.plist$) /Library/LaunchDaemons/"
 #   become: yes
