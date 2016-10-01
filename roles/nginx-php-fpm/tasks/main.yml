@@ -1,0 +1,26 @@
+---
+- name: Find old configs
+  find:
+    paths: "{{ homebrew_install_path }}/etc/nginx/servers"
+    patterns: "ph*.conf"
+  register: old_php_nginx_config
+
+- name: Deleting old configs
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ old_php_nginx_config.files }}"
+
+- name: Print php_versions content
+  debug: var=php_versions
+
+- name: "Creates servers/php.conf"
+  template: src=servers/php.conf.j2 dest={{ homebrew_install_path }}/etc/nginx/servers/php.conf owner={{ www_user }} group={{ www_group }}
+# - name: "Copy the daemon configuration file into place."
+#   shell: "cp $(brew list nginx | grep /homebrew.mxcl.nginx.plist$) /Library/LaunchDaemons/"
+#   become: yes
+#   become_method: sudo
+# - name: "Start Nginx automatically."
+#   shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.nginx.plist"
+#   become: yes
+#   become_method: sudo

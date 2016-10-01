@@ -2,11 +2,11 @@
 - name: "Uninstalling Percona(Mysql) Server (homebrew/versions/percona-server55)"
   homebrew: "name=homebrew/versions/percona-server55 state=absent"
 
-- name: "Uninstalling Percona(Mysql) Server (homebrew/versions/percona-server56)"
-  homebrew: "name=homebrew/versions/percona-server56 state=absent"
+- name: "Uninstalling Percona(Mysql) Server (percona-server)"
+  homebrew: "name=percona-server state=absent"
 
-- name: "Installing Percona(Mysql) Server (percona-server)"
-  homebrew: "name=percona-server state=present"
+- name: "Installing Percona(Mysql) Server (homebrew/versions/percona-server56)"
+  homebrew: "name=homebrew/versions/percona-server56 state=present"
 
 - name: "Create my.cnf"
   template: src=my.cnf.j2 dest={{ homebrew_install_path }}/etc/my.cnf owner={{ www_user }} group={{ www_group }} mode=0744
@@ -33,9 +33,10 @@
   file: path={{ homebrew_install_path }}/lib/mysql state=directory
 
 - name: "Install db (mysqld --initialize-insecure)"
-  shell: "mysqld --initialize-insecure --user={{ www_user }} --basedir={{ homebrew_install_path }} --datadir={{ homebrew_install_path }}/lib/mysql/"
+  shell: "mysql_install_db --basedir={{ homebrew_install_path }} --datadir={{ homebrew_install_path }}/lib/mysql/"
 
 #- name: "Copy the daemon configuration file into place."
 #  shell: "cp $(brew list percona-server | grep /homebrew.mxcl.percona-server.plist$) {{ ansible_env.HOME }}/Library/LaunchAgents/homebrew.mxcl.percona-server.plist"
+
 #- name: "Start Percona(Mysql) Server automatically."
 #  shell: "launchctl load -w {{ ansible_env.HOME }}/Library/LaunchAgents/homebrew.mxcl.percona-server.plist"

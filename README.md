@@ -1,28 +1,46 @@
 # dev-env-osx
 MAC OS X Dev Environment Php Mysql Nginx via Ansible
 
+## Installation 
 1. Open the terminal (just type **terminal** into spotlight)
-2. Execute: xcode-select —install (it's starts XCODE installation process)
-3. Execute: cd /tmp
-4. Execute: git clone git@github.com:SergeyCherepanov/dev-env-osx.git
-5. Execute: dev-env-osx/run.sh (Wait for finish. Should be without "Fatal" messages)
+2. Execute: `xcode-select --install` (it's starts XCODE installation process)
+3. Execute: `cd /tmp`
+4. Execute: `git clone https://github.com/SergeyCherepanov/dev-env-osx.git`
+5. Execute: `bash dev-env-osx/run.sh` (Wait for finish. Should be without "Fatal" messages)
 6. Open **System Preferences** > **LaunchRocket**
 7. Press **Scan homebrew** and choose checkbox **At Login** near all you need services
 8. Choose checkbox **As Root** for **Nginx** and **Dnsmasq**
 
-put folders with you web projects into **www** folder in your home dir:
 
+## Usage
+Add folders with you source code into **www** folder in your home dir: **~/www/{pool}/{project_name}/**
 
+#### Where:  
+{pool} - first level domain name (resolver configured for `dev` and `loc`, but you can add more hosts directly to `/etc/hosts` file)  
+{project} - project name  
 
-**~/www/{pool}{version_suffix}/{project_name}/**
-where:  
-pool - first level domain name with php version suffix (dev55, dev56, dev70 or loc55, loc56, loc70)
-sitename - project name  
+If **fqdn** of project should be **wordpress.dev**, directory structure must be:
 
-For example if **fqdn** of project should be **crm.dev70**, directory structure must be:
+`~/www/dev/wordpress/`
 
-~/www/dev70/crm/
+if subfolders **web** or **public** exists, server will use they as web root. For example:    
 
-if subfolders **web** or **public** exists,server will use they as web root
+`~/www/dev/wordpress/web` or  `~/www/dev/wordpress/public`  
 
-in ~/mail directory will be drops letter what be sent via php **mail** function
+## PHP Multi-Version Support
+
+You have two ways for defining the php version of your project
+
+1. Call project via version domain, for example:  
+`wordpress.55.dev` (php 5.5),  
+`wordpress.56.dev` (php 5.6),  
+`wordpress.70.dev` (php 7.0)  
+
+2. Put empty flag file into project root, for example:   
+`~/www/dev/wordpress/.php55` (php 5.5),  
+`~/www/dev/wordpress/.php56` (php 5.6),  
+`~/www/dev/wordpress/.php70` (php 7.0),  
+
+## PHP Mail
+
+In ~/mail directory will be drops letter what be sent via php **mail** function

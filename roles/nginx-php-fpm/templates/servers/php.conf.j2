@@ -3,9 +3,13 @@ server {
     port_in_redirect off;
     client_max_body_size 256m;
 
-    server_name ~^(?<project_name>.+)\.(?<pool>\w+?55)$;
+    server_name ~^(?<project_name>.+?)\.(?<php_version>[0-9]*)\.*(?<pool>\w+)$;
     set $wwwRoot {{ www_dir }};
     autoindex off;
+    
+    if ($php_version !~* '^({{ php_versions | join("|") }})$') {
+        set $php_version 70;
+    }
 
     if ($project_name ~ ^www\.(.+)$) {
         set $project_name $1;
@@ -30,6 +34,14 @@ server {
     if (!-d $documentRoot) {
         set $documentRoot $projectDir;
     }
+   
+    {% for version in php_versions %}
+
+    if (-f $documentRoot/.php{{ version }}) {
+      set $php_version {{ version }};
+    }
+
+    {% endfor %}
 
     root   $documentRoot;
     index  app.php index.php index.html;
@@ -73,7 +85,7 @@ server {
             rewrite / $cgiIndex last;
         }
 
-        fastcgi_pass                    127.0.0.1:9000;
+        fastcgi_pass                    127.0.0.1:90$php_version;
         fastcgi_split_path_info         ^(.+\.php)(.*)$;
         include                         fastcgi_params;
         fastcgi_param  SCRIPT_FILENAME  $documentRoot$fastcgi_script_name;

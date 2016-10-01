@@ -1,16 +1,19 @@
 ---
 - hosts: localhost
+  vars: 
+    - php_versions: []
   roles:
     - roles/homebrew
-    - roles/percona-server
-    - roles/nginx
+    - roles/percona-server-56
     - roles/fakesendmail
-    - roles/php55
-    - roles/php56
-    - roles/php70
+    - roles/dnsmasq
+    - roles/php-55
+    - roles/php-56
+    - roles/php-70
+    - roles/nginx
+    - roles/nginx-php-fpm
     - roles/redis
     - roles/nodejs
-    - roles/dnsmasq
     - roles/compass
     - roles/less
     - roles/composer
