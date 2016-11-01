@@ -1,0 +1,8 @@
+sudo: true
+os:
+  - osx
+branches:
+  only:
+    - travis
+script:
+  - $TRAVIS_BUILD_DIR/run.sh
