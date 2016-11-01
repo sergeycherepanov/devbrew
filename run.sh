@@ -1,12 +1,9 @@
 #!/bin/bash
 pushd `dirname $0` > /dev/null;DIR=`pwd -P`;popd > /dev/null
 
-if [[ $(whoami) == "root" ]]; then
-    echo "!!! Executing under root will destruct your system !!! Stopping..."
-    exit 1
-fi
+MAC_USER=${SUDO_USER-${USER}}
 
-xcode-select -p >/dev/null 2>&1 || {
+sudo -u ${MAC_USER} xcode-select -p >/dev/null 2>&1 || {
   # Initialize script dir
   echo ""
   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -21,4 +18,4 @@ ansible --version >/dev/null 2>&1 || {
   sudo pip install --ignore-installed --upgrade ansible
 }
 
-ansible-playbook --ask-sudo-pass -i "localhost," -c local "$DIR/main.yml" $@
+ansible-playbook --ask-sudo-pass -i "localhost," -c local "$DIR/main.yml" -e "mac_user=${MAC_USER}" $@

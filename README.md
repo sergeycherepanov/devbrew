@@ -1,6 +1,8 @@
 # dev-env-osx
 MAC OS X Dev Environment Php Mysql Nginx via Ansible
 
+[![Build Status](https://travis-ci.org/SergeyCherepanov/dev-env-osx.svg?branch=master)](https://travis-ci.org/SergeyCherepanov/dev-env-osx)  
+
 ## Installation 
 1. Open the terminal (just type **terminal** into spotlight)
 2. Execute: `xcode-select --install` (it's starts XCODE installation process)
@@ -24,7 +26,7 @@ If **fqdn** of project should be **wordpress.dev**, directory structure must be:
 
 `~/www/dev/wordpress/`
 
-if subfolders **web** or **public** exists, server will use they as web root. For example:    
+If subfolder **web** or **public** exists, server will use they as web root. For example:    
 
 `~/www/dev/wordpress/web` or  `~/www/dev/wordpress/public`  
 

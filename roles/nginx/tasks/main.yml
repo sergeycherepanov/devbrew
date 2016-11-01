@@ -1,11 +1,11 @@
 ---
-- name: "Creates www directory"
+- name: "Creates {{ www_dir }} directory"
   file: path={{ www_dir }} state=directory
 
 - name: "Installing Nginx"
   homebrew: "name=nginx state=present"
 
-- name: "Creates nginx.conf"
+- name: "Creates {{ homebrew_install_path }}/etc/nginx/nginx.conf"
   template: src=nginx.conf.j2 dest={{ homebrew_install_path }}/etc/nginx/nginx.conf owner={{ www_user }} group={{ www_group }}
 
 # - name: "Copy the daemon configuration file into place."
