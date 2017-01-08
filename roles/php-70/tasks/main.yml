@@ -6,13 +6,13 @@
     - "homebrew/php"
 
 - name: "Installing php70 with fpm"
-  homebrew: "name=php70 state=present install_options=with-fpm,with-mysql,without-apache,disable-opcache"
+  homebrew: "name=php70 state=present install_options=with-fpm,with-mysql,without-apache,disable-opcache,with-homebrew-curl"
 
 - name: "Installing php70-mcrypt"
   homebrew: "name=php70-mcrypt state=present"
 
 - name: "Installing php70-intl"
-  homebrew: "name=php70-intl state=present"
+  homebrew: "name=php70-intl state=present install_options=build-from-source"
 
 - name: "Installing php70-xdebug"
   homebrew: "name=php70-xdebug state=present"

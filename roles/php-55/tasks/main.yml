@@ -6,7 +6,7 @@
     - "homebrew/php"
 
 - name: "Installing php55 with fpm"
-  homebrew: "name=php55 state=present install_options=with-fpm,with-mysql,without-apache,disable-opcache"
+  homebrew: "name=php55 state=present install_options=with-fpm,with-mysql,without-apache,disable-opcache,with-homebrew-curl"
 
 - name: "Installing php55-mcrypt"
   homebrew: "name=php55-mcrypt state=present" # install_options=build-from-source"
