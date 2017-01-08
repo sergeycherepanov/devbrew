@@ -32,13 +32,13 @@ If subfolder **web** or **public** exists, server will use they as web root. For
 
 ## PHP Multi-Version Support
 
-You have two ways for defining the php version of your project
+There is two ways for using the different php versions for your project
 
-1. Call project via version domain, for example:  
+1. Direct call of project via version domain, for example:  
 `wordpress.56.dev` (php 5.6),  
 `wordpress.70.dev` (php 7.0)  
 
-2. Put empty flag file into project root, for example:  
+2. Define php version via  empty flag file in project root, for example:  
 `~/www/dev/wordpress/.php56` (php 5.6),  
 `~/www/dev/wordpress/.php70` (php 7.0),  
 
