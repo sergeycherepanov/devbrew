@@ -18,4 +18,4 @@ ansible --version >/dev/null 2>&1 || {
   sudo pip install --ignore-installed --upgrade ansible
 }
 
-ansible-playbook --ask-sudo-pass -i "localhost," -c local "$DIR/main.yml" -e "mac_user=${MAC_USER}" $@
+ansible-playbook -vvvv --ask-sudo-pass -i "localhost," -c local "$DIR/main.yml" -e "mac_user=${MAC_USER}" $@
