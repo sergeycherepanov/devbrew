@@ -8,6 +8,9 @@
 - name: "Installing Percona(Mysql) Server (homebrew/versions/percona-server56)"
   homebrew: "name=homebrew/versions/percona-server56 state=present"
 
+- name: "link percona-server"
+  command: "brew link percona-server@5.6 --force"
+
 - name: "Create my.cnf"
   template: src=my.cnf.j2 dest={{ homebrew_install_path }}/etc/my.cnf owner={{ www_user }} group={{ www_group }} mode=0744
 
