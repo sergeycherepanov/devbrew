@@ -26,6 +26,9 @@
 - name: "Create php.ini"
   template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.6/php.ini owner={{ www_user }} group={{ www_group }}
 
+- name: "Create ext-xdebug.ini"
+  template: src=ext-xdebug.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.6/conf.d/ext-xdebug.ini owner={{ www_user }} group={{ www_group }}
+
 - name: "Unlink php56"
   homebrew: "name=php56 state=unlinked"
   ignore_errors: yes
