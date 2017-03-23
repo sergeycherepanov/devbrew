@@ -6,7 +6,7 @@
     - "homebrew/php"
 
 - name: "Installing php56 with fpm"
-  homebrew: "name=php56 state=present install_options=with-fpm,with-mysql,without-apache,disable-opcache"
+  homebrew: "name=php56 state=present install_options=with-fpm,with-mysql,without-apache,disable-opcache,with-homebrew-curl"
 
 - name: "Installing php56-mcrypt"
   homebrew: "name=php56-mcrypt state=present"

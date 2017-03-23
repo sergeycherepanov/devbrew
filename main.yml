@@ -7,7 +7,7 @@
     - roles/percona-server-56
     - roles/fakesendmail
     - roles/dnsmasq
-    - roles/php-55
+    - roles/curl
     - roles/php-56
     - roles/php-70
     - roles/nginx
