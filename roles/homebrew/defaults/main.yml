@@ -28,7 +28,7 @@ homebrew_cask_apps:
   - virtualbox
   - vagrant
   - java
-  - td-agent
+#  - td-agent
 
 homebrew_cask_appdir: /Applications
 
