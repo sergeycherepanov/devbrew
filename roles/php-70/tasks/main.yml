@@ -37,6 +37,7 @@
 
 - name: "Add simlink"
   shell: "find /usr/local/Cellar/php70 -path '*/bin/php' | awk -F/ '{print \"ln -Fs \" $0 \" \" \"/usr/local/bin/\"$5}' | bash"
+  ignore_errors: yes
 
 - name: add 70 to "php_versions" array
   set_fact: 
