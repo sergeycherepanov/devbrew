@@ -10,6 +10,7 @@
     - roles/curl
     - roles/php-56
     - roles/php-70
+    - roles/php-71
     - roles/nginx
     - roles/nginx-php-fpm
     - roles/redis

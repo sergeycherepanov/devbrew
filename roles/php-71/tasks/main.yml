@@ -1,0 +1,43 @@
+---
+- name: Ensure php taps are tapped.
+  homebrew_tap: "tap={{ item }} state=present"
+  with_items:
+    - "homebrew/dupes"
+    - "homebrew/php"
+
+- name: "Installing php71 with fpm"
+  homebrew: "name=php71 state=present install_options=with-fpm,with-mysql,without-apache,with-homebrew-curl"
+  async: 1800
+  poll: 15
+
+- name: "Installing php71-mcrypt"
+  homebrew: "name=php71-mcrypt state=present"
+
+- name: "Installing php71-intl"
+  homebrew: "name=php71-intl state=present install_options=build-from-source"
+
+- name: "Installing php71-xdebug"
+  homebrew: "name=php71-xdebug state=present"
+
+- name: "Installing php71-redis"
+  homebrew: "name=php71-redis state=present"
+
+- name: "Create php-fpm.conf"
+  template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/7.1/php-fpm.conf owner={{ www_user }} group={{ www_group }}
+
+- name: "Create php.ini"
+  template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.1/php.ini owner={{ www_user }} group={{ www_group }}
+
+- name: "Create ext-xdebug.ini"
+  template: src=ext-xdebug.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.1/conf.d/ext-xdebug.ini owner={{ www_user }} group={{ www_group }}
+
+- name: "Unlink php71"
+  homebrew: "name=php71 state=unlinked"
+  ignore_errors: yes
+
+- name: "Add simlink"
+  shell: "find /usr/local/Cellar/php71 -path '*/bin/php' | awk -F/ '{print \"ln -Fs \" $0 \" \" \"/usr/local/bin/\"$5}' | bash"
+
+- name: add 71 to "php_versions" array
+  set_fact: 
+    php_versions: "{{ php_versions + [ '71' ] }} "
