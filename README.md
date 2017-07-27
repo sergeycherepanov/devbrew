@@ -9,7 +9,7 @@ MAC OS X Dev Environment Php Mysql Nginx via Ansible
 3. Execute: `cd /tmp`
 4. Execute: `git clone https://github.com/SergeyCherepanov/dev-env-osx.git`
 5. Execute: `bash dev-env-osx/run.sh` (Wait for finish. Should be without "Fatal" messages)
-6. Execute: `brew link php70` (setting default php for cli, you can choose other version (php56))
+6. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
 7. Open **System Preferences** > **LaunchRocket**
 8. Press **Scan homebrew** and choose checkbox **At Login** near all you need services
 9. Choose checkbox **As Root** for **Nginx** and **Dnsmasq**
