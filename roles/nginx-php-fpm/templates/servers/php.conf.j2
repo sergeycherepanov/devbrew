@@ -10,6 +10,7 @@ server {
     if ($php_version !~* '^({{ php_versions | join("|") }})$') {
         set $php_version 70;
     }
+    set $php_version_path "/usr/local/bin/php${php_version}";
 
     if ($project_name ~ ^www\.(.+)$) {
         set $project_name $1;
@@ -38,7 +39,7 @@ server {
     {% for version in php_versions %}
 
     if (-f $documentRoot/.php{{ version }}) {
-      set $php_version {{ version }};
+      set $php_version_path "/usr/local/bin/php{{ version }}";
     }
 
     {% endfor %}
@@ -101,6 +102,6 @@ server {
         fastcgi_temp_file_write_size    256k;
         fastcgi_param                   MAGE_IS_DEVELOPER_MODE  true;
         fastcgi_param                   SERVER_NAME $host;
-        fastcgi_param                   PHP_PATH "/usr/local/bin/php"$php_version;
+        fastcgi_param                   PHP_PATH $php_version_path;
     }
 }
