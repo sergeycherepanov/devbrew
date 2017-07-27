@@ -8,7 +8,8 @@ server {
     autoindex off;
     
     if ($php_version !~* '^({{ php_versions | join("|") }})$') {
-        set $php_version 70;
+        # set default php version to 7.1
+        set $php_version 71;
     }
     set $php_version_path "/usr/local/bin/php${php_version}";
 
