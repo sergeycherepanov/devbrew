@@ -16,6 +16,9 @@
 - name: "Installing php56-intl"
   homebrew: "name=php56-intl state=present"
 
+- name: "Installing php56-tidy"
+  homebrew: "name=php56-tidy state=present"
+
 - name: "Installing php56-xdebug"
   homebrew: "name=php56-xdebug state=present"
 

@@ -6,7 +6,7 @@
     - "homebrew/php"
 
 - name: "Installing php71 with fpm"
-  homebrew: "name=php71 state=present install_options=with-fpm,with-mysql,without-apache,with-homebrew-curl"
+  homebrew: "name=php71 state=present install_options=with-fpm,with-mysql,without-apache,with-opcache,with-homebrew-curl"
   async: 1800
   poll: 15
 
@@ -15,6 +15,9 @@
 
 - name: "Installing php71-intl"
   homebrew: "name=php71-intl state=present install_options=build-from-source"
+
+- name: "Installing php71-tidy"
+  homebrew: "name=php71-tidy state=present"
 
 - name: "Installing php71-xdebug"
   homebrew: "name=php71-xdebug state=present"

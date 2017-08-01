@@ -16,6 +16,9 @@
 - name: "Installing php70-intl"
   homebrew: "name=php70-intl state=present install_options=build-from-source"
 
+- name: "Installing php70-tidy"
+  homebrew: "name=php70-tidy state=present"
+
 - name: "Installing php70-xdebug"
   homebrew: "name=php70-xdebug state=present"
 
