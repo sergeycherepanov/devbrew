@@ -14,8 +14,7 @@ sudo -u ${MAC_USER} xcode-select -p >/dev/null 2>&1 || {
 }
 
 ansible --version >/dev/null 2>&1 || {
-  sudo easy_install pip
-  sudo pip install --ignore-installed --upgrade ansible
+  sudo sh -c "easy_install pip && pip install --ignore-installed --upgrade ansible"
 }
 
-ansible-playbook --ask-sudo-pass -i "localhost," -c local "$DIR/main.yml" -e "mac_user=${MAC_USER}" $@
+ansible-playbook --ask-sudo-pass -i "localhost," -c local "$DIR/main.yml" -e "mac_user=${MAC_USER}" "$@"

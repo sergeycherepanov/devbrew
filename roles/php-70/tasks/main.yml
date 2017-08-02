@@ -5,31 +5,35 @@
     - "homebrew/dupes"
     - "homebrew/php"
 
-- name: "Installing php70 with fpm"
-  homebrew: "name=php70 state=present install_options=with-fpm,with-mysql,without-apache,with-homebrew-curl"
+- name: "Unlink all already installed php packages"
+  shell: "brew list | grep php | xargs brew unlink"
+
+- name: "Remove previously installed php70 packages"
+  shell: "brew list | grep ^php70 | xargs brew uninstall --ignore-dependencies --force"
+  ignore_errors: yes
+
+- name: "Installing php70 with flags: {{ php70_flags }}"
+  homebrew: 
+    name: php70 
+    state: present 
+    install_options: "{{ php70_flags }}"
   async: 1800
   poll: 15
 
-- name: "Installing php70-mcrypt"
-  homebrew: "name=php70-mcrypt state=present"
-
-- name: "Installing php70-intl"
-  homebrew: "name=php70-intl state=present install_options=build-from-source"
-
-- name: "Installing php70-tidy"
-  homebrew: "name=php70-tidy state=present"
-
-- name: "Installing php70-xdebug"
-  homebrew: "name=php70-xdebug state=present"
-
-- name: "Installing php70-redis"
-  homebrew: "name=php70-redis state=present"
+- name: "Installing php70 modules"
+  homebrew:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ php70_modules }}"
 
 - name: "Create php-fpm.conf"
   template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/7.0/php-fpm.conf owner={{ www_user }} group={{ www_group }}
 
 - name: "Create php.ini"
   template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.0/php.ini owner={{ www_user }} group={{ www_group }}
+
+- name: "Create ext-opcache.ini"
+  template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.0/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
 
 - name: "Create ext-xdebug.ini"
   template: src=ext-xdebug.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.0/conf.d/ext-xdebug.ini owner={{ www_user }} group={{ www_group }}
