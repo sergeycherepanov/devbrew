@@ -41,6 +41,7 @@ server {
 
     if (-f $documentRoot/.php{{ version }}) {
       set $php_version_path "/usr/local/bin/php{{ version }}";
+      set $php_version {{ version }};
     }
 
     {% endfor %}
