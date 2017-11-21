@@ -3,6 +3,12 @@
   homebrew: 
     name: composer
     state: present
+    
+- name: "Installing fxp/composer-asset-plugin:~1.3"
+  composer:
+    command: require
+    global_command: yes
+    arguments: "fxp/composer-asset-plugin:~1.3"
 
 - name: "Installing phpmd"
   homebrew: 
