@@ -1,0 +1,3 @@
+---
+- name: "Installing Curl with openssl"
+  homebrew: "name=curl state=present install_options=with-openssl"

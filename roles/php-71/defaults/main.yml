@@ -1,0 +1,9 @@
+---
+php71_flags: "with-fpm,with-mysql,with-pgsql,without-apache,with-homebrew-curl"
+php71_modules:
+  - php71-intl
+  - php71-mcrypt
+  - php71-xdebug
+  - php71-redis
+  - php71-tidy
+  - php71-opcache
