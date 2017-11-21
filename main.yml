@@ -13,4 +13,4 @@
     - roles/dnsmasq
     - roles/compass
     - roles/less
-    - roles/composer
+    - roles/php-tools

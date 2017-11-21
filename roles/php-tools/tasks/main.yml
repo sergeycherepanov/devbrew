@@ -1,0 +1,15 @@
+---
+- name: "Installing composer"
+  homebrew: 
+    name: composer
+    state: present
+
+- name: "Installing phpmd"
+  homebrew: 
+    name: phpmd
+    state: present
+
+- name: "Installing phpcs"
+  homebrew: 
+    name: php-code-sniffer
+    state: present
