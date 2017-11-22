@@ -1,0 +1,155 @@
+---
+- name: "Downloading hack font"
+  git:
+    repo: 'https://github.com/powerline/fonts.git'
+    dest: '/tmp/powerline_fonts'
+    version: 'master'
+
+- copy:
+    src: '/tmp/powerline_fonts/Hack/'
+    dest: '{{ ansible_env.HOME }}/Library/Fonts/'
+
+- name: "Downloading terminal hack font"
+  git:
+    repo: 'https://github.com/gabrielelana/awesome-terminal-fonts.git'
+    dest: '/tmp/awesome-terminal-fonts'
+    version: 'master'
+
+- copy:
+    src: '/tmp/awesome-terminal-fonts/build/'
+    dest: '{{ ansible_env.HOME }}/.fonts/'
+ 
+- name: "Installing powerline-status via pip"
+  pip:
+    name: powerline-status
+    state: present
+    extra_args: --user
+
+- name: "Installing zsh via homebrew"
+  homebrew: 
+    name: zsh
+    state: present
+
+- name: "Installing zsh-completions via homebrew"
+  homebrew: 
+    name: zsh-completions
+    state: present
+
+- name: "Installing zsh-completions via homebrew"
+  homebrew: 
+    name: zsh-completions
+    state: present
+
+- git:
+    repo: 'https://github.com/sorin-ionescu/prezto.git'
+    dest: '{{ ansible_env.HOME }}/.zprezto'
+    version: 'master'
+  
+- name: "Configure zshrc: {{ ansible_env.HOME }}/.zshrc"
+  shell: |
+    setopt EXTENDED_GLOB
+    for rcfile in ~/.zprezto/runcoms/^README.md(.N); do
+      unlink ~/.${rcfile:t}
+      cp "$rcfile" ~/.${rcfile:t}
+    done
+  args:
+    executable: /usr/local/bin/zsh
+
+- name: "Clean {{ ansible_env.HOME }}/.oh-my-zsh"
+  file:
+    state: absent
+    path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+
+- git:
+    repo: 'https://github.com/robbyrussell/oh-my-zsh.git'
+    dest: '/tmp/oh-my-zsh'
+    version: 'master'
+
+- name: "Installing Oh My Zsh"
+  shell: 'sudo -H -u {{ mac_user|default(ansible_env.USER) }} /tmp/oh-my-zsh/tools/install.sh'
+  become: true
+
+- name: "Changing default shell to zsh "
+  shell: 'chsh -s /usr/local/bin/zsh {{ mac_user|default(ansible_env.USER) }}'
+  become: true
+
+- lineinfile:
+    path: '{{ ansible_env.HOME }}/.zshrc'
+    regexp: '^DEFAULT_USER=.*'
+    line: 'DEFAULT_USER="$USER"'
+
+- name: "Adding Prezto modules to {{ ansible_env.HOME }}/.zpreztorc"
+  blockinfile:
+    dest: '{{ ansible_env.HOME }}/.zshrc'
+    marker: "# {mark} Prezto Modules"
+    block: |
+      zstyle ':prezto:load' pmodule \
+        'environment' \
+        'terminal' \
+        'editor' \
+        'history' \
+        'directory' \
+        'spectrum' \
+        'utility' \
+        'completion' \
+        'git' \
+        'syntax-highlighting' \
+        'history-substring-search' \
+        'prompt'
+      
+      zstyle ':prezto:module:prompt' theme 'paradox'
+
+- name: "Install pathogen.vim"
+  shell: |
+    mkdir -p {{ ansible_env.HOME }}/.vim/autoload {{ ansible_env.HOME }}/.vim/bundle && \
+    curl -LSso {{ ansible_env.HOME }}/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+
+- name: "Adding pathogen.vim to .vimrc"
+  blockinfile:
+    create: yes
+    dest: '{{ ansible_env.HOME }}/.vimrc'
+    marker: '" {mark} pathogen.vim'
+    block: |
+      execute pathogen#infect()
+      syntax on
+      filetype plugin indent on
+
+- name: "Adding locales to PATH in {{ ansible_env.HOME }}/.zshrc"
+  blockinfile:
+    dest: '{{ ansible_env.HOME }}/.zshrc'
+    marker: "# {mark} locales PATH"
+    insertbefore: BOF
+    block: |
+      export LC_ALL=en_US.UTF-8
+      export LANG=en_US.UTF-8
+      source $HOME/.fonts/*.sh
+
+- name: "Adding Prezto to {{ ansible_env.HOME }}/.zshrc"
+  blockinfile:
+    dest: '{{ ansible_env.HOME }}/.zshrc'
+    marker: "# {mark} Prezto init"
+    insertbefore: BOF
+    block: |
+      # Source Prezto.
+      if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
+        source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
+      fi
+      
+      # Customize to your needs...
+
+- name: "Adding local_python to PATH in {{ ansible_env.HOME }}/.zshrc"
+  blockinfile:
+    dest: '{{ ansible_env.HOME }}/.zshrc'
+    marker: "# {mark} local_python PATH"
+    block: |
+      export PATH="{{ ansible_env.HOME }}/Library/Python/2.7/bin:$PATH"
+      
+- name: "Adding powerline to {{ ansible_env.HOME }}/.zshrc"
+  blockinfile:
+    dest: '{{ ansible_env.HOME }}/.zshrc'
+    marker: "# {mark} powerline"
+    block: |
+      source {{ ansible_env.HOME }}/Library/Python/2.7/lib/python/site-packages/powerline/bindings/zsh/powerline.zsh
+      
+      
+      

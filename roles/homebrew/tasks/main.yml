@@ -88,3 +88,19 @@
 - name: Install from Brewfile.
   command: "brew bundle chdir={{ homebrew_brewfile_dir }}"
   when: homebrew_brewfile.stat.exists and homebrew_use_brewfile
+
+- name: "Adding homebrew to PATH in {{ ansible_env.HOME }}/.zshrc"
+  blockinfile:
+    create: yes
+    dest: '{{ ansible_env.HOME }}/.zshrc'
+    marker: "# {mark} homebrew PATH"
+    block: |
+      export PATH="/usr/local/sbin:$PATH"
+
+- name: "Adding homebrew to PATH in {{ ansible_env.HOME }}/.bashrc"
+  blockinfile:
+    create: yes
+    dest: '{{ ansible_env.HOME }}/.bashrc'
+    marker: "# {mark} homebrew PATH"
+    block: |
+      export PATH="/usr/local/sbin:$PATH"
