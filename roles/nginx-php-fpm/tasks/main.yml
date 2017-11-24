@@ -4,12 +4,16 @@
     paths: "{{ homebrew_install_path }}/etc/nginx/servers"
     patterns: "ph*.conf"
   register: old_php_nginx_config
+  tags:
+    - reinstall
 
 - name: Deleting old configs
   file:
     path: "{{ item.path }}"
     state: absent
   with_items: "{{ old_php_nginx_config.files }}"
+  tags:
+    - reinstall
 
 - name: Print php_versions content
   debug: var=php_versions

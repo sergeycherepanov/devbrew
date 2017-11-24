@@ -3,9 +3,13 @@
   homebrew: "name=homebrew/versions/percona-server55 state=absent"
   async: 1800
   poll: 15
+  tags:
+    - reinstall
 
 - name: "Uninstalling Percona(Mysql) Server (percona-server)"
   homebrew: "name=percona-server state=absent"
+  tags:
+    - reinstall
 
 - name: "Installing Percona(Mysql) Server (homebrew/versions/percona-server56)"
   homebrew: "name=homebrew/versions/percona-server56 state=present"

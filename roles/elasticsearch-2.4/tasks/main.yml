@@ -1,0 +1,3 @@
+---
+- name: "Installing ElasticSearch(2.4) Server"
+  homebrew: "name=elasticsearch@2.4 state=present"

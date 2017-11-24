@@ -11,6 +11,8 @@
 - name: "Remove previously installed php70 packages"
   shell: "brew list | grep ^php70 | xargs brew uninstall --ignore-dependencies --force"
   ignore_errors: yes
+  tags:
+    - reinstall
 
 - name: "Installing php70 with flags: {{ php70_flags }}"
   homebrew: 

@@ -14,6 +14,12 @@ MAC OS X Dev Environment Php Mysql Nginx via Ansible
 8. Press **Scan homebrew** and choose checkbox **At Login** near all you need services
 9. Choose checkbox **As Root** for **Nginx** and **Dnsmasq**
 
+## Reinstall
+For reinstall already installed environment just add the `reinstall` tag to arguments
+```
+bash dev-env-osx/run.sh --tags "reinstall"
+```
+
 
 ## Usage
 Add folders with you source code into **www** folder in your home dir: **~/www/{pool}/{project_name}/**
