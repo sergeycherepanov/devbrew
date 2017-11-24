@@ -8,6 +8,8 @@
     - roles/fakesendmail
     - roles/dnsmasq
     - roles/curl
+    - roles/zsh
+    - roles/coreutils
     - roles/php-56
     - roles/php-70
     - roles/php-71
@@ -17,4 +19,4 @@
     - roles/nodejs
     - roles/compass
     - roles/less
-    - roles/composer
+    - roles/php-tools

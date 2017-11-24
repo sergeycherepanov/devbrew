@@ -1,3 +1,0 @@
----
-- name: "Installing composer"
-  homebrew: "name=composer state=present"

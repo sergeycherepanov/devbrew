@@ -14,8 +14,10 @@ homebrew_upgrade_all_packages: no
 
 homebrew_taps:
   - caskroom/cask
+  - caskroom/fonts
 
 homebrew_cask_apps:
+  - font-hack-nerd-font
   - launchrocket
 #  - sequel-pro
   - iterm2

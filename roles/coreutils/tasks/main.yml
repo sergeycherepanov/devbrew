@@ -1,0 +1,19 @@
+---
+- name: "Installing CoreUtils"
+  homebrew: 
+    name: coreutils
+    state: present
+
+- name: "Adding coreutils to PATH in {{ ansible_env.HOME }}/.zshrc"
+  blockinfile:
+    dest: '{{ ansible_env.HOME }}/.zshrc'
+    marker: "# {mark} coreutils PATH"
+    block: |
+      export PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
+
+- name: "Adding coreutils to PATH in {{ ansible_env.HOME }}/.bashrc"
+  blockinfile:
+    dest: '{{ ansible_env.HOME }}/.bashrc'
+    marker: "# {mark} coreutils PATH"
+    block: |
+      export PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
