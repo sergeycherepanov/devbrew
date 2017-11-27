@@ -14,6 +14,7 @@ homebrew_upgrade_all_packages: no
 
 homebrew_taps:
   - caskroom/cask
+  - caskroom/versions
   - caskroom/fonts
 
 homebrew_cask_apps:
@@ -29,7 +30,8 @@ homebrew_cask_apps:
 #  - dropbox
   - virtualbox
   - vagrant
-  - java
+  - java8
+  - jenv
 #  - td-agent
 
 homebrew_cask_appdir: /Applications

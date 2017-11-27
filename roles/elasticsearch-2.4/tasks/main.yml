@@ -1,3 +1,11 @@
 ---
 - name: "Installing ElasticSearch(2.4) Server"
-  homebrew: "name=elasticsearch@2.4 state=present"
+  homebrew: 
+    name: elasticsearch@2.4 
+    state: present"
+
+  - name: setup elasticsearch plugins
+    shell: "cd /usr/share/elasticsearch/bin && ./plugin install {{ item }}"
+    with_items:
+      - "delete-by-query"
+    tags: elasticsearch
