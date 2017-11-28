@@ -1,5 +1,5 @@
 ---
-php70_flags: "with-fpm,with-mysql,with-pgsql,without-apache,with-homebrew-curl"
+php70_flags: "with-postgresql,with-homebrew-curl"
 php70_modules:
   - php70-intl
   - php70-mcrypt

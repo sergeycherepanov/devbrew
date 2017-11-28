@@ -1,5 +1,5 @@
 ---
-php56_flags: "with-fpm,with-mysql,with-pgsql,without-apache,with-homebrew-curl"
+php56_flags: "with-postgresql,with-homebrew-curl"
 php56_modules:
   - php56-intl
   - php56-mcrypt
