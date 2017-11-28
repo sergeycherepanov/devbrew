@@ -5,7 +5,7 @@
     state: present"
 
   - name: setup elasticsearch plugins
-    shell: "cd /usr/share/elasticsearch/bin && ./plugin install {{ item }}"
+    shell: "/usr/local/opt/elasticsearch@2.4/libexec/bin/plugin install {{ item }}"
     with_items:
       - "delete-by-query"
     tags: elasticsearch
