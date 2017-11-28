@@ -9,6 +9,7 @@ homebrew_installed_packages:
   - mc
   - wget
   - mtr
+  - jenv
 
 homebrew_upgrade_all_packages: no
 
@@ -31,7 +32,6 @@ homebrew_cask_apps:
   - virtualbox
   - vagrant
   - java8
-  - jenv
 #  - td-agent
 
 homebrew_cask_appdir: /Applications
