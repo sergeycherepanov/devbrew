@@ -1,8 +1,6 @@
 ---
 - name: "Uninstalling Percona(Mysql) Server (homebrew/versions/percona-server55)"
   homebrew: "name=homebrew/versions/percona-server55 state=absent"
-  async: 1800
-  poll: 15
   tags:
     - reinstall
 

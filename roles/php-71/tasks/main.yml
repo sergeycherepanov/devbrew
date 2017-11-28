@@ -19,8 +19,6 @@
     name: php71 
     state: present 
     install_options: "{{ php71_flags }}"
-  async: 1800
-  poll: 15
 
 - name: "Installing php71 modules"
   homebrew:
