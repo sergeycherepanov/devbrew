@@ -4,48 +4,71 @@
   with_items:
     - "homebrew/dupes"
     - "homebrew/php"
+  tags:
+    - php70
 
 - name: "Unlink all already installed php packages"
   shell: "brew list | grep php | xargs brew unlink"
+  tags:
+    - php70
 
 - name: "Remove previously installed php70 packages"
   shell: "brew list | grep ^php70 | xargs brew uninstall --ignore-dependencies --force"
   ignore_errors: yes
   tags:
     - reinstall
+    - php70
 
 - name: "Installing php70 with flags: {{ php70_flags }}"
   homebrew: 
     name: php70 
     state: present 
     install_options: "{{ php70_flags }}"
+  tags:
+    - php70
 
 - name: "Installing php70 modules"
   homebrew:
     name: "{{ item }}"
     state: present
   with_items: "{{ php70_modules }}"
+  tags:
+    - php70
 
 - name: "Create php-fpm.conf"
   template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/7.0/php-fpm.conf owner={{ www_user }} group={{ www_group }}
+  tags:
+    - php70
 
 - name: "Create php.ini"
   template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.0/php.ini owner={{ www_user }} group={{ www_group }}
+  tags:
+    - php70
 
 - name: "Create ext-opcache.ini"
   template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.0/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
+  tags:
+    - php70
 
 - name: "Create ext-xdebug.ini"
   template: src=ext-xdebug.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.0/conf.d/ext-xdebug.ini owner={{ www_user }} group={{ www_group }}
+  tags:
+    - php70
 
 - name: "Unlink php70"
   homebrew: "name=php70 state=unlinked"
   ignore_errors: yes
+  tags:
+    - php70
 
 - name: "Add simlink"
   shell: "find /usr/local/Cellar/php70 -path '*/bin/php' | awk -F/ '{print \"ln -Fs \" $0 \" \" \"/usr/local/bin/\"$5}' | bash"
   ignore_errors: yes
+  tags:
+    - php70
 
 - name: add 70 to "php_versions" array
   set_fact: 
     php_versions: "{{ php_versions + [ '70' ] }} "
+  tags:
+    - php70

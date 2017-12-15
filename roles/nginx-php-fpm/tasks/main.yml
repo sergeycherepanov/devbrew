@@ -16,10 +16,43 @@
     - reinstall
 
 - name: Print php_versions content
-  debug: var=php_versions
+  debug: 
+    var: php_versions
+  tags:
+    - always
+
+- stat: 
+    path: "{{ homebrew_install_path }}/etc/nginx/servers/php.conf"
+  register: nginx_php_conf_stat
+  tags:
+    - always
 
 - name: "Creates servers/php.conf"
-  template: src=servers/php.conf.j2 dest={{ homebrew_install_path }}/etc/nginx/servers/php.conf owner={{ www_user }} group={{ www_group }}
+  template: 
+    src: servers/php.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/nginx/servers/php.conf" 
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  when: nginx_php_conf_stat.stat.exists is defined and not nginx_php_conf_stat.stat.exists
+  tags:
+    - always
+  
+- stat: 
+    path: "{{ homebrew_install_path }}/etc/nginx/servers/php_ssl.conf"
+  register: nginx_php_conf_ssl_stat
+  tags:
+    - always
+
+- name: "Creates servers/php.conf"
+  template: 
+    src: servers/php_ssl.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/nginx/servers/php_ssl.conf" 
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  when: nginx_php_conf_ssl_stat.stat.exists is defined and not nginx_php_conf_ssl_stat.stat.exists
+  tags:
+    - always
+  
 # - name: "Copy the daemon configuration file into place."
 #   shell: "cp $(brew list nginx | grep /homebrew.mxcl.nginx.plist$) /Library/LaunchDaemons/"
 #   become: yes

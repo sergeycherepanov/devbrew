@@ -4,46 +4,64 @@
     repo: 'https://github.com/powerline/fonts.git'
     dest: '/tmp/powerline_fonts'
     version: 'master'
+  tags:
+    - zsh
 
 - copy:
     src: '/tmp/powerline_fonts/Hack/'
     dest: '{{ ansible_env.HOME }}/Library/Fonts/'
+  tags:
+    - zsh
 
 - name: "Downloading terminal hack font"
   git:
     repo: 'https://github.com/gabrielelana/awesome-terminal-fonts.git'
     dest: '/tmp/awesome-terminal-fonts'
     version: 'master'
+  tags:
+    - zsh
 
 - copy:
     src: '/tmp/awesome-terminal-fonts/build/'
     dest: '{{ ansible_env.HOME }}/.fonts/'
+  tags:
+    - zsh
  
 - name: "Installing powerline-status via pip"
   pip:
     name: powerline-status
     state: present
     extra_args: --user
+  tags:
+    - zsh
 
 - name: "Installing zsh via homebrew"
   homebrew: 
     name: zsh
     state: present
+  tags:
+    - zsh
 
 - name: "Installing zsh-completions via homebrew"
   homebrew: 
     name: zsh-completions
     state: present
+  tags:
+    - zsh
 
 - name: "Installing zsh-completions via homebrew"
   homebrew: 
     name: zsh-completions
     state: present
+  tags:
+    - zsh
 
 - git:
     repo: 'https://github.com/sorin-ionescu/prezto.git'
     dest: '{{ ansible_env.HOME }}/.zprezto'
     version: 'master'
+  tags:
+    - zsh
   
 - name: "Configure zshrc: {{ ansible_env.HOME }}/.zshrc"
   shell: |
@@ -54,29 +72,41 @@
     done
   args:
     executable: /usr/local/bin/zsh
+  tags:
+    - zsh
 
 - name: "Clean {{ ansible_env.HOME }}/.oh-my-zsh"
   file:
     state: absent
     path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+  tags:
+    - zsh
 
 - git:
     repo: 'https://github.com/robbyrussell/oh-my-zsh.git'
     dest: '/tmp/oh-my-zsh'
     version: 'master'
+  tags:
+    - zsh
 
 - name: "Installing Oh My Zsh"
   shell: 'sudo -H -u {{ mac_user|default(ansible_env.USER) }} /tmp/oh-my-zsh/tools/install.sh'
   become: true
+  tags:
+    - zsh
 
 - name: "Changing default shell to zsh "
   shell: 'chsh -s /usr/local/bin/zsh {{ mac_user|default(ansible_env.USER) }}'
   become: true
+  tags:
+    - zsh
 
 - lineinfile:
     path: '{{ ansible_env.HOME }}/.zshrc'
     regexp: '^DEFAULT_USER=.*'
     line: 'DEFAULT_USER="$USER"'
+  tags:
+    - zsh
 
 - name: "Adding Prezto modules to {{ ansible_env.HOME }}/.zpreztorc"
   blockinfile:
@@ -98,11 +128,15 @@
         'prompt'
       
       zstyle ':prezto:module:prompt' theme 'paradox'
+  tags:
+    - zsh
 
 - name: "Install pathogen.vim"
   shell: |
     mkdir -p {{ ansible_env.HOME }}/.vim/autoload {{ ansible_env.HOME }}/.vim/bundle && \
     curl -LSso {{ ansible_env.HOME }}/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+  tags:
+    - zsh
 
 - name: "Adding pathogen.vim to .vimrc"
   blockinfile:
@@ -113,6 +147,8 @@
       execute pathogen#infect()
       syntax on
       filetype plugin indent on
+  tags:
+    - zsh
 
 - name: "Adding locales to PATH in {{ ansible_env.HOME }}/.zshrc"
   blockinfile:
@@ -123,6 +159,8 @@
       export LC_ALL=en_US.UTF-8
       export LANG=en_US.UTF-8
       source $HOME/.fonts/*.sh
+  tags:
+    - zsh
 
 - name: "Adding Prezto to {{ ansible_env.HOME }}/.zshrc"
   blockinfile:
@@ -136,6 +174,8 @@
       fi
       
       # Customize to your needs...
+  tags:
+    - zsh
 
 - name: "Adding local_python to PATH in {{ ansible_env.HOME }}/.zshrc"
   blockinfile:
@@ -143,6 +183,8 @@
     marker: "# {mark} local_python PATH"
     block: |
       export PATH="{{ ansible_env.HOME }}/Library/Python/2.7/bin:$PATH"
+  tags:
+    - zsh
       
 - name: "Adding powerline to {{ ansible_env.HOME }}/.zshrc"
   blockinfile:
@@ -150,6 +192,8 @@
     marker: "# {mark} powerline"
     block: |
       source {{ ansible_env.HOME }}/Library/Python/2.7/lib/python/site-packages/powerline/bindings/zsh/powerline.zsh
+  tags:
+    - zsh
       
       
       

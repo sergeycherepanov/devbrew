@@ -1,4 +1,6 @@
 ---
 - name: "Installing SDKMAN"
   shell: 'curl -s "https://get.sdkman.io" | bash'
+  tags:
+    - always
  

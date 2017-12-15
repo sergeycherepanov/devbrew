@@ -10,6 +10,7 @@ homebrew_installed_packages:
   - wget
   - mtr
   - jenv
+  - watch
 
 homebrew_upgrade_all_packages: no
 

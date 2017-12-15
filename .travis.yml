@@ -5,4 +5,4 @@ branches:
   only:
     - master
 script:
-  - $TRAVIS_BUILD_DIR/run.sh -vvvv
+  - $TRAVIS_BUILD_DIR/run.sh -vvvv --tags "php71,zsh"

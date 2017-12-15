@@ -1,5 +1,14 @@
 ---
 - name: "Installing nodejs"
-  homebrew: "name=nodejs state=present"
+  homebrew: 
+    name: nodejs 
+    state: present
+  tags:
+    - always
+
 - name: "Installing npm"
-  homebrew: "name=npm state=present"
+  homebrew:
+    name: npm
+    state: present
+  tags:
+    - always

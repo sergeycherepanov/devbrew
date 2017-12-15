@@ -11,36 +11,70 @@
 
 - name: "Installing Percona(Mysql) Server (homebrew/versions/percona-server56)"
   homebrew: "name=homebrew/versions/percona-server56 state=present"
+  tags:
+    - always
 
 - name: "link percona-server"
   command: "brew link percona-server@5.6 --force"
+  tags:
+    - always
 
 - name: "Create my.cnf"
-  template: src=my.cnf.j2 dest={{ homebrew_install_path }}/etc/my.cnf owner={{ www_user }} group={{ www_group }} mode=0744
+  template: 
+    src: my.cnf.j2
+    dest: "{{ homebrew_install_path }}/etc/my.cnf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0744
+  tags:
+    - always
 
 - name: "Creates {{ homebrew_install_path }}/var/log/mysql"
-  file: path={{ homebrew_install_path }}/var/log/mysql state=directory
+  file: 
+    path: "{{ homebrew_install_path }}/var/log/mysql"
+    state: directory
+  tags:
+    - always
 
 - name: "Creates {{ homebrew_install_path }}/var/run/mysqld"
-  file: path={{ homebrew_install_path }}/var/run/mysqld state=directory
+  file: 
+    path: "{{ homebrew_install_path }}/var/run/mysqld"
+    state: directory
+  tags:
+    - always
 
 - name: "Check is {{ homebrew_install_path }}/lib/mysql exists"
-  stat: path={{ homebrew_install_path }}/lib/mysql
+  stat: 
+    path: "{{ homebrew_install_path }}/lib/mysql"
   register: mysql_datadir
+  tags:
+    - always
   
 - name: "Get current time for backup name"
   set_fact: current_time="{{lookup('pipe','date +%Y%m%d%H%M%S')}}"
   when: mysql_datadir.stat.exists
+  tags:
+    - always
 
 - name: "Backup {{ homebrew_install_path }}/lib/mysql to {{ homebrew_install_path }}/lib/mysql.back.{{ current_time }}"
   command: creates="{{ homebrew_install_path }}/lib/mysql.back.{{ current_time }}" mv {{ homebrew_install_path }}/lib/mysql {{ homebrew_install_path }}/lib/mysql.back.{{ current_time }}
   when: mysql_datadir.stat.exists
+  tags:
+    - always
 
 - name: "Create {{ homebrew_install_path }}/lib/mysql"
-  file: path={{ homebrew_install_path }}/lib/mysql state=directory
+  file: 
+    path: "{{ homebrew_install_path }}/lib/mysql" 
+    state: directory
+  when: mysql_datadir.stat.exists is defined and not mysql_datadir.stat.exists
+  tags:
+    - always
 
 - name: "Install db (mysqld --initialize-insecure)"
   shell: "mysql_install_db --basedir={{ homebrew_install_path }} --datadir={{ homebrew_install_path }}/lib/mysql/"
+  when: mysql_datadir.stat.exists is defined and not mysql_datadir.stat.exists
+  tags:
+    - always
 
 #- name: "Copy the daemon configuration file into place."
 #  shell: "cp $(brew list percona-server | grep /homebrew.mxcl.percona-server.plist$) {{ ansible_env.HOME }}/Library/LaunchAgents/homebrew.mxcl.percona-server.plist"

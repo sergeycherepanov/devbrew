@@ -3,9 +3,12 @@
   homebrew: 
     name: elasticsearch@2.4 
     state: present"
+  tags:
+    - always
 
-  - name: setup elasticsearch plugins
-    shell: "/usr/local/opt/elasticsearch@2.4/libexec/bin/plugin install {{ item }}"
-    with_items:
-      - "delete-by-query"
-    tags: elasticsearch
+- name: setup elasticsearch plugins
+  shell: "/usr/local/opt/elasticsearch@2.4/libexec/bin/plugin install {{ item }}"
+  with_items:
+    - "delete-by-query"
+  tags:
+    - always
