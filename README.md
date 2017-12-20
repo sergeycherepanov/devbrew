@@ -25,10 +25,10 @@ bash dev-env-osx/run.sh --tags "reinstall"
 Add folders with you source code into **www** folder in your home dir: **~/www/{pool}/{project_name}/**
 
 #### Where:  
-{pool} - first level domain name (resolver configured for `dev` and `loc`, but you can add more hosts directly to `/etc/hosts` file)  
+{pool} - second level domain name (resolver configured for `dev.com` and `loc.com`, but you can add more hosts directly to `/etc/hosts` file)
 {project} - project name  
 
-If **fqdn** of project should be **wordpress.dev**, directory structure must be:
+If **fqdn** of project should be **wordpress.dev.com**, directory structure must be:
 
 `~/www/dev/wordpress/`
 
@@ -41,9 +41,9 @@ If subfolder **web** or **public** exists, server will use they as web root. For
 There is two ways for using the different php versions for your project
 
 1. Direct call of project via version domain, for example:  
-`wordpress.56.dev` (php 5.6)  
-`wordpress.70.dev` (php 7.0)  
-`wordpress.71.dev` (php 7.1)  
+`wordpress.56.dev.com` (php 5.6)  
+`wordpress.70.dev.com` (php 7.0)  
+`wordpress.71.dev.com` (php 7.1)  
 
 2. Define php version via  empty flag file in project root, for example:  
 `~/www/dev/wordpress/.php56` (php 5.6)  
