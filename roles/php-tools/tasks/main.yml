@@ -12,7 +12,17 @@
     name: phpmd
     state: present
 
+- name: "Link phpmd"
+  homebrew: 
+    name: phpmd
+    state: linked
+
 - name: "Installing phpcs"
   homebrew: 
     name: php-code-sniffer
     state: present
+
+- name: "Link php-code-sniffer"
+  homebrew: 
+    name: php-code-sniffer
+    state: linked
