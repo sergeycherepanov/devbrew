@@ -2,3 +2,5 @@
 www_user: "{{ mac_user|default(ansible_env.USER) }}"
 www_dir: "/Users/{{ mac_user|default(ansible_env.USER) }}/www"
 www_group: "staff"
+root_domain: "com"
+subdomains: ["dev", "loc"]

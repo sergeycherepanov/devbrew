@@ -1,0 +1,104 @@
+set $wwwRoot {{ www_dir }};
+autoindex off;
+client_max_body_size 256m;
+
+if ($php_version !~* '^({{ php_versions | join("|") }})$') {
+    # set default php version to 7.1
+    set $php_version 71;
+}
+set $php_version_path "/usr/local/bin/php${php_version}";
+
+if ($project_name ~ ^www\.(.+)$) {
+    set $project_name $1;
+}
+
+set $projectDir $wwwRoot/$pool/$project_name;
+
+if (!-d $projectDir) {
+    set $projectDir $wwwRoot;
+}
+
+set $documentRoot $projectDir/web;
+
+if (!-d $documentRoot) {
+    set $documentRoot $projectDir/public;
+}
+
+if (!-d $documentRoot) {
+    set $documentRoot $projectDir/pub;
+}
+
+if (!-d $documentRoot) {
+    set $documentRoot $projectDir;
+}
+
+{% for version in php_versions %}
+
+if (-f $documentRoot/.php{{ version }}) {
+  set $php_version_path "/usr/local/bin/php{{ version }}";
+  set $php_version {{ version }};
+}
+
+{% endfor %}
+
+root   $documentRoot;
+index  app.php index.php index.html;
+
+if (-f $documentRoot/app.php) {
+    set $cgiIndex /app.php;
+}
+
+if (!-f $documentRoot/app.php) {
+    set $cgiIndex /index.php;
+}
+
+#deny magento protected files
+location ~ ^(/app/|/media/downloadable/|/var/|/shell/|/pkginfo/|/media/customer/|/lib/|/includes/) {
+    rewrite ^ /index.php last;
+}
+
+# deny access to hidden files
+location ~ /\. {
+    deny all;
+}
+
+location / {
+    try_files $uri $uri/ @handler;
+}
+
+## Common front handler
+location @handler {
+    rewrite / $cgiIndex;
+}
+
+## Forward paths like /js/index.php/x.js to relevant handler
+location ~ .php/ {
+    rewrite ^(.*.php)/ $1 last;
+}
+
+## Process .php files
+location ~ ^.+\.php {
+    # If file not found rewrite to index
+    if (!-e $request_filename) {
+        rewrite / $cgiIndex last;
+    }
+
+    fastcgi_pass                    127.0.0.1:90$php_version;
+    fastcgi_split_path_info         ^(.+\.php)(.*)$;
+    include                         fastcgi_params;
+    fastcgi_param  SCRIPT_FILENAME  $documentRoot$fastcgi_script_name;
+    fastcgi_param  PATH_INFO        $fastcgi_path_info;
+    fastcgi_intercept_errors        on;
+    fastcgi_ignore_client_abort     off;
+    fastcgi_connect_timeout         30;
+    fastcgi_send_timeout            3600;
+    fastcgi_read_timeout            3600;
+    fastcgi_buffer_size             128k;
+    fastcgi_buffers                 4   256k;
+    fastcgi_busy_buffers_size       256k;
+    fastcgi_temp_file_write_size    256k;
+    fastcgi_param                   MAGE_IS_DEVELOPER_MODE  true;
+    fastcgi_param                   SERVER_NAME $host;
+    fastcgi_param                   PHP_PATH $php_version_path;
+    fastcgi_param                   HTTPS $https;
+}

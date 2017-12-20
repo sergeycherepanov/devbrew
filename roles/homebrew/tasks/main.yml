@@ -3,7 +3,7 @@
   shell: whoami
   register: homebrew_whoami
   changed_when: false
-  always_run: true
+  check_mode: no
   tags:
     - always
 
@@ -101,7 +101,7 @@
   command: >
     bash -l -c '{{ homebrew_brew_bin_path }}/brew cask list'
   register: homebrew_cask_list
-  always_run: yes
+  check_mode: no
   changed_when: false
   tags:
     - always

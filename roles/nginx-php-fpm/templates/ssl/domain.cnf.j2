@@ -1,0 +1,21 @@
+[ req ]
+prompt = no
+distinguished_name = server_distinguished_name
+req_extensions = v3_req
+
+[ server_distinguished_name ]
+commonName = {{ item }}.{{root_domain}}
+stateOrProvinceName = NSW
+countryName = AU
+emailAddress = root@localhost
+organizationName = Localhost
+organizationalUnitName = Local Development Environment
+
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.0 = *.{{ item }}.{{root_domain}}
+DNS.1 = {{ item }}.{{root_domain}}

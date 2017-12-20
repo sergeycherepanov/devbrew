@@ -1,11 +1,13 @@
 ---
+- import_tasks: ssl.yml
+
 - name: Find old configs
   find:
     paths: "{{ homebrew_install_path }}/etc/nginx/servers"
     patterns: "ph*.conf"
   register: old_php_nginx_config
   tags:
-    - reinstall
+    - always
 
 - name: Deleting old configs
   file:
@@ -13,43 +15,42 @@
     state: absent
   with_items: "{{ old_php_nginx_config.files }}"
   tags:
-    - reinstall
+    - always
 
 - name: Print php_versions content
   debug: 
     var: php_versions
   tags:
     - always
-
-- stat: 
-    path: "{{ homebrew_install_path }}/etc/nginx/servers/php.conf"
-  register: nginx_php_conf_stat
+    
+- name: "Creates {{ homebrew_install_path }}/etc/nginx/dev.conf"
+  template: 
+    src: dev.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/nginx/dev.conf" 
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
   tags:
     - always
 
-- name: "Creates servers/php.conf"
+- name: "Creates {{ homebrew_install_path }}/etc/nginx/servers/{{item}}_{{root_domain}}.conf"
   template: 
     src: servers/php.conf.j2
-    dest: "{{ homebrew_install_path }}/etc/nginx/servers/php.conf" 
+    dest: "{{ homebrew_install_path }}/etc/nginx/servers/{{item}}_{{root_domain}}.conf" 
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
-  when: nginx_php_conf_stat.stat.exists is defined and not nginx_php_conf_stat.stat.exists
-  tags:
-    - always
-  
-- stat: 
-    path: "{{ homebrew_install_path }}/etc/nginx/servers/php_ssl.conf"
-  register: nginx_php_conf_ssl_stat
+  with_items: "{{subdomains}}"
   tags:
     - always
 
-- name: "Creates servers/php.conf"
+- name: "Creates {{ homebrew_install_path }}/etc/nginx/servers/{{item.1}}_{{item.0}}_{{root_domain}}.conf"
   template: 
-    src: servers/php_ssl.conf.j2
-    dest: "{{ homebrew_install_path }}/etc/nginx/servers/php_ssl.conf" 
+    src: servers/php_version.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/nginx/servers/{{item.1}}_{{item.0}}_{{root_domain}}.conf" 
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
-  when: nginx_php_conf_ssl_stat.stat.exists is defined and not nginx_php_conf_ssl_stat.stat.exists
+  with_nested:
+    - "{{subdomains}}"
+    - "{{php_versions}}"
   tags:
     - always
   

@@ -1,14 +1,19 @@
 ---
-- name: "Installing nodejs"
+- name: "Remove old node packages"
   homebrew: 
-    name: nodejs 
-    state: present
+    name: "{{ item }}"
+    state: absent
   tags:
     - always
-
-- name: "Installing npm"
-  homebrew:
-    name: npm
+  with_items:
+    - nodejs
+    - node
+    - npm
+    
+- name: "Installing nodejs"
+  homebrew: 
+    name: node 
     state: present
+    install_options: "without-icu4c"
   tags:
     - always
