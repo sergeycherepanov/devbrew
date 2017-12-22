@@ -1,0 +1,17 @@
+---
+- name: "Installing golang"
+  homebrew: 
+    name: go 
+    state: present
+    install_options: "cross-compile-common"
+  tags:
+    - always
+    
+- name: "Adding Prezto modules to {{ ansible_env.HOME }}/.zpreztorc"
+  blockinfile:
+    dest: '{{ ansible_env.HOME }}/{{item}}'
+    marker: "# {mark} golang"
+    block: |
+      export GOPATH="${HOME}/go"
+      export PATH="${PATH}:${GOPATH}/bin"
+  with_items: ['.zshrc', '.bashrc']

@@ -11,6 +11,8 @@ homebrew_installed_packages:
   - mtr
   - jenv
   - watch
+  - hg
+  - bzr
 
 homebrew_upgrade_all_packages: no
 
