@@ -62,8 +62,7 @@
     - php70
 
 - name: "Add symlink"
-  shell: "find /usr/local/Cellar/php70 -path '*/bin/php' | awk -F/ '{print \"ln -fTs \" $0 \" \" \"/usr/local/bin/\"$5}' | bash"
-  ignore_errors: yes
+  shell: find /usr/local/Cellar/php70 -path '*/bin/php' | awk -F/ '{print "ln -fs " $0 " " "/usr/local/bin/"$5}' | bash
   tags:
     - php70
 

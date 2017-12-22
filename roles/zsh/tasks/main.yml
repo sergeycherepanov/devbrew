@@ -129,10 +129,20 @@
   tags:
     - zsh
 
+
+- name: "Creating .vim/autoload folder"
+- file:
+    path: "{{item}}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ ansible_env.HOME }}/.vim/autoload"
+    - "{{ ansible_env.HOME }}/.vim/bundle"
+
 - name: "Install pathogen.vim"
-  shell: |
-    mkdir -p {{ ansible_env.HOME }}/.vim/autoload {{ ansible_env.HOME }}/.vim/bundle && \
-    curl -LSso {{ ansible_env.HOME }}/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+  get_url:
+    url: "https://tpo.pe/pathogen.vim"
+    dest: "{{ ansible_env.HOME }}/.vim/autoload/pathogen.vim"
   tags:
     - zsh
 
