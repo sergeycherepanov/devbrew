@@ -89,14 +89,14 @@
   tags:
     - zsh
 
-- name: "Installing Oh My Zsh"
-  shell: '/tmp/oh-my-zsh/tools/install.sh'
-  tags:
-    - zsh
-
 - name: "Changing default shell to zsh "
   shell: 'chsh -s /usr/local/bin/zsh {{ mac_user|default(ansible_env.USER) }}'
   become: true
+  tags:
+    - zsh
+
+- name: "Installing Oh My Zsh"
+  shell: '/tmp/oh-my-zsh/tools/install.sh'
   tags:
     - zsh
 
