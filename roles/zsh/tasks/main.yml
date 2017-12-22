@@ -90,8 +90,11 @@
     - zsh
 
 - name: "Installing Oh My Zsh"
-  shell: 'sudo -H -u {{ mac_user|default(ansible_env.USER) }} /tmp/oh-my-zsh/tools/install.sh'
+  shell: '/tmp/oh-my-zsh/tools/install.sh'
   become: true
+  become_method: sudo
+  become_user: "{{ mac_user|default(ansible_env.USER) }}"
+  become_flags: '-H'
   tags:
     - zsh
 
