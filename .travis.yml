@@ -4,5 +4,11 @@ os:
 branches:
   only:
     - master
+matrix:
+  include:
+    env:
+    - TAGS=php56,zsh
+    - TAGS=php70,zsh
+    - TAGS=php71,zsh
 script:
-  - $TRAVIS_BUILD_DIR/run.sh -n -vvvv --tags "php71,zsh"
+  - $TRAVIS_BUILD_DIR/run.sh -v --tags "${TAGS}"
