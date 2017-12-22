@@ -49,6 +49,7 @@
   tags:
     - zsh
 
+
 - git:
     repo: 'https://github.com/sorin-ionescu/prezto.git'
     dest: '{{ ansible_env.HOME }}/.zprezto'
@@ -85,6 +86,7 @@
 - name: "Changing default shell to zsh "
   shell: 'chsh -s /usr/local/bin/zsh {{ mac_user|default(ansible_env.USER) }}'
   become: true
+  become_user: root
   tags:
     - zsh
 
