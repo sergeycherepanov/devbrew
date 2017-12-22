@@ -84,7 +84,7 @@
     - zsh
 
 - name: "Changing default shell to zsh "
-  shell: 'chsh -s /usr/local/bin/zsh {{ mac_user|default(ansible_env.USER) }}'
+  shell: 'chsh -s /bin/zsh {{ mac_user|default(ansible_env.USER) }}'
   become: true
   become_user: root
   tags:
@@ -93,7 +93,7 @@
 - name: "Installing Oh My Zsh"
   shell: '/tmp/oh-my-zsh/tools/install.sh'
   args:
-    executable: /usr/local/bin/zsh
+    executable: /bin/zsh
   tags:
     - zsh
 
