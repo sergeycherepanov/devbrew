@@ -1,10 +1,11 @@
 ---
-
-- file:
+- name: "Remove old localCA directories"
+  file:
     path: "{{ homebrew_install_path }}/etc/openssl/localCA"
     state: absent
 
-- file:
+- name: "Creates localCA directories"
+  file:
     path: "{{item}}"
     state: directory
     mode: 0755
