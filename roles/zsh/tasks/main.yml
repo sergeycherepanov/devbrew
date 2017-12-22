@@ -92,6 +92,8 @@
 
 - name: "Installing Oh My Zsh"
   shell: '/tmp/oh-my-zsh/tools/install.sh'
+  environment:
+    SHELL: /bin/zsh
   args:
     executable: /bin/zsh
   tags:
