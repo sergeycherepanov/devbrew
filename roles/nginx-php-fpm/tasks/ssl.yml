@@ -3,6 +3,8 @@
   file:
     path: "{{ homebrew_install_path }}/etc/openssl/localCA"
     state: absent
+  tags:
+    - always  
 
 - name: "Creates localCA directories"
   file:
@@ -14,6 +16,8 @@
     - "{{ homebrew_install_path }}/etc/openssl/localCA/newcerts"
     - "{{ homebrew_install_path }}/etc/openssl/localCA/crl"
     - "{{ homebrew_install_path }}/etc/openssl/localCA/private"
+  tags:
+    - always  
 
 - name: "Creates ca config"
   template: 
