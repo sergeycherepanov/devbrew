@@ -49,13 +49,6 @@
   tags:
     - zsh
 
-- name: "Installing zsh-completions via homebrew"
-  homebrew: 
-    name: zsh-completions
-    state: present
-  tags:
-    - zsh
-
 - git:
     repo: 'https://github.com/sorin-ionescu/prezto.git'
     dest: '{{ ansible_env.HOME }}/.zprezto'
