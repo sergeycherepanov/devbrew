@@ -1,5 +1,5 @@
 # dev-env-osx
-MAC OS X Dev Environment Php Mysql Nginx via Ansible
+macOS Development Environment
 
 [![Build Status](https://travis-ci.org/SergeyCherepanov/dev-env-osx.svg?branch=master)](https://travis-ci.org/SergeyCherepanov/dev-env-osx)  
 
@@ -19,7 +19,6 @@ For reinstall already installed environment just add the `reinstall` tag to argu
 ```
 bash dev-env-osx/run.sh --tags "reinstall"
 ```
-
 
 ## Usage
 Add folders with you source code into **www** folder in your home dir: **~/www/{pool}/{project_name}/**
