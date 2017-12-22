@@ -131,7 +131,7 @@
 
 
 - name: "Creating .vim/autoload folder"
-- file:
+  file:
     path: "{{item}}"
     state: directory
     mode: 0755
