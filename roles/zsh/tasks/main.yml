@@ -138,6 +138,8 @@
   with_items:
     - "{{ ansible_env.HOME }}/.vim/autoload"
     - "{{ ansible_env.HOME }}/.vim/bundle"
+  tags:
+    - zsh
 
 - name: "Install pathogen.vim"
   get_url:
