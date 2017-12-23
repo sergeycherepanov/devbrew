@@ -4,7 +4,7 @@
     name: "{{ item }}"
     state: absent
   tags:
-    - always
+    - nodejs
   with_items:
     - nodejs
     - node
@@ -16,4 +16,4 @@
     state: present
     install_options: "without-icu4c"
   tags:
-    - always
+    - nodejs
