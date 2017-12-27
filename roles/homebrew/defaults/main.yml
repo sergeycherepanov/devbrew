@@ -13,6 +13,7 @@ homebrew_installed_packages:
   - watch
   - hg
   - bzr
+  - p7zip
 
 homebrew_upgrade_all_packages: no
 
