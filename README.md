@@ -52,3 +52,19 @@ There is two ways for using the different php versions for your project
 ## PHP Mail
 
 In ~/mail directory will be drops letter what be sent via php **mail** function
+
+## Change cli Java version
+
+List available versions
+```
+jenv versions
+```
+
+Set 1.8 as default
+```
+jenv local 1.8
+```
+or
+```
+jenv global 1.8
+```
