@@ -1,0 +1,16 @@
+---
+- name: "Installing jenv"
+  homebrew: 
+    name: jenv 
+    state: present
+  tags:
+    - always
+    
+- name: "Adding jenv to rc"
+  blockinfile:
+    dest: '{{ ansible_env.HOME }}/{{item}}'
+    marker: "# {mark} jenv"
+    block: |
+      if which jenv > /dev/null; then eval "$(jenv init -)"; fi
+  with_items: ['.zshrc', '.bashrc']
+

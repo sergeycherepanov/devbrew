@@ -9,7 +9,6 @@ homebrew_installed_packages:
   - mc
   - wget
   - mtr
-  - jenv
   - watch
   - hg
   - bzr

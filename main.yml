@@ -10,6 +10,7 @@
     - roles/curl
     - roles/zsh
     - roles/coreutils
+    - roles/jenv
     - roles/php-56
     - roles/php-70
     - roles/php-71
