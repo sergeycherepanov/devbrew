@@ -32,6 +32,11 @@ if (!-d $documentRoot) {
     set $documentRoot $projectDir;
 }
 
+# if the Magento 2
+if (-f $projectDir/bin/magento) {
+    set $documentRoot $projectDir;
+}
+
 {% for version in php_versions %}
 
 if (-f $documentRoot/.php{{ version }}) {
@@ -64,6 +69,19 @@ location ~ /\. {
 
 location / {
     try_files $uri $uri/ @handler;
+}
+
+# Magento 2 hack for static
+location /pub/static/ {
+
+    # Remove signature of the static files that is used to overcome the browser cache
+    location ~ ^/pub/static/version {
+        rewrite ^/pub/static/(version\d*/)?(.*)$ /pub/static/$2 last;
+    }
+    if (!-f $request_filename) {
+        rewrite ^/pub/static/?(.*)$ /pub/static.php?resource=$1 last;
+    }
+    add_header X-Frame-Options "SAMEORIGIN";
 }
 
 ## Common front handler
