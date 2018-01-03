@@ -14,13 +14,11 @@
 - name: "Installing Percona(Mysql) Server (homebrew/versions/percona-server56)"
   homebrew: "name=homebrew/versions/percona-server56 state=present"
   tags:
-    - always
     - percona56
 
 - name: "link percona-server"
   command: "brew link percona-server@5.6 --force"
   tags:
-    - always
     - percona56
 
 - name: "Create my.cnf"
@@ -31,7 +29,6 @@
     group: "{{ www_group }}"
     mode: 0744
   tags:
-    - always
     - percona56
 
 - name: "Creates {{ homebrew_install_path }}/var/log/mysql"
@@ -39,7 +36,6 @@
     path: "{{ homebrew_install_path }}/var/log/mysql"
     state: directory
   tags:
-    - always
     - percona56
 
 - name: "Creates {{ homebrew_install_path }}/var/run/mysqld"
@@ -47,7 +43,6 @@
     path: "{{ homebrew_install_path }}/var/run/mysqld"
     state: directory
   tags:
-    - always
     - percona56
 
 - name: "Check is {{ homebrew_install_path }}/lib/mysql exists"
@@ -55,21 +50,18 @@
     path: "{{ homebrew_install_path }}/lib/mysql"
   register: mysql_datadir
   tags:
-    - always
     - percona56
   
 - name: "Get current time for backup name"
   set_fact: current_time="{{lookup('pipe','date +%Y%m%d%H%M%S')}}"
   when: mysql_datadir.stat.exists
   tags:
-    - always
     - percona56
 
 - name: "Backup {{ homebrew_install_path }}/lib/mysql to {{ homebrew_install_path }}/lib/mysql.back.{{ current_time }}"
   command: creates="{{ homebrew_install_path }}/lib/mysql.back.{{ current_time }}" mv {{ homebrew_install_path }}/lib/mysql {{ homebrew_install_path }}/lib/mysql.back.{{ current_time }}
   when: mysql_datadir.stat.exists
   tags:
-    - always
     - percona56
 
 - name: "Create {{ homebrew_install_path }}/lib/mysql"
@@ -78,14 +70,12 @@
     state: directory
   when: mysql_datadir.stat.exists is defined and not mysql_datadir.stat.exists
   tags:
-    - always
     - percona56
 
 - name: "Install db (mysqld --initialize-insecure)"
   shell: "mysql_install_db --basedir={{ homebrew_install_path }} --datadir={{ homebrew_install_path }}/lib/mysql/"
   when: mysql_datadir.stat.exists is defined and not mysql_datadir.stat.exists
   tags:
-    - always
     - percona56
 
 #- name: "Copy the daemon configuration file into place."
