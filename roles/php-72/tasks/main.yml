@@ -1,0 +1,79 @@
+---
+- name: Ensure php taps are tapped.
+  homebrew_tap: "tap={{ item }} state=present"
+  with_items:
+    - "homebrew/dupes"
+    - "homebrew/php"
+  tags:
+    - php72
+
+- name: "Unlink all already installed php packages"
+  shell: "brew list | grep php | xargs brew unlink"
+  tags:
+    - php72
+
+- name: "Remove previously installed php72 packages"
+  shell: "brew list | grep ^php72 | xargs brew uninstall --ignore-dependencies --force"
+  ignore_errors: yes
+  tags:
+    - reinstall
+    - php72
+
+- name: "Installing php72 with flags: {{ php72_flags }}"
+  homebrew:
+    name: php72 
+    state: present 
+    install_options: "{{ php72_flags }}"
+  tags:
+    - php72
+
+- name: "Installing php72 modules"
+  homebrew:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ php72_modules }}"
+  tags:
+    - php72
+
+- name: "Installing php72 pear packages modules"
+  shell: "pear install {{ item }}"
+  with_items: "{{ php72_pear_packages }}"
+  tags:
+    - php72
+
+- name: "Create php-fpm.conf"
+  template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/7.2/php-fpm.conf owner={{ www_user }} group={{ www_group }}
+  tags:
+    - php72
+
+- name: "Create php.ini"
+  template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.2/php.ini owner={{ www_user }} group={{ www_group }}
+  tags:
+    - php72
+
+- name: "Create ext-opcache.ini"
+  template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
+  tags:
+    - php72
+
+- name: "Create ext-xdebug.ini"
+  template: src=ext-xdebug.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-xdebug.ini owner={{ www_user }} group={{ www_group }}
+  tags:
+    - php72
+
+- name: "Unlink php72"
+  homebrew: "name=php72 state=unlinked"
+  ignore_errors: yes
+  tags:
+    - php72
+
+- name: "Add symlink"
+  shell: find /usr/local/Cellar/php72 -path '*/bin/php' | awk -F/ '{print "ln -fs " $0 " " "/usr/local/bin/"$5}' | bash
+  tags:
+    - php72
+
+- name: add 72 to "php_versions" array
+  set_fact: 
+    php_versions: "{{ php_versions + [ '72' ] }} "
+  tags:
+    - php72

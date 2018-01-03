@@ -40,6 +40,12 @@
   tags:
     - php56
 
+- name: "Installing php56 pear packages modules"
+  shell: "pear install {{ item }}"
+  with_items: "{{ php56_pear_packages }}"
+  tags:
+    - php56
+
 - name: "Create php-fpm.conf"
   template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/5.6/php-fpm.conf owner={{ www_user }} group={{ www_group }}
   tags:

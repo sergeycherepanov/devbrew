@@ -6,7 +6,6 @@
   tags:
     - nodejs
   with_items:
-    - nodejs
     - node
     - npm
     
@@ -14,6 +13,12 @@
   homebrew: 
     name: node 
     state: present
-    install_options: "without-icu4c"
+#    install_options: "without-icu4c"
+  tags:
+    - nodejs
+
+- name: "Setting fact"
+  set_fact: 
+    nodejs_installed: true
   tags:
     - nodejs
