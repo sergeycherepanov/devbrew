@@ -1,5 +1,5 @@
 ---
-php72_flags: "with-homebrew-curl,with-pear"
+php72_flags: "with-homebrew-curl"
 php72_modules:
   - php72-intl
   - php72-xdebug
@@ -7,5 +7,4 @@ php72_modules:
   - php72-tidy
   - php72-opcache
   - php72-pdo-pgsql
-php72_pear_packages:
-  - mcrypt
+php72_pear_packages: []

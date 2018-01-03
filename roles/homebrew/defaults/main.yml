@@ -13,6 +13,7 @@ homebrew_installed_packages:
   - hg
   - bzr
   - p7zip
+  - autoconf
 
 homebrew_upgrade_all_packages: no
 
