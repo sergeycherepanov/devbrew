@@ -42,22 +42,22 @@
     - php72
 
 - name: "Create php-fpm.conf"
-  template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/7.1/php-fpm.conf owner={{ www_user }} group={{ www_group }}
+  template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/7.2/php-fpm.conf owner={{ www_user }} group={{ www_group }}
   tags:
     - php72
 
 - name: "Create php.ini"
-  template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.1/php.ini owner={{ www_user }} group={{ www_group }}
+  template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.2/php.ini owner={{ www_user }} group={{ www_group }}
   tags:
     - php72
 
 - name: "Create ext-opcache.ini"
-  template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.1/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
+  template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
   tags:
     - php72
 
 - name: "Create ext-xdebug.ini"
-  template: src=ext-xdebug.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.1/conf.d/ext-xdebug.ini owner={{ www_user }} group={{ www_group }}
+  template: src=ext-xdebug.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-xdebug.ini owner={{ www_user }} group={{ www_group }}
   tags:
     - php72
 
