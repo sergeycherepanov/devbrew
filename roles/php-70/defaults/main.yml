@@ -1,5 +1,5 @@
 ---
-php70_flags: "with-homebrew-curl"
+php70_flags: "with-homebrew-curl,with-pear"
 php70_modules:
   - php70-intl
   - php70-mcrypt
@@ -8,3 +8,4 @@ php70_modules:
   - php70-tidy
   - php70-opcache
   - php70-pdo-pgsql
+php70_pear_packages: []

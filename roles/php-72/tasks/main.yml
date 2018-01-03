@@ -35,6 +35,12 @@
   tags:
     - php72
 
+- name: "Installing php72 pear packages modules"
+  shell: "pear install {{ item }}"
+  with_items: "{{ php72_pear_packages }}"
+  tags:
+    - php72
+
 - name: "Create php-fpm.conf"
   template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/7.1/php-fpm.conf owner={{ www_user }} group={{ www_group }}
   tags:

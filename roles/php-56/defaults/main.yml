@@ -1,5 +1,5 @@
 ---
-php56_flags: "with-homebrew-curl"
+php56_flags: "with-homebrew-curl,with-pear"
 php56_modules:
   - php56-intl
   - php56-mcrypt
@@ -8,3 +8,4 @@ php56_modules:
   - php56-tidy
   - php56-opcache
   - php56-pdo-pgsql
+php56_pear_packages: []
