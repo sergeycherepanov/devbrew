@@ -4,6 +4,6 @@
     name: less
     global: yes
     state: present
-  when: nodejs_installed
+  when: nodejs_installed is defined and nodejs_installed
   tags:
     - always
