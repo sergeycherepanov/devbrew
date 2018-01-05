@@ -32,6 +32,15 @@
   tags:
     - always
 
+- name: "Creates {{ homebrew_install_path }}/etc/nginx/conf.d/default_server.conf"
+  template: 
+    src: default_server.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/nginx/conf.d/default_server.conf" 
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - always
+
 - name: "Creates {{ homebrew_install_path }}/etc/nginx/servers/{{item}}_{{root_domain}}.conf"
   template: 
     src: servers/php.conf.j2

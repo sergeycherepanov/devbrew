@@ -45,6 +45,13 @@ If subfolder **web** or **public** exists, server will use they as web root. For
 
 `~/www/dev/wordpress/web` or  `~/www/dev/wordpress/public`  
 
+### Production domains
+Sometimes we are require to use live domains like wordpress.com or google.com  
+
+To do this, just create put source code of your project to `~/www/com/google` and update you `/etc/hosts` file by adding next line: `127.0.0.1 google.com`  
+
+> Keep in mind the local live domains currently not supports ssl
+
 ## PHP Multi-Version Support
 
 There is two ways for using the different php versions for your project
