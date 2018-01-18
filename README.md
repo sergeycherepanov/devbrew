@@ -8,7 +8,7 @@ macOS Development Environment
 2. Execute: `xcode-select --install` (it's starts XCODE installation process)
 3. Execute: `cd /tmp`
 4. Execute: `git clone https://github.com/SergeyCherepanov/dev-env-osx.git`
-5. Execute: `bash dev-env-osx/run.sh --ask-become-pass --tags "php56,php70,php71,php72,percona56,nodejs,zsh --skip-tags=reinstall"` (Wait for finish. Should be without "Fatal" messages)
+5. Execute: `bash dev-env-osx/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,nodejs,zsh" --skip-tags=reinstall` (Wait for finish. Should be without "Fatal" messages)
 6. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
 7. Open **System Preferences** > **LaunchRocket**
 8. Press **Scan homebrew** and choose checkbox **At Login** near all you need services
