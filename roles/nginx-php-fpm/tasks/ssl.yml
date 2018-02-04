@@ -47,7 +47,7 @@
 - name: "Create the Certificate Database"
   shell: "echo '01' > {{ homebrew_install_path }}/etc/openssl/localCA/serial && touch {{ homebrew_install_path }}/etc/openssl/localCA/index.txt"
   tags:
-      - always 
+    - always 
 
 - name: "Generate the Certificate Authority (CA) certificate"
   shell: 'openssl req -x509 -newkey rsa:2048 -out {{ homebrew_install_path }}/etc/openssl/localCA/cacert.pem -outform PEM -days 1825 -nodes'
