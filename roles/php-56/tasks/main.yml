@@ -12,13 +12,6 @@
   tags:
     - php56
 
-- name: "Remove previously installed php56 packages"
-  shell: "brew list | grep ^php56 | xargs brew uninstall --ignore-dependencies --force"
-  ignore_errors: yes
-  tags:
-    - reinstall
-    - php56
-
 - name: "Installing php56 with flags: {{ php56_flags }}"
   homebrew:
     name: php56
@@ -56,13 +49,18 @@
   tags:
     - php56
 
-- name: "Create ext-opcache.ini"
-  template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.6/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
+- name: "Create php-fpm-xdebug.conf"
+  template: src=php-fpm-xdebug.conf.j2 dest={{ homebrew_install_path }}/etc/php/5.6/php-fpm-xdebug.conf owner={{ www_user }} group={{ www_group }}
   tags:
     - php56
 
-- name: "Create ext-xdebug.ini"
-  template: src=ext-xdebug.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.6/conf.d/ext-xdebug.ini owner={{ www_user }} group={{ www_group }}
+- name: "Create php-xdebug.ini"
+  template: src=php-xdebug.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.6/php-xdebug.ini owner={{ www_user }} group={{ www_group }}
+  tags:
+    - php56
+
+- name: "Create ext-opcache.ini"
+  template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.6/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
   tags:
     - php56
 
@@ -80,5 +78,12 @@
 - name: add 56 to "php_versions" array
   set_fact: 
     php_versions: "{{ php_versions + [ '56' ] }} "
+  tags:
+    - php56
+
+- name: "Create etc/supervisor.d/php56.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: {{ homebrew_install_path }}/etc/supervisor.d/php56.ini
   tags:
     - php56

@@ -12,6 +12,19 @@ max_input_vars = 100000
 mysqli.default_socket = /usr/local/var/run/mysqld/mysqld.sock
 pdo_mysql.default_socket = /usr/local/var/run/mysqld/mysqld.sock
 sendmail_path = /usr/local/bin/fake_sendmail.sh
-
+ 
 [Date]
 date.timezone=UTC
+ 
+[xdebug]
+zend_extension="/usr/local/opt/php56-xdebug/xdebug.so"
+xdebug.remote_enable=1
+xdebug.remote_autostart = 0
+xdebug.remote_connect_back = 0
+xdebug.remote_host=127.0.0.1
+xdebug.remote_port=9256
+xdebug.profiler_enable=0
+xdebug.profiler_output_dir=/tmp/xdebug56
+xdebug.idekey=PHPSTORM
+xdebug.overload_var_dump=0
+xdebug.max_nesting_level=500

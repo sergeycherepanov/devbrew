@@ -49,7 +49,6 @@
   tags:
     - zsh
 
-
 - git:
     repo: 'https://github.com/sorin-ionescu/prezto.git'
     dest: '{{ ansible_env.HOME }}/.zprezto'
@@ -57,17 +56,17 @@
   tags:
     - zsh
   
-- name: "Configure zshrc: {{ ansible_env.HOME }}/.zshrc"
-  shell: |
-    setopt EXTENDED_GLOB
-    for rcfile in ~/.zprezto/runcoms/^README.md(.N); do
-      unlink ~/.${rcfile:t}
-      cp "$rcfile" ~/.${rcfile:t}
-    done
-  args:
-    executable: /usr/local/bin/zsh
-  tags:
-    - zsh
+#- name: "Configure zshrc: {{ ansible_env.HOME }}/.zshrc"
+#  shell: |
+#    setopt EXTENDED_GLOB
+#    for rcfile in ~/.zprezto/runcoms/^README.md(.N); do
+#      unlink ~/.${rcfile:t}
+#      cp "$rcfile" ~/.${rcfile:t}
+#    done
+#  args:
+#    executable: /usr/local/bin/zsh
+#  tags:
+#    - zsh
 
 - name: "Clean {{ ansible_env.HOME }}/.oh-my-zsh"
   file:
@@ -128,7 +127,6 @@
       zstyle ':prezto:module:prompt' theme 'paradox'
   tags:
     - zsh
-
 
 - name: "Creating .vim/autoload folder"
   file:

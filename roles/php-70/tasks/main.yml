@@ -12,13 +12,6 @@
   tags:
     - php70
 
-- name: "Remove previously installed php70 packages"
-  shell: "brew list | grep ^php70 | xargs brew uninstall --ignore-dependencies --force"
-  ignore_errors: yes
-  tags:
-    - reinstall
-    - php70
-
 - name: "Installing php70 with flags: {{ php70_flags }}"
   homebrew: 
     name: php70 
@@ -75,5 +68,12 @@
 - name: add 70 to "php_versions" array
   set_fact: 
     php_versions: "{{ php_versions + [ '70' ] }} "
+  tags:
+    - php70
+
+- name: "Create etc/supervisor.d/php70.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: {{ homebrew_install_path }}/etc/supervisor.d/php70.ini
   tags:
     - php70

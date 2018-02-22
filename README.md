@@ -8,18 +8,12 @@ macOS Development Environment
 2. Execute: `xcode-select --install` (it's starts XCODE installation process)
 3. Execute: `cd /tmp`
 4. Execute: `git clone https://github.com/SergeyCherepanov/dev-env-osx.git`
-5. Execute: `bash dev-env-osx/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,nodejs,zsh" --skip-tags=reinstall`  
+5. Execute: `bash dev-env-osx/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,nodejs,zsh"`  
 (Wait for finish. Should be without "Fatal" messages)
 6. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
 7. Open **System Preferences** > **LaunchRocket**
 8. Press **Scan homebrew** and choose checkbox **At Login** near all you need services
 9. Choose checkbox **As Root** for **Nginx** and **Dnsmasq**
-
-## Reinstall
-For reinstall already installed environment just add the `reinstall` tag to arguments
-```
-bash dev-env-osx/run.sh --tags "php56,php70,php71,php72,percona56,nodejs,zsh,reinstall"
-```
 
 ## Tags
 *  `php56` - will install PHP version 5.6  
@@ -28,8 +22,7 @@ bash dev-env-osx/run.sh --tags "php56,php70,php71,php72,percona56,nodejs,zsh,rei
 *  `php72` - will install PHP version 7.2  
 *  `percona56` - will install Percona Server (mysql) version 5.6  
 *  `nodejs` - will NodeJS and NPM  
-*  `zsh` - will install and configure ZSH with PowerLine and Oh-My-Zsh  
-*  `reinstall`- will remove already installed packages with data and do clean installation
+*  `zsh` - will install and configure ZSH with PowerLine and Oh-My-Zsh
 
 ## Usage
 Add folders with you source code into **www** folder in your home dir: **~/www/{pool}/{project_name}/**

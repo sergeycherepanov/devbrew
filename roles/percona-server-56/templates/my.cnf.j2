@@ -1,35 +1,25 @@
 [client]
-port         = 3306
-socket       = {{ homebrew_install_path }}/var/run/mysqld/mysqld.sock
+port               = 3306
+socket             = {{ mysql56_run_dir }}/mysqld.sock
 
-# Here is entries for some specific programs
-# The following values assume you have at least 32M ram
-
-# This was formally known as [safe_mysqld]. Both versions are currently parsed.
 [mysqld_safe]
-socket      = {{ homebrew_install_path }}/var/run/mysqld/mysqld.sock
-nice        = 0
+socket             = {{ mysql56_run_dir }}/mysqld.sock
+nice               = 0
 
 [mysqld]
 user               = {{ www_user }}
-pid-file           = {{ homebrew_install_path }}/var/run/mysqld/mysqld.pid
-socket             = {{ homebrew_install_path }}/var/run/mysqld/mysqld.sock
+pid-file           = {{ mysql56_run_dir }}/mysqld.pid
+socket             = {{ mysql56_run_dir }}/mysqld.sock
 port               = 3306
 basedir            = {{ homebrew_install_path }}
-datadir            = {{ homebrew_install_path }}/lib/mysql
-tmpdir             = /tmp
-lc-messages-dir    = {{ homebrew_install_path }}/share/mysql
+datadir            = {{ mysql56_data_dir }}/lib/mysql/56
+tmpdir             = /tmp/mysql56
+lc-messages-dir    = {{ mysql56_cellar }}/share/mysql/56
 
 explicit_defaults_for_timestamp = 1
+bind-address                    = 127.0.0.1
 
-#
-# Instead of skip-networking the default is now to listen only on
-# localhost which is more compatible and is not less secure.
-bind-address       = 127.0.0.1
-
-#
 # * Fine Tuning
-#
 max_allowed_packet    = 512M
 thread_stack          = 192K
 thread_cache_size     = 8
@@ -45,7 +35,7 @@ max_heap_table_size   = 256M
 query_cache_limit     = 16M
 query_cache_size      = 64M
 query_cache_type      = ON
-log_error             = {{ homebrew_install_path }}/var/log/mysql/error.log
+log_error             = {{ mysql56_log_dir }}/error.log
 expire_logs_days      = 7
 
 innodb_file_per_table           = 1
@@ -57,7 +47,8 @@ innodb_log_file_size            = 256M # if changing, stop database, remove old 
 innodb_log_buffer_size          = 16M
 #innodb_flush_log_at_trx_commit = 2
 innodb_flush_log_at_trx_commit  = 0
-innodb_buffer_pool_size         = 1024M
+innodb_buffer_pool_size         = 1G
+innodb_buffer_pool_instances    = 8
 
 lower_case_table_names=2
 table_open_cache=250

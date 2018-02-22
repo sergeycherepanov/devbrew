@@ -1,18 +1,50 @@
 ---
-- name: "Uninstalling Percona(Mysql) Server (homebrew/versions/percona-server55)"
-  homebrew: "name=homebrew/versions/percona-server55 state=absent"
-  tags:
-    - reinstall
-    - percona56
-
-- name: "Uninstalling Percona(Mysql) Server (percona-server)"
-  homebrew: "name=percona-server state=absent"
-  tags:
-    - reinstall
-    - percona56
-
 - name: "Installing Percona(Mysql) Server (homebrew/versions/percona-server56)"
-  homebrew: "name=homebrew/versions/percona-server56 state=present"
+  homebrew: 
+    name: "{{ mysql56_formula }}"
+    state: present
+  tags:
+    - percona56
+
+- name: "Get mysql cellar info"
+  shell: "echo $(brew --cellar percona-server@5.6)/$(ls $(brew --cellar percona-server@5.6))"
+  register: mysql56_cellar_stat
+  tags:
+    - percona56
+
+- name: "Set "
+  set_fact: 
+    mysql56_cellar: "{{ mysql56_cellar_stat.stdout }}"
+  tags:
+    - percona56
+
+- name: "Check mysql already installed"
+  shell: "brew --cellar percona-server@5.6"
+  stat: 
+    path: "{{ mysql56_data_dir }}"
+  register: mysql56_data_dir_stat
+  tags:
+    - percona56
+
+- name: "Create directories"
+  file: 
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ mysql56_etc_dir }}"
+    - "{{ mysql56_data_dir }}"
+    - "{{ mysql56_log_dir }}"
+    - "{{ mysql56_run_dir }}"
+  tags:
+    - percona56
+
+- name: "Create my.cnf"
+  template: 
+    src: my.cnf.j2
+    dest: "{{ mysql56_etc_dir }}/my.cnf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0744
   tags:
     - percona56
 
@@ -21,65 +53,8 @@
   tags:
     - percona56
 
-- name: "Create my.cnf"
-  template: 
-    src: my.cnf.j2
-    dest: "{{ homebrew_install_path }}/etc/my.cnf"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
-    mode: 0744
-  tags:
-    - percona56
-
-- name: "Creates {{ homebrew_install_path }}/var/log/mysql"
-  file: 
-    path: "{{ homebrew_install_path }}/var/log/mysql"
-    state: directory
-  tags:
-    - percona56
-
-- name: "Creates {{ homebrew_install_path }}/var/run/mysqld"
-  file: 
-    path: "{{ homebrew_install_path }}/var/run/mysqld"
-    state: directory
-  tags:
-    - percona56
-
-- name: "Check is {{ homebrew_install_path }}/lib/mysql exists"
-  stat: 
-    path: "{{ homebrew_install_path }}/lib/mysql"
-  register: mysql_datadir
-  tags:
-    - percona56
-  
-- name: "Get current time for backup name"
-  set_fact: current_time="{{lookup('pipe','date +%Y%m%d%H%M%S')}}"
-  when: mysql_datadir.stat.exists
-  tags:
-    - percona56
-
-- name: "Backup {{ homebrew_install_path }}/lib/mysql to {{ homebrew_install_path }}/lib/mysql.back.{{ current_time }}"
-  command: creates="{{ homebrew_install_path }}/lib/mysql.back.{{ current_time }}" mv {{ homebrew_install_path }}/lib/mysql {{ homebrew_install_path }}/lib/mysql.back.{{ current_time }}
-  when: mysql_datadir.stat.exists
-  tags:
-    - percona56
-
-- name: "Create {{ homebrew_install_path }}/lib/mysql"
-  file: 
-    path: "{{ homebrew_install_path }}/lib/mysql" 
-    state: directory
-  when: mysql_datadir.stat.exists is defined and not mysql_datadir.stat.exists
-  tags:
-    - percona56
-
 - name: "Install db (mysqld --initialize-insecure)"
-  shell: "mysql_install_db --basedir={{ homebrew_install_path }} --datadir={{ homebrew_install_path }}/lib/mysql/"
-  when: mysql_datadir.stat.exists is defined and not mysql_datadir.stat.exists
+  shell: "mysql_install_db --basedir={{ mysql56_cellar_stat.stdout }} --datadir={{ mysql56_data_dir }}"
+  when: mysql56_data_dir_stat.stat.exists is defined and not mysql56_data_dir_stat.stat.exists
   tags:
     - percona56
-
-#- name: "Copy the daemon configuration file into place."
-#  shell: "cp $(brew list percona-server | grep /homebrew.mxcl.percona-server.plist$) {{ ansible_env.HOME }}/Library/LaunchAgents/homebrew.mxcl.percona-server.plist"
-
-#- name: "Start Percona(Mysql) Server automatically."
-#  shell: "launchctl load -w {{ ansible_env.HOME }}/Library/LaunchAgents/homebrew.mxcl.percona-server.plist"

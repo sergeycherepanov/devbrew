@@ -1,0 +1,14 @@
+---
+- name: "Installing supervisor"
+  homebrew: 
+    name: supervisor 
+    state: present
+  tags:
+    - always
+
+- name: "Creates /usr/local/etc/supervisor.d"
+  file:
+    path: "{{ homebrew_install_path }}/etc/supervisor.d"
+    state: directory
+  tags:
+    - always

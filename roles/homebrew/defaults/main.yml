@@ -24,7 +24,7 @@ homebrew_taps:
 
 homebrew_cask_apps:
   - font-hack-nerd-font
-  - launchrocket
+#  - launchrocket
 #  - sequel-pro
   - iterm2
 #  - atom

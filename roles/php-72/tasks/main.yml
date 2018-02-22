@@ -12,13 +12,6 @@
   tags:
     - php72
 
-- name: "Remove previously installed php72 packages"
-  shell: "brew list | grep ^php72 | xargs brew uninstall --ignore-dependencies --force"
-  ignore_errors: yes
-  tags:
-    - reinstall
-    - php72
-
 - name: "Installing php72 with flags: {{ php72_flags }}"
   homebrew:
     name: php72 
@@ -75,5 +68,12 @@
 - name: add 72 to "php_versions" array
   set_fact: 
     php_versions: "{{ php_versions + [ '72' ] }} "
+  tags:
+    - php72
+
+- name: "Create etc/supervisor.d/php72.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: {{ homebrew_install_path }}/etc/supervisor.d/php72.ini
   tags:
     - php72

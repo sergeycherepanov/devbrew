@@ -1,0 +1,6 @@
+[program:mysql56]
+command={{ mysql56_cellar }}/bin/mysqld_safe --defaults-file={{ homebrew_install_path }}/etc/mysql56/my.cnf
+directory=/usr/local/var
+stdout_logfile={{ mysql56_log_dir }}/mysql.log
+stderr_logfile={{ mysql56_log_dir }}/mysql.err
+autorestart=true

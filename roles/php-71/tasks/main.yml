@@ -12,13 +12,6 @@
   tags:
     - php71
 
-- name: "Remove previously installed php71 packages"
-  shell: "brew list | grep ^php71 | xargs brew uninstall --ignore-dependencies --force"
-  ignore_errors: yes
-  tags:
-    - reinstall
-    - php71
-
 - name: "Installing php71 with flags: {{ php71_flags }}"
   homebrew:
     name: php71 
@@ -75,5 +68,12 @@
 - name: add 71 to "php_versions" array
   set_fact: 
     php_versions: "{{ php_versions + [ '71' ] }} "
+  tags:
+    - php71
+
+- name: "Create etc/supervisor.d/php71.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: {{ homebrew_install_path }}/etc/supervisor.d/php71.ini
   tags:
     - php71
