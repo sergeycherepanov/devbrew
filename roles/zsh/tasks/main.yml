@@ -1,5 +1,5 @@
 ---
-- name: "Downloading hack font"
+- name: "Downloading 'hack' font"
   git:
     repo: 'https://github.com/powerline/fonts.git'
     dest: '/tmp/powerline_fonts'
@@ -13,7 +13,7 @@
   tags:
     - zsh
 
-- name: "Downloading terminal hack font"
+- name: "Downloading 'hack' font for terminal"
   git:
     repo: 'https://github.com/gabrielelana/awesome-terminal-fonts.git'
     dest: '/tmp/awesome-terminal-fonts'
@@ -68,10 +68,17 @@
 #  tags:
 #    - zsh
 
+- stat: 
+    path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+  register: state
+  tags:
+    - zsh
+
 - name: "Clean {{ ansible_env.HOME }}/.oh-my-zsh"
   file:
     state: absent
     path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+  when: state.stat.exists
   tags:
     - zsh
 

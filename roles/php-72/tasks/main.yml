@@ -2,7 +2,6 @@
 - name: Ensure php taps are tapped.
   homebrew_tap: "tap={{ item }} state=present"
   with_items:
-    - "homebrew/dupes"
     - "homebrew/php"
   tags:
     - php72
@@ -15,7 +14,7 @@
 - name: "Installing php72 with flags: {{ php72_flags }}"
   homebrew:
     name: php72 
-    state: present 
+    state: latest 
     install_options: "{{ php72_flags }}"
   tags:
     - php72
@@ -23,10 +22,16 @@
 - name: "Installing php72 modules"
   homebrew:
     name: "{{ item }}"
-    state: present
+    state: latest
   with_items: "{{ php72_modules }}"
   tags:
     - php72
+
+- name: "Remove outdated php72"
+  shell: "brew upgrade --cleanup php72"
+  ignore_errors: yes
+  tags:
+    - php71
 
 - name: "Installing php72 pear packages modules"
   shell: "pear install {{ item }}"
@@ -44,13 +49,45 @@
   tags:
     - php72
 
-- name: "Create ext-opcache.ini"
-  template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
-  tags:
-    - php72
+- stat: 
+    path: "{{ homebrew_install_path }}/etc/php/7.2/php-fpm-xdebug.conf"
+  register: state
 
-- name: "Create ext-xdebug.ini"
-  template: src=ext-xdebug.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-xdebug.ini owner={{ www_user }} group={{ www_group }}
+- name: "Create php-fpm-xdebug.conf"
+  template: 
+      src: php-fpm-xdebug.conf.j2
+      dest: "{{ homebrew_install_path }}/etc/php/7.2/php-fpm-xdebug.conf"
+      owner: "{{ www_user }}"
+      group: "{{ www_group }}"
+  when: not state.stat.exists
+  tags:
+    - php56
+
+- stat: 
+    path: "{{ homebrew_install_path }}/etc/php/7.2/php-xdebug.ini"
+  register: state
+
+- name: "Create php-xdebug.ini"
+  template: 
+      src: php-xdebug.ini.j2
+      dest: "{{ homebrew_install_path }}/etc/php/7.2/php-xdebug.ini"
+      owner: "{{ www_user }}"
+      group: "{{ www_group }}"
+  when: not state.stat.exists
+  tags:
+    - php56
+
+- stat: 
+    path: "{{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini"
+  register: state
+
+- name: "Create ext-opcache.ini"
+  template: 
+    src: "ext-opcache.ini.j2"
+    dest: "{{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  when: not state.stat.exists
   tags:
     - php72
 
@@ -71,9 +108,14 @@
   tags:
     - php72
 
+- stat: 
+    path: "{{ homebrew_install_path }}/etc/supervisor.d/php72.ini"
+  register: state
+
 - name: "Create etc/supervisor.d/php72.ini"
   template:
     src: supervisord.ini.j2
-    dest: {{ homebrew_install_path }}/etc/supervisor.d/php72.ini
+    dest: "{{ homebrew_install_path }}/etc/supervisor.d/php72.ini"
+  when: not state.stat.exists
   tags:
     - php72

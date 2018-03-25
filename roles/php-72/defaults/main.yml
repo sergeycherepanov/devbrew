@@ -1,9 +1,6 @@
 ---
 php72_flags: "with-homebrew-curl"
 php72_modules:
-  - php72-intl
   - php72-xdebug
   - php72-redis
-  - php72-tidy
-  - php72-opcache
 php72_pear_packages: []

@@ -51,17 +51,26 @@
   tags:
     - always
 
-- name: "Creates {{ homebrew_install_path }}/etc/nginx/servers/{{item.1}}_{{item.0}}_{{root_domain}}.conf"
+- name: "Creates {{ homebrew_install_path }}/etc/nginx/custom_server.conf.tpl"
   template: 
-    src: servers/php_version.conf.j2
-    dest: "{{ homebrew_install_path }}/etc/nginx/servers/{{item.1}}_{{item.0}}_{{root_domain}}.conf" 
+    src: servers/custom_server.conf.tpl.j2
+    dest: "{{ homebrew_install_path }}/etc/nginx/custom_server.conf.tpl" 
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
-  with_nested:
-    - "{{subdomains}}"
-    - "{{php_versions}}"
   tags:
     - always
+
+#- name: "Creates {{ homebrew_install_path }}/etc/nginx/servers/{{item.1}}_{{item.0}}_{{root_domain}}.conf"
+#  template: 
+#    src: servers/php_version.conf.j2
+#    dest: "{{ homebrew_install_path }}/etc/nginx/servers/{{item.1}}_{{item.0}}_{{root_domain}}.conf" 
+#    owner: "{{ www_user }}"
+#    group: "{{ www_group }}"
+#  with_nested:
+#    - "{{subdomains}}"
+#    - "{{php_versions}}"
+#  tags:
+#    - always
   
 # - name: "Copy the daemon configuration file into place."
 #   shell: "cp $(brew list nginx | grep /homebrew.mxcl.nginx.plist$) /Library/LaunchDaemons/"

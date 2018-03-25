@@ -2,7 +2,6 @@
 - name: Ensure php taps are tapped.
   homebrew_tap: "tap={{ item }} state=present"
   with_items:
-    - "homebrew/dupes"
     - "homebrew/php"
   tags:
     - php70
@@ -15,7 +14,7 @@
 - name: "Installing php70 with flags: {{ php70_flags }}"
   homebrew: 
     name: php70 
-    state: present 
+    state: latest 
     install_options: "{{ php70_flags }}"
   tags:
     - php70
@@ -23,10 +22,16 @@
 - name: "Installing php70 modules"
   homebrew:
     name: "{{ item }}"
-    state: present
+    state: latest
   with_items: "{{ php70_modules }}"
   tags:
     - php70
+
+- name: "Remove outdated php70"
+  shell: "brew upgrade --cleanup php70"
+  ignore_errors: yes
+  tags:
+    - php71
 
 - name: "Installing php70 pear packages modules"
   shell: "pear install {{ item }}"
@@ -34,23 +39,71 @@
   tags:
     - php70
 
+- stat:
+    path: "{{ homebrew_install_path }}/etc/php/7.0/php-fpm.conf"
+  register: state
+  tags:
+    - php70
+
 - name: "Create php-fpm.conf"
   template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/7.0/php-fpm.conf owner={{ www_user }} group={{ www_group }}
+  when: not state.stat.exists
+  tags:
+    - php70
+
+- stat:
+    path: "{{ homebrew_install_path }}/etc/php/7.0/php.ini"
+  register: state
   tags:
     - php70
 
 - name: "Create php.ini"
   template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.0/php.ini owner={{ www_user }} group={{ www_group }}
+  when: not state.stat.exists
+  tags:
+    - php70
+
+- stat:
+    path: "{{ homebrew_install_path }}/etc/php/7.0/php-fpm-xdebug.conf"
+  register: state
+  tags:
+    - php70
+
+- name: "Create php-fpm-xdebug.conf"
+  template: 
+      src: php-fpm-xdebug.conf.j2
+      dest: "{{ homebrew_install_path }}/etc/php/7.0/php-fpm-xdebug.conf"
+      owner: "{{ www_user }}"
+      group: "{{ www_group }}"
+  when: not state.stat.exists
+  tags:
+    - php70
+
+- stat:
+    path: "{{ homebrew_install_path }}/etc/php/7.0/php-xdebug.ini"
+  register: state
+  tags:
+    - php70
+
+- name: "Create php-xdebug.ini"
+  template: 
+      src: php-xdebug.ini.j2
+      dest: "{{ homebrew_install_path }}/etc/php/7.0/php-xdebug.ini"
+      owner: "{{ www_user }}"
+      group: "{{ www_group }}"
+  when: not state.stat.exists
+  tags:
+    - php70
+
+- stat:
+    path: "{{ homebrew_install_path }}/etc/php/7.0/conf.d/ext-opcache.ini"
+  register: state
   tags:
     - php70
 
 - name: "Create ext-opcache.ini"
   template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.0/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
-  tags:
-    - php70
-
-- name: "Create ext-xdebug.ini"
-  template: src=ext-xdebug.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.0/conf.d/ext-xdebug.ini owner={{ www_user }} group={{ www_group }}
+  when: not state.stat.exists
   tags:
     - php70
 
@@ -71,9 +124,16 @@
   tags:
     - php70
 
+- stat:
+    path: "{{ homebrew_install_path }}/etc/supervisor.d/php70.ini"
+  register: state
+  tags:
+    - php70
+
 - name: "Create etc/supervisor.d/php70.ini"
   template:
     src: supervisord.ini.j2
-    dest: {{ homebrew_install_path }}/etc/supervisor.d/php70.ini
+    dest: "{{ homebrew_install_path }}/etc/supervisor.d/php70.ini"
+  when: not state.stat.exists
   tags:
     - php70

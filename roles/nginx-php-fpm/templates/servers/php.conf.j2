@@ -4,7 +4,7 @@ server {
 
     server_name ~^(?<project_name>.+?)\.*(?<pool>{{item}}).{{root_domain}}$;
     
-    include /usr/local/etc/nginx/dev.conf;
+    include {{ homebrew_install_path }}/etc/nginx/dev.conf;
 }
 
 server {
@@ -14,8 +14,8 @@ server {
     server_name ~^(?<project_name>.+?)\.*(?<pool>{{item}}).{{root_domain}}$;
     
     ssl on;
-    ssl_certificate {{ homebrew_install_path }}/etc/openssl/localCA/certs/{{item}}_{{root_domain}}_crt.pem;
-    ssl_certificate_key {{ homebrew_install_path }}/etc/openssl/localCA/private/{{item}}_{{root_domain}}_key_encrypted.pem;
+    ssl_certificate {{ homebrew_install_path }}/etc/openssl/localCA/certs/{{item}}.{{root_domain}}_crt.pem;
+    ssl_certificate_key {{ homebrew_install_path }}/etc/openssl/localCA/private/{{item}}.{{root_domain}}_key_encrypted.pem;
     
-    include    /usr/local/etc/nginx/dev.conf;
+    include {{ homebrew_install_path }}/etc/nginx/dev.conf;
 }

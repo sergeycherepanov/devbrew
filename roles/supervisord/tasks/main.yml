@@ -12,3 +12,11 @@
     state: directory
   tags:
     - always
+
+- name: Create symlink or supervisord.ini
+  file:
+    src: "{{ homebrew_install_path }}/etc/supervisord.ini"
+    dest: "{{ homebrew_install_path }}/etc/supervisord.conf"
+    state: link
+  tags:
+    - always

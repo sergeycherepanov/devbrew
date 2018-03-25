@@ -3,6 +3,6 @@
   homebrew: 
     name: curl
     state: present
-    install_options: with-openssl
+    install_options: with-openssl with-libssh2
   tags:
     - always

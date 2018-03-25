@@ -4,7 +4,20 @@
     name: "{{ mysql_formula }}"
     state: latest
   tags:
-    - percona56
+    - percona57
+
+- homebrew: 
+    name: "{{ mysql_formula }}"
+    state: unlinked
+  tags:
+    - percona57
+
+- name: "Check mysql already installed"
+  stat: 
+    path: "{{ mysql_data_dir }}"
+  register: mysql_data_dir_stat
+  tags:
+    - percona57
 
 - name: "Create directories"
   file: 
@@ -16,13 +29,13 @@
     - "{{ mysql_log_dir }}"
     - "{{ mysql_run_dir }}"
   tags:
-    - percona56
+    - percona57
 
 - stat:
     path: "{{ mysql_etc_dir }}/my.cnf"
   register: state
   tags:
-    - percona56
+    - percona57
 
 - name: "Create my.cnf"
   template: 
@@ -33,7 +46,7 @@
     mode: 0744
   when: not state.stat.exists
   tags:
-    - percona56
+    - percona57
 
 - find: 
     paths: "{{ mysql_data_dir }}"
@@ -61,8 +74,3 @@
   tags:
     - percona56
 
-- homebrew: 
-    name: "{{ mysql_formula }}"
-    state: unlinked
-  tags:
-    - percona56

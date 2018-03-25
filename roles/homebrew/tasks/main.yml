@@ -14,21 +14,28 @@
   tags:
     - always
 
-- name: Setup homebrew install path.
-  file:
-    path: "{{ homebrew_install_path }}"
-    owner: "{{ ansible_env.USER }}"
-    group: admin
-    mode: 0775
-    state: directory
-    recurse: yes
-  become: yes
-  become_method: sudo
+#- name: Setup homebrew install path.
+#  file:
+#    path: "{{ homebrew_install_path }}/*"
+#    owner: "{{ ansible_env.USER }}"
+#    recurse: yes
+#  become: yes
+#  become_method: sudo
+#  tags:
+#    - always
+
+- name: Downloading Homebrew.
+  #shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ homebrew_install_path }}"
+  get_url: 
+    url: "https://github.com/Homebrew/brew/tarball/master"
+    dest: "/tmp/brew-master.tgz"
   tags:
     - always
 
-- name: Ensure Homebrew.
-  shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ homebrew_install_path }}"
+- name: Extracting Homebrew.
+  shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ homebrew_install_path }}"
+  args:
+    warn: false
   tags:
     - always
 

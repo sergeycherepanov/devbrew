@@ -19,5 +19,6 @@ http {
                     '"$http_referer" "$http_user_agent"';
 
     include servers/*.conf;
+    include servers_custom/*.conf;
     include conf.d/*.conf;
 }

@@ -1,11 +1,11 @@
 ---
 php71_flags: "with-homebrew-curl"
 php71_modules:
-  - php71-intl
+#  - php71-intl
   - php71-mcrypt
   - php71-xdebug
   - php71-redis
-  - php71-tidy
+#  - php71-tidy
   - php71-opcache
   - php71-pdo-pgsql
 php71_pear_packages: []

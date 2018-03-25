@@ -4,7 +4,9 @@
     - php_versions: []
   roles:
     - roles/homebrew
+    - roles/supervisord
     - roles/percona-server-56
+    - roles/percona-server-57
     - roles/fakesendmail
     - roles/dnsmasq
     - roles/curl

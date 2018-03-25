@@ -7,6 +7,11 @@ fi
 
 DOMAIN=$1
 
+if cat "{{ homebrew_install_path }}/etc/openssl/localCA/index.txt" | grep ${DOMAIN}; then
+  echo "Domain already exists"
+  exit 0
+fi
+
 tee {{ homebrew_install_path }}/etc/openssl/localCA/${DOMAIN}.cnf << EOM
 [ req ]
 prompt = no
