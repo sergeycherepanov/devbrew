@@ -1,11 +1,15 @@
 [program:php71-fpm]
 command={{ homebrew_install_path }}/opt/php71/sbin/php-fpm --nodaemonize --fpm-config {{ homebrew_install_path }}/etc/php/7.1/php-fpm.conf
+directory={{ homebrew_install_path }}/opt/php71
 stdout_logfile={{ homebrew_install_path }}/var/log/php71.log
 stderr_logfile={{ homebrew_install_path }}/var/log/php71.err
+user={{ www_user }}
 autorestart=true
 
 [program:php71-fpm-xdebug]
 command={{ homebrew_install_path }}/opt/php71/sbin/php-fpm --nodaemonize --fpm-config {{ homebrew_install_path }}/etc/php/7.1/php-fpm-xdebug.conf
+directory={{ homebrew_install_path }}/opt/php71
 stdout_logfile={{ homebrew_install_path }}/var/log/php71-xdebug.log
 stderr_logfile={{ homebrew_install_path }}/var/log/php71-xdebug.err
+user={{ www_user }}
 autorestart=true

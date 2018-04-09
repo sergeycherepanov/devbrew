@@ -30,6 +30,20 @@
   tags:
     - always
 
+- stat: 
+    path: "{{ homebrew_install_path }}/etc/supervisor.d/nginx.ini"
+  tags:
+    - always
+  register: state
+
+- name: "Create etc/supervisor.d/nginx.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/supervisor.d/nginx.ini"
+  when: not state.stat.exists
+  tags:
+    - always
+
 # - name: "Copy the daemon configuration file into place."
 #   shell: "cp $(brew list nginx | grep /homebrew.mxcl.nginx.plist$) /Library/LaunchDaemons/"
 #   become: yes

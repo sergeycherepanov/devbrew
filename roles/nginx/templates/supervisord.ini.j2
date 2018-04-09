@@ -1,0 +1,6 @@
+[program:nginx]
+command="{{ homebrew_install_path }}/opt/nginx/bin/nginx -g 'daemon off;'"
+directory={{ homebrew_install_path }}/opt/nginx
+stdout_logfile={{ homebrew_install_path }}/var/log/php72.log
+stderr_logfile={{ homebrew_install_path }}/var/log/php72.err
+autorestart=true

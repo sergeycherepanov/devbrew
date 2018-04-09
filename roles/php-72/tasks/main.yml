@@ -110,6 +110,8 @@
 
 - stat: 
     path: "{{ homebrew_install_path }}/etc/supervisor.d/php72.ini"
+  tags:
+    - php72
   register: state
 
 - name: "Create etc/supervisor.d/php72.ini"

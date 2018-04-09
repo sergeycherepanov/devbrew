@@ -2,7 +2,7 @@
 - name: Ensure php taps are tapped.
   homebrew_tap: "tap={{ item }} state=present"
   with_items:
-    - "homebrew/php"
+    - "kyslik/homebrew-php"
   tags:
     - php56
 
@@ -11,11 +11,10 @@
   tags:
     - php56
 
-- name: "Installing php56 with flags: {{ php56_flags }}"
-  homebrew:
+- homebrew:
     name: php56
     state: latest
-    install_options: "{{ php56_flags }}"
+    install_options: "{{ php_flags }}"
   tags:
     - php56
   
@@ -24,23 +23,23 @@
   tags:
     - php56
 
-- name: "Installing php56 modules"
+- name: "Installing {{ php_version }} modules"
   homebrew:
-    name: "{{ item }}"
+    name: "{{php_version}}-{{ item }}"
     state: latest
-  with_items: "{{ php56_modules }}"
+  with_items: "{{ php_modules }}"
   tags:
     - php56
 
-- name: "Remove outdated php56"
-  shell: "brew upgrade --cleanup php56"
+- name: "Remove outdated {{ php_version }}"
+  shell: "brew upgrade --cleanup {{ php_version }}"
   ignore_errors: yes
   tags:
     - php71
 
-- name: "Installing php56 pear packages modules"
+- name: "Installing {{ php_version }} pear packages modules"
   shell: "pear install {{ item }}"
-  with_items: "{{ php56_pear_packages }}"
+  with_items: "{{ php_pear_packages }}"
   tags:
     - php56
 
@@ -112,33 +111,40 @@
   tags:
     - php56
 
-- name: "Unlink php56"
-  homebrew: "name=php56 state=unlinked"
+- name: "Unlink {{ php_version }}"
+  homebrew: 
+    name: "{{ php_version }}"
+    state: "unlinked"
   ignore_errors: yes
   tags:
     - php56
 
-- name: "Add symlink"
-  shell: find /usr/local/Cellar/php56 -path '*/bin/php' | awk -F/ '{print "ln -fs " $0 " " "/usr/local/bin/"$5}' | bash
+- name: "Add wrapper"
+  template:
+    src: "php.j2"
+    dest: "{{ homebrew_install_path }}/bin/{{ php_version }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
   tags:
     - php56
 
 - name: add 56 to "php_versions" array
   set_fact: 
-    php_versions: "{{ php_versions + [ '56' ] }} "
+    php_versions: "{{ php_versions + [ '{{ php_version }}' ] }} "
   tags:
     - php56
 
 - stat:
-    path: "{{ homebrew_install_path }}/etc/supervisor.d/php56.ini"
+    path: "{{ homebrew_install_path }}/etc/supervisor.d/{{ php_version }}.ini"
   register: state
   tags:
     - php56
 
-- name: "Create etc/supervisor.d/php56.ini"
+- name: "Create etc/supervisor.d/{{ php_version }}.ini"
   template:
     src: supervisord.ini.j2
-    dest: "{{ homebrew_install_path }}/etc/supervisor.d/php56.ini"
+    dest: "{{ homebrew_install_path }}/etc/supervisor.d/{{ php_version }}.ini"
   when: not state.stat.exists
   tags:
     - php56

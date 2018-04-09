@@ -60,3 +60,17 @@
 #   shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist"
 #   become: yes
 #   become_method: sudo
+
+- stat: 
+    path: "{{ homebrew_install_path }}/etc/supervisor.d/dnsmasq.ini"
+  tags:
+      - always
+  register: state
+
+- name: "Create etc/supervisor.d/dnsmasq.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/supervisor.d/dnsmasq.ini"
+  when: not state.stat.exists
+  tags:
+    - always

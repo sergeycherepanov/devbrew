@@ -13,10 +13,38 @@
   tags:
     - always
 
-- name: Create symlink or supervisord.ini
+- name: Ensure symlink for supervisord.ini
   file:
     src: "{{ homebrew_install_path }}/etc/supervisord.ini"
     dest: "{{ homebrew_install_path }}/etc/supervisord.conf"
     state: link
+  tags:
+    - always
+
+- name: Ensute permissions for supervisord socket
+  ini_file:
+    dest: {{ homebrew_install_path }}/etc/supervisord.ini
+    section: unix_http_server
+    option: chmod 
+    value: 770
+
+- name: Ensute ownership for supervisord socket
+  ini_file:
+    dest: {{ homebrew_install_path }}/etc/supervisord.ini
+    section: unix_http_server
+    option: chown
+    value: root:admin
+
+- name: Ensure symlink for homebrew.mxcl.supervisor.plist
+  file:
+    src: "{{ homebrew_install_path }}cat /usr/local/opt/supervisor/homebrew.mxcl.supervisor.plist"
+    dest: "/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+    state: link
+  tags:
+    - always
+
+- name: "Starting supervisord"
+  shell: 'launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist'
+  become: true
   tags:
     - always
