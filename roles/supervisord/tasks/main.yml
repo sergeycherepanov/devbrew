@@ -13,6 +13,14 @@
   tags:
     - always
 
+
+- name: "Creates {{ homebrew_install_path }}/var/log/supervisor"
+  file:
+    path: "{{ homebrew_install_path }}/var/log/supervisor"
+    state: directory
+  tags:
+    - always
+
 - name: Ensure symlink for supervisord.ini
   file:
     src: "{{ homebrew_install_path }}/etc/supervisord.ini"
@@ -21,30 +29,40 @@
   tags:
     - always
 
-- name: Ensute permissions for supervisord socket
+- name: Ensure permissions for supervisord socket
   ini_file:
-    dest: {{ homebrew_install_path }}/etc/supervisord.ini
-    section: unix_http_server
-    option: chmod 
-    value: 770
+    path: "{{ homebrew_install_path }}/etc/supervisord.ini"
+    section: "unix_http_server"
+    option: "chmod" 
+    value: "0770"
+  tags:
+    - always
 
-- name: Ensute ownership for supervisord socket
+- name: Ensure ownership for supervisord socket
   ini_file:
-    dest: {{ homebrew_install_path }}/etc/supervisord.ini
-    section: unix_http_server
-    option: chown
-    value: root:admin
+    path: "{{ homebrew_install_path }}/etc/supervisord.ini"
+    section: "unix_http_server"
+    option: "chown"
+    value: "root:admin"
+  tags:
+    - always
 
-- name: Ensure symlink for homebrew.mxcl.supervisor.plist
-  file:
-    src: "{{ homebrew_install_path }}cat /usr/local/opt/supervisor/homebrew.mxcl.supervisor.plist"
-    dest: "/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-    state: link
+- name: "Ensure homebrew.mxcl.supervisor.plist"
+  template: 
+    src: homebrew.mxcl.supervisor.plist.j2
+    dest: '/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist'
+  become: true
+  tags:
+    - always
+
+- name: "Stopping supervisord"
+  shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+  become: true
   tags:
     - always
 
 - name: "Starting supervisord"
-  shell: 'launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist'
+  shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
   become: true
   tags:
     - always

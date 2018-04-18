@@ -4,15 +4,16 @@
     - php_versions: []
   roles:
     - roles/homebrew
-    - roles/supervisord
-    - roles/percona-server-56
-    - roles/percona-server-57
-    - roles/fakesendmail
-    - roles/dnsmasq
-    - roles/curl
     - roles/zsh
     - roles/coreutils
+    - roles/git
+    - roles/curl
     - roles/jenv
+    - roles/supervisord
+    - roles/fakesendmail
+    - roles/dnsmasq
+    - roles/percona-server-56
+    - roles/percona-server-57
     - roles/php-56
     - roles/php-70
     - roles/php-71
@@ -24,3 +25,16 @@
     - roles/compass
     - roles/less
     - roles/php-tools
+    - roles/efk
+  post_tasks:
+    - name: "Stopping supervisord"
+      shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+      become: true
+      tags:
+        - always
+    
+    - name: "Starting supervisord"
+      shell: "launchctl load /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+      become: true
+      tags:
+        - always

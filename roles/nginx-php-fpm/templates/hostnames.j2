@@ -50,7 +50,8 @@ function add_hostname {
   
   gomplate -f "{{ homebrew_install_path }}/etc/nginx/custom_server.conf.tpl" --left-delim '<?' --right-delim '?>' -o "{{ homebrew_install_path }}/etc/nginx/servers_custom/${HOSTNAME}.conf"
   
-  echo "Please restart nginx"
+  echo "Restarting nginx..."
+  supervisorctl restart nginx
 }
 
 function remove_hostname {

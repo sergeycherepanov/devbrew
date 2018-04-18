@@ -1,0 +1,32 @@
+---
+- name: "Installing ElasticSearch Server"
+  homebrew: 
+    name: elasticsearch
+    state: latest
+  tags:
+    - always
+
+- name: "Installing Kibana"
+  homebrew: 
+    name: kibana
+    state: latest
+  tags:
+    - always
+
+# Cask.
+- name: Get list of apps installed with cask.
+  command: >
+    bash -l -c '{{ homebrew_brew_bin_path }}/brew cask list'
+  register: homebrew_cask_list
+  check_mode: no
+  changed_when: false
+  tags:
+    - always
+
+# Use command module instead of homebrew_cask so appdir can be used.
+- name: Install td-agent
+  command: >
+    bash -l -c '{{ homebrew_brew_bin_path }}/brew cask install td-agent --appdir={{ homebrew_cask_appdir }}'
+  when: "'td-agent' not in homebrew_cask_list.stdout"
+  tags:
+    - always

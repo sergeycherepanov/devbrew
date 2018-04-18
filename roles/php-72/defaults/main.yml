@@ -1,4 +1,5 @@
 ---
+php_version: php@7.2
 php72_flags: "with-homebrew-curl"
 php72_modules:
   - php72-xdebug

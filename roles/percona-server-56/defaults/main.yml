@@ -1,6 +1,8 @@
 ---
+mysql_version: "5.6"
+mysql_version_num: "56"
 mysql_formula: "percona-server@5.6"
-mysql_base_dir: "{{ homebrew_install_path }}/opt/percona-server@5.6"
+#mysql_base_dir: "{{ homebrew_install_path }}/opt/percona-server@5.6"
 mysql_etc_dir: "{{ homebrew_install_path }}/etc/mysql/56"
 mysql_run_dir: "{{ homebrew_install_path }}/var/run/mysql/56"
 mysql_log_dir: "{{ homebrew_install_path }}/var/log/mysql/56"

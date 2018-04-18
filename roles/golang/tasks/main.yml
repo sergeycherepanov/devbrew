@@ -7,7 +7,7 @@
   tags:
     - always
     
-- name: "Adding Prezto modules to {{ ansible_env.HOME }}/.zpreztorc"
+- name: "Adding GOPATH to env"
   blockinfile:
     dest: '{{ ansible_env.HOME }}/{{item}}'
     marker: "# {mark} golang"

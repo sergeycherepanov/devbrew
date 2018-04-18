@@ -6,6 +6,18 @@
   tags:
     - percona57
 
+- name: "Resolve mysql base dir"
+  shell: "ls {{ homebrew_install_path }}/opt/percona-server*/bin/mysqld | xargs -I{} bash -c '{} --version' | grep -i 'ver {{ mysql_version }}' | head -1 | awk '{print $1}' | xargs dirname | xargs dirname"
+  register: mysql_base_dir_output
+  tags:
+    - percona57
+
+- name: Register mysql_base_dir fact
+  set_fact: 
+    mysql_base_dir: "{{ mysql_base_dir_output.stdout | trim }}"
+  tags:
+    - percona57
+
 - homebrew: 
     name: "{{ mysql_formula }}"
     state: unlinked
@@ -52,19 +64,28 @@
     paths: "{{ mysql_data_dir }}"
   register: mysql_data_dir_files
   tags:
-    - percona56
+    - percona57
+
+- name: Create error.log file
+  file: 
+    path: "{{ mysql_log_dir }}/error.log"
+    state: touch
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - percona57
 
 - name: "Install db (mysqld --initialize-insecure)"
   shell: "{{ mysql_base_dir }}/bin/mysql_install_db --basedir={{ mysql_base_dir }} --datadir={{ mysql_data_dir }}"
   when: mysql_data_dir_files.matched|int == 0
   tags:
-    - percona56
+    - percona57
 
 - stat: 
     path: "{{ homebrew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
   register: state
   tags:
-    - percona56
+    - percona57
 
 - name: "Create {{ homebrew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
   template:
@@ -72,5 +93,25 @@
     dest: "{{ homebrew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
   when: not state.stat.exists
   tags:
-    - percona56
+    - percona57
 
+- ini_file:
+    path: "{{ homebrew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
+    section: "program:{{ mysql_supervisord_name }}"
+    option: "command" 
+    value: "{{ homebrew_install_path }}/bin/pidproxy /usr/local/var/run/mysql/{{ mysql_version_num }}/mysqld.proxy.pid {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf"
+  tags:
+    - percona57
+
+- homebrew: 
+    name: "{{ mysql_formula }}"
+    state: unlinked
+  tags:
+    - percona57
+
+- name: "Absent {{ homebrew_install_path }}/var/mysql"
+  file:
+    state: absent
+    path: "{{ homebrew_install_path }}/var/mysql/"
+  tags:
+    - percona57

@@ -60,6 +60,13 @@
   tags:
     - always
 
+- git:
+    repo: 'https://github.com/SergeyCherepanov/nginx-error-pages.git'
+    dest: '/usr/local/opt/nginx-error-pages'
+    version: 'master'
+  tags:
+    - always
+
 #- name: "Creates {{ homebrew_install_path }}/etc/nginx/servers/{{item.1}}_{{item.0}}_{{root_domain}}.conf"
 #  template: 
 #    src: servers/php_version.conf.j2

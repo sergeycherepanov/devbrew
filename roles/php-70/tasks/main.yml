@@ -39,35 +39,35 @@
   tags:
     - php70
 
-- stat:
-    path: "{{ homebrew_install_path }}/etc/php/7.0/php-fpm.conf"
-  register: state
-  tags:
-    - php70
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/7.0/php-fpm.conf"
+#  register: state
+#  tags:
+#    - php70
 
 - name: "Create php-fpm.conf"
   template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/7.0/php-fpm.conf owner={{ www_user }} group={{ www_group }}
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php70
 
-- stat:
-    path: "{{ homebrew_install_path }}/etc/php/7.0/php.ini"
-  register: state
-  tags:
-    - php70
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/7.0/php.ini"
+#  register: state
+#  tags:
+#    - php70
 
 - name: "Create php.ini"
   template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.0/php.ini owner={{ www_user }} group={{ www_group }}
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php70
 
-- stat:
-    path: "{{ homebrew_install_path }}/etc/php/7.0/php-fpm-xdebug.conf"
-  register: state
-  tags:
-    - php70
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/7.0/php-fpm-xdebug.conf"
+#  register: state
+#  tags:
+#    - php70
 
 - name: "Create php-fpm-xdebug.conf"
   template: 
@@ -75,15 +75,15 @@
       dest: "{{ homebrew_install_path }}/etc/php/7.0/php-fpm-xdebug.conf"
       owner: "{{ www_user }}"
       group: "{{ www_group }}"
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php70
 
-- stat:
-    path: "{{ homebrew_install_path }}/etc/php/7.0/php-xdebug.ini"
-  register: state
-  tags:
-    - php70
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/7.0/php-xdebug.ini"
+#  register: state
+#  tags:
+#    - php70
 
 - name: "Create php-xdebug.ini"
   template: 
@@ -91,19 +91,19 @@
       dest: "{{ homebrew_install_path }}/etc/php/7.0/php-xdebug.ini"
       owner: "{{ www_user }}"
       group: "{{ www_group }}"
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php70
 
-- stat:
-    path: "{{ homebrew_install_path }}/etc/php/7.0/conf.d/ext-opcache.ini"
-  register: state
-  tags:
-    - php70
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/7.0/conf.d/ext-opcache.ini"
+#  register: state
+#  tags:
+#    - php70
 
 - name: "Create ext-opcache.ini"
   template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.0/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php70
 
@@ -113,8 +113,13 @@
   tags:
     - php70
 
-- name: "Add symlink"
-  shell: find /usr/local/Cellar/php70 -path '*/bin/php' | awk -F/ '{print "ln -fs " $0 " " "/usr/local/bin/"$5}' | bash
+- name: "Add wrapper"
+  template:
+    src: "php.j2"
+    dest: "{{ homebrew_install_path }}/bin/{{ php_version }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
   tags:
     - php70
 

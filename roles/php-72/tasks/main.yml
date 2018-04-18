@@ -2,7 +2,7 @@
 - name: Ensure php taps are tapped.
   homebrew_tap: "tap={{ item }} state=present"
   with_items:
-    - "homebrew/php"
+    - "kyslik/homebrew-php"
   tags:
     - php72
 
@@ -40,18 +40,26 @@
     - php72
 
 - name: "Create php-fpm.conf"
-  template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/7.2/php-fpm.conf owner={{ www_user }} group={{ www_group }}
+  template:
+    src: php-fpm.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/php/7.2/php-fpm.conf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
   tags:
     - php72
 
 - name: "Create php.ini"
-  template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.2/php.ini owner={{ www_user }} group={{ www_group }}
+  template:
+    src: php.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/php/7.2/php.ini"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
   tags:
     - php72
 
-- stat: 
-    path: "{{ homebrew_install_path }}/etc/php/7.2/php-fpm-xdebug.conf"
-  register: state
+#- stat: 
+#    path: "{{ homebrew_install_path }}/etc/php/7.2/php-fpm-xdebug.conf"
+#  register: state
 
 - name: "Create php-fpm-xdebug.conf"
   template: 
@@ -59,13 +67,13 @@
       dest: "{{ homebrew_install_path }}/etc/php/7.2/php-fpm-xdebug.conf"
       owner: "{{ www_user }}"
       group: "{{ www_group }}"
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php56
 
-- stat: 
-    path: "{{ homebrew_install_path }}/etc/php/7.2/php-xdebug.ini"
-  register: state
+#- stat: 
+#    path: "{{ homebrew_install_path }}/etc/php/7.2/php-xdebug.ini"
+#  register: state
 
 - name: "Create php-xdebug.ini"
   template: 
@@ -73,13 +81,13 @@
       dest: "{{ homebrew_install_path }}/etc/php/7.2/php-xdebug.ini"
       owner: "{{ www_user }}"
       group: "{{ www_group }}"
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php56
 
-- stat: 
-    path: "{{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini"
-  register: state
+#- stat: 
+#    path: "{{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini"
+#  register: state
 
 - name: "Create ext-opcache.ini"
   template: 
@@ -87,7 +95,7 @@
     dest: "{{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php72
 
@@ -97,8 +105,13 @@
   tags:
     - php72
 
-- name: "Add symlink"
-  shell: find /usr/local/Cellar/php72 -path '*/bin/php' | awk -F/ '{print "ln -fs " $0 " " "/usr/local/bin/"$5}' | bash
+- name: "Add wrapper"
+  template:
+    src: "php.j2"
+    dest: "{{ homebrew_install_path }}/bin/{{ php_version }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
   tags:
     - php72
 

@@ -63,9 +63,9 @@
 
 - stat: 
     path: "{{ homebrew_install_path }}/etc/supervisor.d/dnsmasq.ini"
-  tags:
-      - always
   register: state
+  tags:
+    - always
 
 - name: "Create etc/supervisor.d/dnsmasq.ini"
   template:

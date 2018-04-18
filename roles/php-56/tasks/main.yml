@@ -7,7 +7,7 @@
     - php56
 
 - name: "Unlink all already installed php packages"
-  shell: "brew list | grep php | xargs brew unlink"
+  shell: "brew list | grep php | xargs brew unlink --no-run-if-empty"
   tags:
     - php56
 
@@ -15,11 +15,6 @@
     name: php56
     state: latest
     install_options: "{{ php_flags }}"
-  tags:
-    - php56
-  
-- name: "Unlink all already installed php packages"
-  shell: "brew list | grep php | xargs brew unlink --no-run-if-empty"
   tags:
     - php56
 
@@ -43,35 +38,35 @@
   tags:
     - php56
 
-- stat:
-    path: "{{ homebrew_install_path }}/etc/php/5.6/php-fpm.conf"
-  register: state
-  tags:
-    - php56
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/5.6/php-fpm.conf"
+#  register: state
+#  tags:
+#    - php56
 
 - name: "Create php-fpm.conf"
   template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/5.6/php-fpm.conf owner={{ www_user }} group={{ www_group }}
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php56
 
-- stat:
-    path: "{{ homebrew_install_path }}/etc/php/5.6/php.ini"
-  register: state
-  tags:
-    - php56
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/5.6/php.ini"
+#  register: state
+#  tags:
+#    - php56
 
 - name: "Create php.ini"
   template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.6/php.ini owner={{ www_user }} group={{ www_group }}
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php56
-
-- stat:
-    path: "{{ homebrew_install_path }}/etc/php/5.6/php-fpm-xdebug.conf"
-  register: state
-  tags:
-    - php56
+#
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/5.6/php-fpm-xdebug.conf"
+#  register: state
+#  tags:
+#    - php56
 
 - name: "Create php-fpm-xdebug.conf"
   template: 
@@ -79,15 +74,15 @@
     dest: "{{ homebrew_install_path }}/etc/php/5.6/php-fpm-xdebug.conf"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php56
 
-- stat:
-    path: "{{ homebrew_install_path }}/etc/php/5.6/php-xdebug.ini"
-  register: state
-  tags:
-    - php56
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/5.6/php-xdebug.ini"
+#  register: state
+#  tags:
+#    - php56
 
 - name: "Create php-xdebug.ini"
   template: 
@@ -95,19 +90,19 @@
     dest: "{{ homebrew_install_path }}/etc/php/5.6/php-xdebug.ini"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php56
 
-- stat:
-    path: "{{ homebrew_install_path }}/etc/php/5.6/conf.d/ext-opcache.ini"
-  register: state
-  tags:
-    - php56
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/5.6/conf.d/ext-opcache.ini"
+#  register: state
+#  tags:
+#    - php56
 
 - name: "Create ext-opcache.ini"
   template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.6/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php56
 
