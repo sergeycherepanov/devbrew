@@ -8,7 +8,7 @@
 
 - name: "Create {{ homebrew_install_path }}/etc/supervisor.d/redisdb.ini"
   template:
-    src: redisdb.ini.j2
+    src: supervisord.ini.j2
     dest: "{{ homebrew_install_path }}/etc/supervisor.d/redisdb.ini"
   when: not state.stat.exists
   tags:
