@@ -1,8 +1,11 @@
 ---
-- name: "Creates {{ www_dir }} directory"
+- name: "Creates directories"
   file:
-    path: "{{ www_dir }}"
+    path: "{{ item }}"
     state: directory
+  with_items:
+    - "{{ homebrew_install_path }}/etc/logrotate.d"
+    - "{{ www_dir }}"
   tags:
     - always
 
