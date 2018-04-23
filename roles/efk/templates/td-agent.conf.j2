@@ -58,6 +58,8 @@
   port 24230
 </source>
 
+@include {{ homebrew_install_path }}/etc/efk/td-agent/conf.d/*.conf
+
 <match **.*>
   @type elasticsearch
   host localhost
@@ -68,7 +70,5 @@
   buffer_type memory
   target_index_key @target_index
   index_name fluentd
-  flush_interval 5s
+  flush_interval 3s
 </match>
-
-@include {{ homebrew_install_path }}/etc/efk/td-agent/conf.d/*.conf

@@ -11,7 +11,7 @@ autorestart=true
 priority:100
 
 [program:efk-td-agent]
-command=/opt/td-agent/usr/sbin/td-agent --config {{ homebrew_install_path }}/etc/efk/td-agent/td-agent.conf --log {{ homebrew_install_path }}/var/log/efk/td-agent.log --use-v1-config
+command=/opt/td-agent/usr/sbin/td-agent --config {{ homebrew_install_path }}/etc/efk/td-agent/td-agent.conf --use-v1-config
 directory=/opt/td-agent/
 stdout_logfile={{ homebrew_install_path }}/var/log/efk/td-agent.log
 stderr_logfile={{ homebrew_install_path }}/var/log/efk/td-agent.err

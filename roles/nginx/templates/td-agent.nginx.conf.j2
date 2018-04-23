@@ -15,8 +15,8 @@
   @type record_transformer
   enable_ruby true
   <record>
+    @target_index logs_nginx
     severity ${ tag_suffix[1] == 'error' ? 'ERROR' : 'INFO'; }
-    target_index logs_nginx
     stream nginx_${ tag_suffix[1] }
   </record>
 </filter>

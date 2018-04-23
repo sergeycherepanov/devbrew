@@ -10,6 +10,5 @@
   template:
     src: supervisord.ini.j2
     dest: "{{ homebrew_install_path }}/etc/supervisor.d/redisdb.ini"
-  when: not state.stat.exists
   tags:
     - always
