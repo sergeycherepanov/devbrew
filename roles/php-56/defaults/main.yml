@@ -11,4 +11,5 @@ php_modules:
   - opcache
   - pdo-pgsql
   - xhprof
+  - mongodb
 php_pear_packages: []

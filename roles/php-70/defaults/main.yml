@@ -10,4 +10,5 @@ php70_modules:
   - php70-tidy
   - php70-opcache
   - php70-pdo-pgsql
+  - php70-mongodb
 php70_pear_packages: []

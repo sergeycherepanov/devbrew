@@ -1,10 +1,18 @@
 ---
 - git:
     repo: "https://github.com/SergeyCherepanov/xhgui.git"
-    dest: "/usr/local/opt/xhgui"
+    dest: "{{ homebrew_install_path }}/opt/xhgui"
     version: "master_20180417"
   tags:
     - always
+
+- name: "Install xhprof extension"
+  shell: >
+    {{ homebrew_install_path }}/bin/php71 {{ homebrew_install_path }}/bin/composer install
+  args:
+    chdir: "{{ homebrew_install_path }}/opt/xhgui"
+  tags:
+    - php72
 
 - name: "Ensure {{ homebrew_install_path }}/etc/nginx/servers/xhgui.conf"
   template:
@@ -17,5 +25,6 @@
   lineinfile:
     path: '/etc/hosts'
     line: '127.0.0.1    xhgui.local'
+  become: yes
   tags:
     - always

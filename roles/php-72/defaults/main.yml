@@ -6,4 +6,5 @@ php72_flags: "with-homebrew-curl"
 php72_modules:
   - php72-xdebug
   - php72-redis
+  - php72-mongodb
 php72_pear_packages: []

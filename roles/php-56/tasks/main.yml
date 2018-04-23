@@ -11,7 +11,8 @@
   tags:
     - php56
 
-- homebrew:
+- name: "Installing php56 with flags: {{ php_flags }}"
+  homebrew:
     name: php56
     state: latest
     install_options: "{{ php_flags }}"

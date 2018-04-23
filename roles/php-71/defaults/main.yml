@@ -10,4 +10,5 @@ php71_modules:
 #  - php71-tidy
   - php71-opcache
   - php71-pdo-pgsql
+  - php71-mongodb
 php71_pear_packages: []
