@@ -10,10 +10,13 @@
     - roles/curl
     - roles/jenv
     - roles/supervisord
+    - roles/efk
+    - roles/logrotate
     - roles/fakesendmail
     - roles/dnsmasq
     - roles/percona-server-56
     - roles/percona-server-57
+    - roles/mongodb
     - roles/php-56
     - roles/php-70
     - roles/php-71
@@ -25,7 +28,6 @@
     - roles/compass
     - roles/less
     - roles/php-tools
-    - roles/efk
   post_tasks:
     - name: "Stopping supervisord"
       shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"

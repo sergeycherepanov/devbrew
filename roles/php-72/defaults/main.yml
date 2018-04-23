@@ -1,6 +1,8 @@
 ---
 php_version: php@7.2
-php72_flags: "with-homebrew-curl"
+php_version_legacy: php72
+php_version_num: 7.2
+php72_flags: "with-homebrew-curl,with-opcache"
 php72_modules:
   - php72-xdebug
   - php72-redis

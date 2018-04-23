@@ -69,11 +69,36 @@
       group: "{{ www_group }}"
 #  when: not state.stat.exists
   tags:
-    - php56
+    - php72
 
 #- stat: 
 #    path: "{{ homebrew_install_path }}/etc/php/7.2/php-xdebug.ini"
 #  register: state
+
+- git:
+    repo: 'https://github.com/tideways/php-profiler-extension.git'
+    dest: "/tmp/xhprof{{php_version}}"
+    version: 'master'
+  tags:
+    - php72
+
+- name: "Install xhprof extension"
+  shell: >
+    {{ homebrew_install_path }}/opt/{{php_version}}/bin/phpize &&
+    ./configure --with-php-config={{ homebrew_install_path }}/opt/{{php_version}}/bin/php-config &&
+    make &&
+    make install
+  args:
+    chdir: "/tmp/xhprof{{php_version}}"
+  tags:
+    - php72
+
+- name: "Ensure ext-xhprof.ini"
+  copy:
+    content: "extension=tideways_xhprof.so"
+    dest: "{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xhprof.ini"
+  tags:
+    - php72
 
 - name: "Create php-xdebug.ini"
   template: 
@@ -83,7 +108,7 @@
       group: "{{ www_group }}"
 #  when: not state.stat.exists
   tags:
-    - php56
+    - php72
 
 #- stat: 
 #    path: "{{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini"
@@ -108,7 +133,7 @@
 - name: "Add wrapper"
   template:
     src: "php.j2"
-    dest: "{{ homebrew_install_path }}/bin/{{ php_version }}"
+    dest: "{{ homebrew_install_path }}/bin/{{ php_version_legacy }}"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
     mode: 0755
@@ -121,16 +146,16 @@
   tags:
     - php72
 
-- stat: 
-    path: "{{ homebrew_install_path }}/etc/supervisor.d/php72.ini"
-  tags:
-    - php72
-  register: state
+#- stat: 
+#    path: "{{ homebrew_install_path }}/etc/supervisor.d/php72.ini"
+#  tags:
+#    - php72
+#  register: state
 
 - name: "Create etc/supervisor.d/php72.ini"
   template:
     src: supervisord.ini.j2
     dest: "{{ homebrew_install_path }}/etc/supervisor.d/php72.ini"
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php72

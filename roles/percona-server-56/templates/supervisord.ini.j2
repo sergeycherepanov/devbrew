@@ -4,4 +4,5 @@ directory=/usr/local/var
 stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/{{ mysql_supervisord_name }}.log
 stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/{{ mysql_supervisord_name }}.err
 autorestart=true
+user={{ mysql_user }}
 #stopasgroup=true

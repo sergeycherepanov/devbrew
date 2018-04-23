@@ -1,0 +1,11 @@
+{{ homebrew_install_path }}/var/log/nginx/*.log {{ homebrew_install_path }}/var/log/nginx/*.err {
+  size 1m
+  missingok
+  rotate 7
+  daily
+  compress
+  delaycompress
+  copytruncate
+  notifempty
+  postotate {{ homebrew_install_path }}/bin/nginx -s reload > /dev/null
+}

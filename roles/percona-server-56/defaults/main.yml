@@ -1,4 +1,5 @@
 ---
+mysql_user: "{{ homebrew_whoami.stdout }}"
 mysql_version: "5.6"
 mysql_version_num: "56"
 mysql_formula: "percona-server@5.6"

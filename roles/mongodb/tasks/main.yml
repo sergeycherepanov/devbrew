@@ -1,0 +1,15 @@
+---
+- name: "Ensure mongodb"
+  homebrew: 
+    name: mongodb
+    state: present
+  tags:
+    - always
+
+- name: "Create {{ homebrew_install_path }}/etc/supervisor.d/mongodb.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/supervisor.d/mongodb.ini"
+  when: not state.stat.exists
+  tags:
+    - always

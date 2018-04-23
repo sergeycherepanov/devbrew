@@ -101,8 +101,37 @@
 #  tags:
 #    - php70
 
+- git:
+    repo: 'https://github.com/tideways/php-profiler-extension.git'
+    dest: "/tmp/xhprof{{php_version}}"
+    version: 'master'
+  tags:
+    - php70
+
+- name: "Install xhprof extension"
+  shell: >
+    {{ homebrew_install_path }}/opt/{{php_version}}/bin/phpize &&
+    ./configure --with-php-config={{ homebrew_install_path }}/opt/{{php_version}}/bin/php-config &&
+    make &&
+    make install
+  args:
+    chdir: "/tmp/xhprof{{php_version}}"
+  tags:
+    - php70
+
+- name: "Ensure ext-xhprof.ini"
+  copy:
+    content: "extension=tideways_xhprof.so"
+    dest: "{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xhprof.ini"
+  tags:
+    - php70
+
 - name: "Create ext-opcache.ini"
-  template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.0/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
+  template:
+    src: ext-opcache.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/php/7.0/conf.d/ext-opcache.ini"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
 #  when: not state.stat.exists
   tags:
     - php70
@@ -129,16 +158,16 @@
   tags:
     - php70
 
-- stat:
-    path: "{{ homebrew_install_path }}/etc/supervisor.d/php70.ini"
-  register: state
-  tags:
-    - php70
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/supervisor.d/php70.ini"
+#  register: state
+#  tags:
+#    - php70
 
 - name: "Create etc/supervisor.d/php70.ini"
   template:
     src: supervisord.ini.j2
     dest: "{{ homebrew_install_path }}/etc/supervisor.d/php70.ini"
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php70

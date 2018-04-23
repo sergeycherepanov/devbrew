@@ -55,6 +55,17 @@
   tags:
     - always
 
+
+- name: "Ensure supervisor-listener"
+  template: 
+    src: supervisor-listener
+    dest: '/usr/local/bin/supervisor-listener'
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
+  tags:
+    - always
+
 - name: "Stopping supervisord"
   shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
   become: true

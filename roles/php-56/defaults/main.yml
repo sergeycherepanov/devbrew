@@ -10,4 +10,5 @@ php_modules:
   - tidy
   - opcache
   - pdo-pgsql
+  - xhprof
 php_pear_packages: []

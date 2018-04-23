@@ -130,16 +130,16 @@
   tags:
     - php56
 
-- stat:
-    path: "{{ homebrew_install_path }}/etc/supervisor.d/{{ php_version }}.ini"
-  register: state
-  tags:
-    - php56
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/supervisor.d/{{ php_version }}.ini"
+#  register: state
+#  tags:
+#    - php56
 
 - name: "Create etc/supervisor.d/{{ php_version }}.ini"
   template:
     src: supervisord.ini.j2
     dest: "{{ homebrew_install_path }}/etc/supervisor.d/{{ php_version }}.ini"
-  when: not state.stat.exists
+#  when: not state.stat.exists
   tags:
     - php56

@@ -1,12 +1,28 @@
 ---
-- name: "Installing ElasticSearch Server"
+- name: "Ensure ElasticSearch Server"
   homebrew: 
     name: elasticsearch
     state: latest
   tags:
     - always
 
-- name: "Installing Kibana"
+- name: "Ensure curator via pip"
+  pip:
+    name: elasticsearch-curator
+    state: latest
+  become: yes
+  tags:
+    - always
+
+- name: "Ensure elastalert via pip"
+  pip:
+    name: elastalert
+    state: latest
+  become: yes
+  tags:
+    - always
+
+- name: "Ensure Kibana"
   homebrew: 
     name: kibana
     state: latest
@@ -14,7 +30,7 @@
     - always
 
 # Cask.
-- name: Get list of apps installed with cask.
+- name: "Get list of apps installed with cask."
   command: >
     bash -l -c '{{ homebrew_brew_bin_path }}/brew cask list'
   register: homebrew_cask_list
@@ -24,9 +40,103 @@
     - always
 
 # Use command module instead of homebrew_cask so appdir can be used.
-- name: Install td-agent
+- name: "Ensure td-agent (fluentd)"
   command: >
     bash -l -c '{{ homebrew_brew_bin_path }}/brew cask install td-agent --appdir={{ homebrew_cask_appdir }}'
   when: "'td-agent' not in homebrew_cask_list.stdout"
+  tags:
+    - always
+
+- name: "Ensure fluent-plugin-elasticsearch"
+  command: >
+    /opt/td-agent/usr/sbin/td-agent-gem install fluent-plugin-elasticsearch
+  become: yes
+  tags:
+    - always
+
+- name: "Disable td-agent via launchctl"
+  command: "launchctl unload -w /Library/LaunchDaemons/td-agent.plist"
+  become: yes
+  tags:
+    - always
+
+- name: "Ensure EFK directories"
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ homebrew_install_path }}/etc/efk"
+    - "{{ homebrew_install_path }}/etc/efk/elasticsearch"
+    - "{{ homebrew_install_path }}/etc/efk/td-agent"
+    - "{{ homebrew_install_path }}/etc/efk/td-agent/conf.d"
+    - "{{ homebrew_install_path }}/etc/efk/kibana"
+    - "{{ homebrew_install_path }}/etc/efk/curator"
+    - "{{ homebrew_install_path }}/var/log/efk"
+    - "{{ homebrew_install_path }}/var/log/efk/td-agent"
+    - "{{ homebrew_install_path }}/var/log/efk/td-agent/buffer"
+    - "{{ homebrew_install_path }}/var/log/efk/elasticsearch"
+    - "{{ homebrew_install_path }}/var/lib/efk/elasticsearch"
+
+  tags:
+    - always
+
+- name: "Ensure elasticsearch config"
+  template:
+    src: elasticsearch.yml.j2
+    dest: "{{ homebrew_install_path }}/etc/efk/elasticsearch/elasticsearch.yml"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - always
+
+- name: "Ensure jvm.options config"
+  template:
+    src: elasticsearch.jvm.options.j2
+    dest: "{{ homebrew_install_path }}/etc/efk/elasticsearch/jvm.options"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - always
+
+- name: "Ensure log4j2.properties config"
+  template:
+    src: elasticsearch.log4j2.properties.j2
+    dest: "{{ homebrew_install_path }}/etc/efk/elasticsearch/log4j2.properties"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - always
+
+- name: "Ensure td-agent config"
+  template:
+    src: td-agent.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/efk/td-agent/td-agent.conf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - always
+
+- name: "Ensure kibana config"
+  template:
+    src: kibana.yml.j2
+    dest: "{{ homebrew_install_path }}/etc/efk/kibana/kibana.yml"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - always
+
+- name: "Ensure curator config"
+  template:
+    src: curator.yml.j2
+    dest: "{{ homebrew_install_path }}/etc/efk/curator/curator.yml"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - always
+
+- name: "Create etc/supervisor.d/efk.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/supervisor.d/efk.ini"
   tags:
     - always

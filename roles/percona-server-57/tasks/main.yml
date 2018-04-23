@@ -43,6 +43,22 @@
   tags:
     - percona57
 
+- name: "Ensure proper ownership on"
+  file:
+    path: "{{ mysql_etc_dir }}"
+    state: directory
+    owner: "{{ mysql_user }}"
+    group: admin
+    recurse: true
+  become: yes
+  with_items:
+    - "{{ mysql_etc_dir }}"
+    - "{{ mysql_data_dir }}"
+    - "{{ mysql_log_dir }}"
+    - "{{ mysql_run_dir }}"
+  tags:
+    - percona57
+
 - stat:
     path: "{{ mysql_etc_dir }}/my.cnf"
   register: state
@@ -66,7 +82,7 @@
   tags:
     - percona57
 
-- name: Create error.log file
+- name: Touch error.log file
   file: 
     path: "{{ mysql_log_dir }}/error.log"
     state: touch

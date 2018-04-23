@@ -1,0 +1,20 @@
+---
+- name: "Ensure logrotate"
+  homebrew: 
+    name: logrotate 
+    state: latest
+  tags:
+    - always
+
+- name: "Ensure homebrew.mxcl.supervisor.plist"
+  template: 
+    src: homebrew.mxcl.logrotate.plist.j2
+    dest: '/Library/LaunchDaemons/homebrew.mxcl.logrotate.plist'
+  become: true
+  tags:
+    - always
+
+- name: "Starting logrotate"
+  shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.logrotate.plist"
+  tags:
+    - always

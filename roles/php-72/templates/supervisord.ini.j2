@@ -15,3 +15,6 @@ stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/php72-xdebug.err
 user={{ www_user }}
 autorestart=true
 stopasgroup=true
+
+[group:php72]
+programs=php72-fpm,php72-fpm-xdebug

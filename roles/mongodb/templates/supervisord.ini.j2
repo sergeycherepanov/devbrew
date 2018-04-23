@@ -1,0 +1,7 @@
+[program:mongodb]
+command={{ homebrew_install_path }}/opt/mongodb/bin/mongod --config {{ homebrew_install_path }}/etc/mongod.conf
+directory={{ homebrew_install_path }}
+stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/mongod.log
+stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/mongod.err
+autorestart=true
+user={{ www_user }}
