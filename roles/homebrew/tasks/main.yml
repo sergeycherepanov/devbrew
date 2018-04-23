@@ -50,9 +50,32 @@
   tags:
     - always
 
+
+- name: Ensure homebrew directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ homebrew_install_path }}/Cellar"
+    - "{{ homebrew_install_path }}/Caskroom"
+    - "{{ homebrew_install_path }}/Frameworks"
+    - "{{ homebrew_install_path }}/bin"
+    - "{{ homebrew_install_path }}/etc"
+    - "{{ homebrew_install_path }}/docs"
+    - "{{ homebrew_install_path }}/manpages"
+    - "{{ homebrew_install_path }}/include"
+    - "{{ homebrew_install_path }}/lib"
+    - "{{ homebrew_install_path }}/opt"
+    - "{{ homebrew_install_path }}/sbin"
+    - "{{ homebrew_install_path }}/share"
+    - "{{ homebrew_install_path }}/var"
+    - "{{ homebrew_install_path }}/completions"
+  become: yes
+  tags:
+    - always
+
 - name: Ensure proper ownership on homebrew_install_path subdirs.
   shell: >
-    chown "{{ homebrew_whoami.stdout }}:admin" "{{ homebrew_install_path }}"
     ls -A "{{ homebrew_install_path }}" | xargs -I {} chown -R "{{ homebrew_whoami.stdout }}:admin" "{{ homebrew_install_path }}/{}"
   become: yes
   tags:
