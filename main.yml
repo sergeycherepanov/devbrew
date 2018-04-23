@@ -10,6 +10,7 @@
     - roles/curl
     - roles/jenv
     - roles/supervisord
+    - roles/nginx
     - roles/efk
     - roles/logrotate
     - roles/fakesendmail
@@ -22,7 +23,6 @@
     - roles/php-70
     - roles/php-71
     - roles/php-72
-    - roles/nginx
     - roles/nginx-php-fpm
     - roles/nodejs
     - roles/xhgui
