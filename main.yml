@@ -25,10 +25,10 @@
     - roles/php-72
     - roles/nginx-php-fpm
     - roles/nodejs
+    - roles/php-tools
     - roles/xhgui
     - roles/compass
     - roles/less
-    - roles/php-tools
   post_tasks:
     - name: "Stopping supervisord"
       shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
