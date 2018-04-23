@@ -13,28 +13,6 @@ http {
     include       mime.types;
     default_type  application/octet-stream;
 
-    log_format access_json '{'
-      '"host": "$host", '
-      '"project": "$project_name", '
-      '"pool": "$pool", '
-      '"document_root": "$documentRoot", '
-      '"php_version": "$php_version", '
-      '"cgi_index": "$cgiIndex", '
-      '"remote_addr": "$remote_addr", '
-      '"remote_user": "$remote_user", '
-      '"time_local": "$time_local", '
-      '"status": "$status", '
-      '"request": "$request", '
-      '"http_referer": "$http_referer", '
-      '"http_user_agent": "$http_user_agent", '
-      '"body_bytes_sent": "$body_bytes_sent", '
-      '"request_time": "$request_time", '
-      '"upstream_response_time": "$upstream_response_time", '
-      '"pipe": "$pipe"'
-      '}';
-
-    access_log {{ homebrew_install_path }}/var/log/nginx/access_json.log access_json;
-
     include servers/*.conf;
     include servers_custom/*.conf;
     include conf.d/*.conf;
