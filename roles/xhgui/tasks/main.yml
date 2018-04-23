@@ -1,0 +1,21 @@
+---
+- git:
+    repo: "https://github.com/SergeyCherepanov/xhgui.git"
+    dest: "/usr/local/opt/xhgui"
+    version: "master_20180417"
+  tags:
+    - always
+
+- name: "Ensure {{ homebrew_install_path }}/etc/nginx/servers/xhgui.conf"
+  template:
+    src: nginx.xhgui.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/nginx/servers/xhgui.conf"
+  tags:
+    - always
+
+- name: "Ensure xhgui.local in /etc/hosts"
+  lineinfile:
+    path: '/etc/hosts'
+    line: '127.0.0.1    xhgui.local'
+  tags:
+    - always

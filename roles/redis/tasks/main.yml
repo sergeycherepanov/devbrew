@@ -1,11 +1,15 @@
 ---
-- name: "Installing RedisDB Server"
+- name: "Ensure redisdb"
   homebrew: 
     name: redis
     state: present
   tags:
     - always
-# - name: "Copy the daemon configuration file into place."
-#   shell: "cp $(brew list redis | grep /homebrew.mxcl.redis.plist$) {{ ansible_env.HOME }}/Library/LaunchAgents/homebrew.mxcl.redis.plist"
-# - name: "Start RedisDB Server automatically."
-#   shell: "launchctl load -w {{ ansible_env.HOME }}/Library/LaunchAgents/homebrew.mxcl.redis.plist"
+
+- name: "Create {{ homebrew_install_path }}/etc/supervisor.d/redisdb.ini"
+  template:
+    src: redisdb.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/supervisor.d/redisdb.ini"
+  when: not state.stat.exists
+  tags:
+    - always

@@ -17,14 +17,15 @@
     - roles/percona-server-56
     - roles/percona-server-57
     - roles/mongodb
+    - roles/redis
     - roles/php-56
     - roles/php-70
     - roles/php-71
     - roles/php-72
     - roles/nginx
     - roles/nginx-php-fpm
-    - roles/redis
     - roles/nodejs
+    - roles/xhgui
     - roles/compass
     - roles/less
     - roles/php-tools

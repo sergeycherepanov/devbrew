@@ -140,3 +140,17 @@
     dest: "{{ homebrew_install_path }}/etc/supervisor.d/efk.ini"
   tags:
     - always
+
+- name: "Ensure kibana.local in /etc/hosts"
+  lineinfile:
+    path: '/etc/hosts'
+    line: '127.0.0.1    kibana.local'
+  tags:
+    - always
+
+- name: "Ensure {{ homebrew_install_path }}/etc/nginx/servers/kibana.conf"
+  template:
+    src: nginx.kibana.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/nginx/servers/kibana.conf"
+  tags:
+    - always
