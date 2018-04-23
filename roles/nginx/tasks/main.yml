@@ -4,8 +4,8 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ homebrew_install_path }}/etc/logrotate.d"
     - "{{ www_dir }}"
+    - "{{ homebrew_install_path }}/etc/nginx/servers_custom"
   tags:
     - always
 

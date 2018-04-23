@@ -10,9 +10,9 @@
     - roles/curl
     - roles/jenv
     - roles/supervisord
+    - roles/logrotate
     - roles/nginx
     - roles/efk
-    - roles/logrotate
     - roles/fakesendmail
     - roles/dnsmasq
     - roles/percona-server-56
