@@ -52,7 +52,7 @@
 
 - name: Ensure proper ownership on homebrew_install_path subdirs.
   shell: >
-    chown "{{ homebrew_whoami.stdout }}:admin" "{{ homebrew_install_path }}/{}"
+    chown "{{ homebrew_whoami.stdout }}:admin" "{{ homebrew_install_path }}"
     ls -A "{{ homebrew_install_path }}" | xargs -I {} chown -R "{{ homebrew_whoami.stdout }}:admin" "{{ homebrew_install_path }}/{}"
   become: yes
   tags:
