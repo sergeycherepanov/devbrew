@@ -52,7 +52,7 @@
 
 - name: Ensure proper ownership on homebrew_install_path subdirs.
   file:
-    path: "{{ homebrew_install_path }}"
+    path: "{{ homebrew_install_path }}/*"
     state: directory
     owner: "{{ homebrew_whoami.stdout }}"
     group: admin
