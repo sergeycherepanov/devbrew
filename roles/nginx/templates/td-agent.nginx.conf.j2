@@ -16,7 +16,7 @@
   enable_ruby true
   <record>
     severity ${ tag_suffix[1] == 'error' ? 'ERROR' : 'INFO'; }
-    process nginx
+    target_index logs_nginx
     stream nginx_${ tag_suffix[1] }
   </record>
 </filter>
