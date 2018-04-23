@@ -5,4 +5,4 @@ stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/{{ mysql_superviso
 stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/{{ mysql_supervisord_name }}.err
 autorestart=true
 user={{ mysql_user }}
-#stopasgroup=true
+stopasgroup=true
