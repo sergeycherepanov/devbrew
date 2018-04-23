@@ -51,12 +51,8 @@
     - always
 
 - name: Ensure proper ownership on homebrew_install_path subdirs.
-  file:
-    path: "{{ homebrew_install_path }}/*"
-    state: directory
-    owner: "{{ homebrew_whoami.stdout }}"
-    group: admin
-    recurse: true
+  shell: >
+    ls -A "{{ homebrew_install_path }}" | xargs -I {} chown -R "{{ homebrew_whoami.stdout }}:admin" "{}"
   become: yes
   tags:
     - always
