@@ -179,3 +179,12 @@
 #  when: not state.stat.exists
   tags:
     - php71
+
+- name: "Creates {{ homebrew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
+  template:
+    src: td-agent.php.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - always

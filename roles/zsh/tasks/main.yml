@@ -105,6 +105,16 @@
   tags:
     - zsh
 
+- name: "Adding homebrew to PATH in {{ ansible_env.HOME }}/.zshrc"
+  blockinfile:
+    create: yes
+    dest: '{{ ansible_env.HOME }}/.zshrc'
+    marker: "# {mark} homebrew PATH"
+    block: |
+      export PATH="/usr/local/sbin:$PATH"
+  tags:
+    - always
+
 - lineinfile:
     path: '{{ ansible_env.HOME }}/.zshrc'
     regexp: '^DEFAULT_USER=.*'

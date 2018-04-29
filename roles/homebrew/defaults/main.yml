@@ -20,6 +20,7 @@ homebrew_installed_packages:
   - json-table
   - pup
   - fswatch
+  - shellcheck
 
 homebrew_upgrade_all_packages: no
 

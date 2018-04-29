@@ -1,5 +1,5 @@
 [program:redisdb]
-command={{ homebrew_install_path }}/opt/redis/bin/redis-server --config {{ homebrew_install_path }}/etc/redis.conf --daemonize no
+command={{ homebrew_install_path }}/opt/redis/bin/redis-server {{ homebrew_install_path }}/etc/redis.conf --daemonize no
 directory={{ homebrew_install_path }}/var
 stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/redisdb.log
 stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/redisdb.err

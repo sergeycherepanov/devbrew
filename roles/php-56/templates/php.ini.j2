@@ -9,9 +9,12 @@ display_errors=on
 ;error_reporting=E_ALL
 error_reporting=E_ALL ^ E_DEPRECATED
 max_input_vars = 100000
-mysqli.default_socket = /usr/local/var/run/mysqld/56/mysqld.sock
-pdo_mysql.default_socket = /usr/local/var/run/mysqld/56/mysqld.sock
-sendmail_path = /usr/local/bin/fake_sendmail.sh
+mysqli.default_socket = {{ homebrew_install_path }}/var/run/mysql/57/mysqld.sock
+pdo_mysql.default_socket = {{ homebrew_install_path }}/var/run/mysql/57/mysqld.sock
+sendmail_path = {{ homebrew_install_path }}/bin/fake_sendmail.sh
+display_startup_errors = on
+log_errors = on
+error_log = {{ homebrew_install_path }}/var/log/php/{{ php_version_num }}/error.log
  
 [Date]
 date.timezone=UTC

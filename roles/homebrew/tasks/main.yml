@@ -156,16 +156,6 @@
   tags:
     - always
 
-- name: "Adding homebrew to PATH in {{ ansible_env.HOME }}/.zshrc"
-  blockinfile:
-    create: yes
-    dest: '{{ ansible_env.HOME }}/.zshrc'
-    marker: "# {mark} homebrew PATH"
-    block: |
-      export PATH="/usr/local/sbin:$PATH"
-  tags:
-    - always
-
 - name: "Adding homebrew to PATH in {{ ansible_env.HOME }}/.bashrc"
   blockinfile:
     create: yes

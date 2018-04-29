@@ -15,3 +15,5 @@
       export GOPATH="${HOME}/go"
       export PATH="${PATH}:${GOPATH}/bin"
   with_items: ['.zshrc', '.bashrc']
+  tags:
+    - always

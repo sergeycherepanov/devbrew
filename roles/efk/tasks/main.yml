@@ -60,6 +60,13 @@
   tags:
     - always
 
+- name: "Remove /Library/LaunchDaemons/td-agent.plist"
+  file:
+    path: "/Library/LaunchDaemons/td-agent.plist"
+    state: absent
+  tags:
+    - always
+
 - name: "Ensure EFK directories"
   file:
     path: "{{ item }}"
@@ -76,7 +83,6 @@
     - "{{ homebrew_install_path }}/var/log/efk/td-agent/buffer"
     - "{{ homebrew_install_path }}/var/log/efk/elasticsearch"
     - "{{ homebrew_install_path }}/var/lib/efk/elasticsearch"
-
   tags:
     - always
 
