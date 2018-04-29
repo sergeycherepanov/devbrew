@@ -7,6 +7,7 @@ stderr_logfile={{ homebrew_install_path }}/var/log/efk/elasticsearch.err
 stderr_logfile_maxbytes=5MB
 stdout_logfile_maxbytes=5MB
 user={{ www_user }}
+autostart=false
 autorestart=true
 priority:100
 
@@ -18,6 +19,7 @@ stderr_logfile={{ homebrew_install_path }}/var/log/efk/td-agent.err
 stderr_logfile_maxbytes=5MB
 stdout_logfile_maxbytes=5MB
 user={{ www_user }}
+autostart=false
 autorestart=true
 
 [program:efk-kibana]
@@ -27,14 +29,15 @@ stderr_logfile={{ homebrew_install_path }}/var/log/efk/kibana.err
 stderr_logfile_maxbytes=5MB
 stdout_logfile_maxbytes=5MB
 user={{ www_user }}
+autostart=false
 autorestart=true
 
-[eventlistener:efk-curator]
-command=/usr/local/bin/supervisor-listener /usr/local/bin/curator --config {{ homebrew_install_path }}/etc/efk/curator/curator.yml > {{ homebrew_install_path }}/var/log/efk/curator.log
-events=TICK_3600
-stderr_logfile={{ homebrew_install_path }}/var/log/efk/curator.err
-stderr_logfile_maxbytes=5MB
-user={{ www_user }}
+#[eventlistener:efk-curator]
+#command=/usr/local/bin/supervisor-listener /usr/local/bin/curator --config {{ homebrew_install_path }}/etc/efk/curator/curator.yml > {{ homebrew_install_path }}/var/log/efk/curator.log
+#events=TICK_3600
+#stderr_logfile={{ homebrew_install_path }}/var/log/efk/curator.err
+#stderr_logfile_maxbytes=5MB
+#user={{ www_user }}
 
 [group:efk]
 programs=efk-elasticsearch,efk-td-agent,efk-kibana
