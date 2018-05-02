@@ -1,6 +1,7 @@
 ---
 php_version: php71
 php_version_num: 7.1
+php_version_num_int: 71
 php71_flags: "with-homebrew-curl"
 php71_modules:
 #  - php71-intl

@@ -1,6 +1,7 @@
 ---
 php_version: php70
 php_version_num: 7.0
+php_version_num_int: 70
 php70_flags: "with-homebrew-curl"
 php70_modules:
   - php70-intl

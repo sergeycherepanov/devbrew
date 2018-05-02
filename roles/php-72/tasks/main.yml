@@ -101,14 +101,31 @@
     - php72
 
 - name: "Create php-xdebug.ini"
-  template: 
-      src: php-xdebug.ini.j2
-      dest: "{{ homebrew_install_path }}/etc/php/7.2/php-xdebug.ini"
-      owner: "{{ www_user }}"
-      group: "{{ www_group }}"
+  template:
+    src: php.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
 #  when: not state.stat.exists
   tags:
-    - php72
+    - php56
+
+blockinfile:
+    dest: '{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini'
+    marker: "; {mark} ansible xdebug"
+    block: |
+      [xdebug]
+      zend_extension="/usr/local/opt/{{ php_version }}-xdebug/xdebug.so"
+      xdebug.remote_enable=1
+      xdebug.remote_autostart = 0
+      xdebug.remote_connect_back = 0
+      xdebug.remote_host=127.0.0.1
+      xdebug.remote_port=92{{ php_version_num_int }}
+      xdebug.profiler_enable=0
+      xdebug.profiler_output_dir=/tmp/xdebug{{ php_version_num_int }}
+      xdebug.idekey=PHPSTORM
+      xdebug.overload_var_dump=0
+      xdebug.max_nesting_level=500
 
 #- stat: 
 #    path: "{{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini"
