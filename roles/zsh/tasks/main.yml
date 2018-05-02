@@ -115,6 +115,18 @@
   tags:
     - always
 
+- name: "Adding aliases {{ ansible_env.HOME }}/.zshrc"
+  blockinfile:
+    create: yes
+    dest: '{{ ansible_env.HOME }}/.zshrc'
+    marker: "# {mark} export aliases"
+    block: |
+      if [[ -f ~/.aliases ]]; then
+        source ~/.aliases
+      fi
+  tags:
+    - always
+
 - lineinfile:
     path: '{{ ansible_env.HOME }}/.zshrc'
     regexp: '^DEFAULT_USER=.*'
