@@ -39,6 +39,11 @@ function add_hostname {
 
   gomplate -f "/usr/local/etc/nginx/custom_server.conf.tpl" --left-delim '<?' --right-delim '?>' -o "/usr/local/etc/nginx/servers_custom/${HOSTNAME}.conf"
 
+  if [[ ! -d "{{ www_dir }}/${POOL_NAME}/${PROJECT_NAME}" ]]; then
+    mkdir -p "{{ www_dir }}/${POOL_NAME}/${PROJECT_NAME}"
+    echo "It's works!" | tee "{{ www_dir }}/${POOL_NAME}/${PROJECT_NAME}/index.php" > /dev/null
+  fi
+
   echo "Restarting nginx..."
   supervisorctl restart nginx
 }

@@ -12,3 +12,4 @@ mysql_tmp_dir: /tmp
 mysql_listen_port: 3307
 mysql_listen_address: 127.0.0.1
 mysql_supervisord_name: mysql57
+mysql_root_password: root

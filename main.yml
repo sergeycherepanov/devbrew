@@ -2,6 +2,19 @@
 - hosts: localhost
   vars: 
     - php_versions: []
+  pre_tasks:
+    - stat:
+        path: "/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+      register: state
+      tags:
+        - always
+
+    - name: "Stopping supervisord"
+      shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+      when: state.stat.exists
+      become: true
+      tags:
+        - always
   roles:
     - roles/homebrew
     - roles/zsh
@@ -30,14 +43,8 @@
     - roles/compass
     - roles/less
   post_tasks:
-    - name: "Stopping supervisord"
-      shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-      become: true
-      tags:
-        - always
-    
     - name: "Starting supervisord"
-      shell: "launchctl load /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+      shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
       become: true
       tags:
         - always

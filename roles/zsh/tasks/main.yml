@@ -1,4 +1,16 @@
 ---
+- name: "Clean /tmp/powerline_fonts if exists"
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - "/tmp/awesome-terminal-fonts"
+    - "/tmp/powerline_fonts"
+    - "/tmp/oh-my-zsh"
+  ignore_errors: yes
+  tags:
+    - zsh
+
 - name: "Downloading 'hack' font"
   git:
     repo: 'https://github.com/powerline/fonts.git'

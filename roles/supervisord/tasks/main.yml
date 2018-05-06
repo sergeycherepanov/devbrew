@@ -65,15 +65,15 @@
     mode: 0755
   tags:
     - always
+#
+#- name: "Stopping supervisord"
+#  shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+#  become: true
+#  tags:
+#    - always
 
-- name: "Stopping supervisord"
-  shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-  become: true
-  tags:
-    - always
-
-- name: "Starting supervisord"
-  shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-  become: true
-  tags:
-    - always
+#- name: "Starting supervisord"
+#  shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+#  become: true
+#  tags:
+#    - always

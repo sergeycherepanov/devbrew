@@ -96,7 +96,7 @@
   tags:
     - php56
 
-blockinfile:
+- blockinfile:
     dest: '{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini'
     marker: "; {mark} ansible xdebug"
     block: |
