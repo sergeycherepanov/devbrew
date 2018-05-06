@@ -1,0 +1,20 @@
+[program:php70-fpm]
+command={{ homebrew_install_path }}/opt/php70/sbin/php-fpm --nodaemonize --fpm-config {{ homebrew_install_path }}/etc/php/7.0/php-fpm.conf
+directory={{ homebrew_install_path }}/opt/php70
+stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/php70.log
+stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/php70.err
+user={{ www_user }}
+autorestart=true
+stopasgroup=true
+
+[program:php70-fpm-xdebug]
+command={{ homebrew_install_path }}/opt/php70/sbin/php-fpm --nodaemonize --fpm-config {{ homebrew_install_path }}/etc/php/7.0/php-fpm-xdebug.conf
+directory={{ homebrew_install_path }}/opt/php70
+stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/php70-xdebug.log
+stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/php70-xdebug.err
+user={{ www_user }}
+autorestart=true
+stopasgroup=true
+
+[group:php70]
+programs=php70-fpm,php70-fpm-xdebug

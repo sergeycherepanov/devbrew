@@ -1,0 +1,7 @@
+[program:dnsmasq]
+command={{ homebrew_install_path }}/opt/dnsmasq/sbin/dnsmasq --keep-in-foreground -C {{ homebrew_install_path }}/etc/dnsmasq.conf
+directory={{ homebrew_install_path }}/opt/dnsmasq
+stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/dnsmasq.log
+stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/dnsmasq.err
+autorestart=true
+stopasgroup=true

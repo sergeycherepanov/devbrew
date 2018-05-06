@@ -14,6 +14,13 @@ homebrew_installed_packages:
   - bzr
   - p7zip
   - autoconf
+  - gomplate
+  - gettext
+  - glances
+  - json-table
+  - pup
+  - fswatch
+  - shellcheck
 
 homebrew_upgrade_all_packages: no
 
@@ -24,19 +31,8 @@ homebrew_taps:
 
 homebrew_cask_apps:
   - font-hack-nerd-font
-  - launchrocket
-#  - sequel-pro
   - iterm2
-#  - atom
-#  - google-chrome
-#  - skype
-#  - phpstorm
-#  - teamviewer
-#  - dropbox
-  - virtualbox
-  - vagrant
   - java8
-#  - td-agent
 
 homebrew_cask_appdir: /Applications
 

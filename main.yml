@@ -2,23 +2,49 @@
 - hosts: localhost
   vars: 
     - php_versions: []
+  pre_tasks:
+    - stat:
+        path: "/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+      register: state
+      tags:
+        - always
+
+    - name: "Stopping supervisord"
+      shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+      when: state.stat.exists
+      become: true
+      tags:
+        - always
   roles:
     - roles/homebrew
-    - roles/percona-server-56
-    - roles/fakesendmail
-    - roles/dnsmasq
-    - roles/curl
     - roles/zsh
     - roles/coreutils
+    - roles/git
+    - roles/curl
     - roles/jenv
+    - roles/supervisord
+    - roles/logrotate
+    - roles/nginx
+    - roles/efk
+    - roles/fakesendmail
+    - roles/dnsmasq
+    - roles/percona-server-56
+    - roles/percona-server-57
+    - roles/mongodb
+    - roles/redis
     - roles/php-56
     - roles/php-70
     - roles/php-71
     - roles/php-72
-    - roles/nginx
     - roles/nginx-php-fpm
-    - roles/redis
     - roles/nodejs
+    - roles/php-tools
+    - roles/xhgui
     - roles/compass
     - roles/less
-    - roles/php-tools
+  post_tasks:
+    - name: "Starting supervisord"
+      shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+      become: true
+      tags:
+        - always

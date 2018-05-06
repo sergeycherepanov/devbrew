@@ -1,8 +1,11 @@
 ---
-- name: "Creates {{ www_dir }} directory"
+- name: "Creates directories"
   file:
-    path: "{{ www_dir }}"
+    path: "{{ item }}"
     state: directory
+  with_items:
+    - "{{ www_dir }}"
+    - "{{ homebrew_install_path }}/etc/nginx/servers_custom"
   tags:
     - always
 
@@ -27,6 +30,38 @@
     path: "{{ homebrew_install_path }}/etc/nginx/conf.d"
     state: directory
     mode: 0755
+  tags:
+    - always
+
+- stat: 
+    path: "{{ homebrew_install_path }}/etc/supervisor.d/nginx.ini"
+  tags:
+    - always
+  register: state
+
+- name: "Create etc/supervisor.d/nginx.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/supervisor.d/nginx.ini"
+  when: not state.stat.exists
+  tags:
+    - always
+
+- name: "Creates {{ homebrew_install_path }}/etc/logrotate.d/nginx.conf"
+  template:
+    src: logrotate.nginx.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/logrotate.d/nginx.conf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - always
+
+- name: "Creates {{ homebrew_install_path }}/etc/efk/td-agent/conf.d/nginx.conf"
+  template:
+    src: td-agent.nginx.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/efk/td-agent/conf.d/nginx.conf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
   tags:
     - always
 

@@ -1,0 +1,7 @@
+---
+- name: "Configure global .gitignore"
+  template: 
+    src: .gitignore.j2
+    dest: "/Users/{{ www_user }}/.gitignore"
+  tags:
+    - always

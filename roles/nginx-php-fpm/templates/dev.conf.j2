@@ -2,6 +2,7 @@ set $wwwRoot {{ www_dir }};
 autoindex off;
 client_max_body_size 256m;
 
+
 if ($php_version !~* '^({{ php_versions | join("|") }})$') {
     # set default php version to 7.1
     set $php_version 71;
@@ -57,14 +58,26 @@ if (!-f $documentRoot/app.php) {
     set $cgiIndex /index.php;
 }
 
+include {{ homebrew_install_path }}/opt/nginx-error-pages/snippets/error_pages_osx.conf;
+
 #deny magento protected files
-location ~ ^(/app/|/media/downloadable/|/var/|/shell/|/pkginfo/|/media/customer/|/lib/|/includes/) {
-    rewrite ^ /index.php last;
-}
+# location ~ ^(/app/|/media/downloadable/|/var/|/shell/|/pkginfo/|/media/customer/|/lib/|/includes/) {
+#location ~* ^/(app|var|downloader|includes|pkginfo|lib|media/customer|/media/downloadable)/ {
+#    deny all;
+#    rewrite ^ /index.php last;
+#}
 
 # deny access to hidden files
 location ~ /\. {
     deny all;
+}
+
+location /minify/ {
+    rewrite ^/minify/([^/]+)(/.*.(js|css))$ /lib/minify/m.php?f=$2&d=$1 last;
+}
+
+location /skin/m/ {
+    rewrite ^/skin/m/([^/]+)(/.*.(js|css))$ /lib/minify/m.php?f=$2&d=$1 last;
 }
 
 location / {
@@ -94,6 +107,16 @@ location ~ .php/ {
     rewrite ^(.*.php)/ $1 last;
 }
 
+set $port_prefix 90;
+
+if ($cookie_xdebug_session != "") {
+    set $port_prefix 91;
+}
+
+if ($cookie_xdebug_profile != "") {
+    set $auto_prepend_file {{ homebrew_install_path }}/opt/xhgui/external/header.php;
+}
+
 ## Process .php files
 location ~ ^.+\.php {
     # If file not found rewrite to index
@@ -101,7 +124,7 @@ location ~ ^.+\.php {
         rewrite / $cgiIndex last;
     }
 
-    fastcgi_pass                    127.0.0.1:90$php_version;
+    fastcgi_pass                    127.0.0.1:$port_prefix$php_version;
     fastcgi_split_path_info         ^(.+\.php)(.*)$;
     include                         fastcgi_params;
     fastcgi_param  SCRIPT_FILENAME  $documentRoot$fastcgi_script_name;
@@ -119,4 +142,5 @@ location ~ ^.+\.php {
     fastcgi_param                   SERVER_NAME $host;
     fastcgi_param                   PHP_PATH $php_version_path;
     fastcgi_param                   HTTPS $https;
+    fastcgi_param                   PHP_VALUE "auto_prepend_file=$auto_prepend_file";
 }

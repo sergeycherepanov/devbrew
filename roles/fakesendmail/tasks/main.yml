@@ -1,4 +1,10 @@
 ---
+- stat: 
+    path: "{{ homebrew_brew_bin_path }}/fake_sendmail.sh"
+  register: state
+  tags:
+    - always
+
 - name: "Create fake_sendmail.sh"
   template: 
     src: fake_sendmail.sh.j2
@@ -6,6 +12,7 @@
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
     mode: 0744
+  when: not state.stat.exists
   tags:
     - always
   

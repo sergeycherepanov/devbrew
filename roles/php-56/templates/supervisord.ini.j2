@@ -1,0 +1,20 @@
+[program:php56-fpm]
+command={{ homebrew_install_path }}/opt/php56/sbin/php-fpm --nodaemonize --fpm-config {{ homebrew_install_path }}/etc/php/5.6/php-fpm.conf
+directory={{ homebrew_install_path }}/opt/php56
+stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/php56.log
+stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/php56.err
+user={{ www_user }}
+autorestart=true
+stopasgroup=true
+
+[program:php56-fpm-xdebug]
+command={{ homebrew_install_path }}/opt/php56/sbin/php-fpm --nodaemonize --fpm-config {{ homebrew_install_path }}/etc/php/5.6/php-fpm-xdebug.conf
+directory={{ homebrew_install_path }}/opt/php56
+stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/php56-xdebug.log
+stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/php56-xdebug.err
+user={{ www_user }}
+autorestart=true
+stopasgroup=true
+
+[group:php56]
+programs=php56-fpm,php56-fpm-xdebug

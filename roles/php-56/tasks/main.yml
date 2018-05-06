@@ -2,83 +2,171 @@
 - name: Ensure php taps are tapped.
   homebrew_tap: "tap={{ item }} state=present"
   with_items:
-    - "homebrew/dupes"
-    - "homebrew/php"
+    - "kyslik/homebrew-php"
   tags:
     - php56
 
-- name: "Unlink all already installed php packages"
-  shell: "brew list | grep php | xargs brew unlink"
-  tags:
-    - php56
-
-- name: "Remove previously installed php56 packages"
-  shell: "brew list | grep ^php56 | xargs brew uninstall --ignore-dependencies --force"
-  ignore_errors: yes
-  tags:
-    - reinstall
-    - php56
-
-- name: "Installing php56 with flags: {{ php56_flags }}"
-  homebrew:
-    name: php56
-    state: present
-    install_options: "{{ php56_flags }}"
-  tags:
-    - php56
-  
 - name: "Unlink all already installed php packages"
   shell: "brew list | grep php | xargs brew unlink --no-run-if-empty"
   tags:
     - php56
 
-- name: "Installing php56 modules"
+- name: "Installing php56 with flags: {{ php_flags }}"
   homebrew:
-    name: "{{ item }}"
-    state: present
-  with_items: "{{ php56_modules }}"
+    name: php56
+    state: latest
+    install_options: "{{ php_flags }}"
   tags:
     - php56
 
-- name: "Installing php56 pear packages modules"
-  shell: "pear install {{ item }}"
-  with_items: "{{ php56_pear_packages }}"
+- name: "Installing {{ php_version }} modules"
+  homebrew:
+    name: "{{php_version}}-{{ item }}"
+    state: latest
+  with_items: "{{ php_modules }}"
   tags:
     - php56
+
+- name: "Remove outdated {{ php_version }}"
+  shell: "brew upgrade --cleanup {{ php_version }}"
+  ignore_errors: yes
+  tags:
+    - php71
+
+- name: "Installing {{ php_version }} pear packages modules"
+  shell: "pear install {{ item }}"
+  with_items: "{{ php_pear_packages }}"
+  tags:
+    - php56
+
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/5.6/php-fpm.conf"
+#  register: state
+#  tags:
+#    - php56
 
 - name: "Create php-fpm.conf"
   template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/5.6/php-fpm.conf owner={{ www_user }} group={{ www_group }}
+#  when: not state.stat.exists
   tags:
     - php56
+
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/5.6/php.ini"
+#  register: state
+#  tags:
+#    - php56
 
 - name: "Create php.ini"
   template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.6/php.ini owner={{ www_user }} group={{ www_group }}
+#  when: not state.stat.exists
   tags:
     - php56
+#
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/5.6/php-fpm-xdebug.conf"
+#  register: state
+#  tags:
+#    - php56
+
+- name: "Create php-fpm-xdebug.conf"
+  template: 
+    src: php-fpm-xdebug.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/php/5.6/php-fpm-xdebug.conf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+#  when: not state.stat.exists
+  tags:
+    - php56
+
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/5.6/php-xdebug.ini"
+#  register: state
+#  tags:
+#    - php56
+
+- name: "Create php-xdebug.ini"
+  template: 
+    src: php.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+#  when: not state.stat.exists
+  tags:
+    - php56
+
+- blockinfile:
+    dest: '{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini'
+    marker: "; {mark} ansible xdebug"
+    block: |
+      [xdebug]
+      zend_extension="/usr/local/opt/{{ php_version }}-xdebug/xdebug.so"
+      xdebug.remote_enable=1
+      xdebug.remote_autostart = 0
+      xdebug.remote_connect_back = 0
+      xdebug.remote_host=127.0.0.1
+      xdebug.remote_port=92{{ php_version_num_int }}
+      xdebug.profiler_enable=0
+      xdebug.profiler_output_dir=/tmp/xdebug{{ php_version_num_int }}
+      xdebug.idekey=PHPSTORM
+      xdebug.overload_var_dump=0
+      xdebug.max_nesting_level=500
+
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/php/5.6/conf.d/ext-opcache.ini"
+#  register: state
+#  tags:
+#    - php56
 
 - name: "Create ext-opcache.ini"
   template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.6/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
+#  when: not state.stat.exists
   tags:
     - php56
 
-- name: "Create ext-xdebug.ini"
-  template: src=ext-xdebug.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.6/conf.d/ext-xdebug.ini owner={{ www_user }} group={{ www_group }}
-  tags:
-    - php56
-
-- name: "Unlink php56"
-  homebrew: "name=php56 state=unlinked"
+- name: "Unlink {{ php_version }}"
+  homebrew: 
+    name: "{{ php_version }}"
+    state: "unlinked"
   ignore_errors: yes
   tags:
     - php56
 
-- name: "Add symlink"
-  shell: find /usr/local/Cellar/php56 -path '*/bin/php' | awk -F/ '{print "ln -fs " $0 " " "/usr/local/bin/"$5}' | bash
+- name: "Add wrapper"
+  template:
+    src: "php.j2"
+    dest: "{{ homebrew_install_path }}/bin/{{ php_version }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
   tags:
     - php56
 
 - name: add 56 to "php_versions" array
   set_fact: 
-    php_versions: "{{ php_versions + [ '56' ] }} "
+    php_versions: "{{ php_versions + [ '{{ php_version }}' ] }} "
   tags:
     - php56
+
+#- stat:
+#    path: "{{ homebrew_install_path }}/etc/supervisor.d/{{ php_version }}.ini"
+#  register: state
+#  tags:
+#    - php56
+
+- name: "Create etc/supervisor.d/{{ php_version }}.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/supervisor.d/{{ php_version }}.ini"
+#  when: not state.stat.exists
+  tags:
+    - php56
+
+- name: "Creates {{ homebrew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
+  template:
+    src: td-agent.php.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - always

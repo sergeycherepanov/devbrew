@@ -1,0 +1,79 @@
+---
+- name: "Installing supervisor"
+  homebrew: 
+    name: supervisor 
+    state: present
+  tags:
+    - always
+
+- name: "Creates /usr/local/etc/supervisor.d"
+  file:
+    path: "{{ homebrew_install_path }}/etc/supervisor.d"
+    state: directory
+  tags:
+    - always
+
+
+- name: "Creates {{ homebrew_install_path }}/var/log/supervisor"
+  file:
+    path: "{{ homebrew_install_path }}/var/log/supervisor"
+    state: directory
+  tags:
+    - always
+
+- name: Ensure symlink for supervisord.ini
+  file:
+    src: "{{ homebrew_install_path }}/etc/supervisord.ini"
+    dest: "{{ homebrew_install_path }}/etc/supervisord.conf"
+    state: link
+  tags:
+    - always
+
+- name: Ensure permissions for supervisord socket
+  ini_file:
+    path: "{{ homebrew_install_path }}/etc/supervisord.ini"
+    section: "unix_http_server"
+    option: "chmod" 
+    value: "0770"
+  tags:
+    - always
+
+- name: Ensure ownership for supervisord socket
+  ini_file:
+    path: "{{ homebrew_install_path }}/etc/supervisord.ini"
+    section: "unix_http_server"
+    option: "chown"
+    value: "root:admin"
+  tags:
+    - always
+
+- name: "Ensure homebrew.mxcl.supervisor.plist"
+  template: 
+    src: homebrew.mxcl.supervisor.plist.j2
+    dest: '/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist'
+  become: true
+  tags:
+    - always
+
+
+- name: "Ensure supervisor-listener"
+  template: 
+    src: supervisor-listener
+    dest: '/usr/local/bin/supervisor-listener'
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
+  tags:
+    - always
+#
+#- name: "Stopping supervisord"
+#  shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+#  become: true
+#  tags:
+#    - always
+
+#- name: "Starting supervisord"
+#  shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+#  become: true
+#  tags:
+#    - always

@@ -1,0 +1,70 @@
+#!/bin/bash
+
+function usage {
+  echo "Usage: $0 add|remove  <hostname> [project_name] [pool_name]"
+  echo "Example #1: $0 add <hostname> [project_name] [pool_name]"
+  echo "Example #2: $0 delete <hostname>"
+  exit 1
+}
+
+if [[ -z $2 ]]; then
+  usage
+else
+  export HOSTNAME=$2;
+fi
+
+if ! [[ $2 =~ [a-z0-9_\-]+\.[a-z0-9_\-]+$ ]]; then
+
+  echo "Invalid hostname '$2', hostname must contain 1st and 2nd levels"
+  exit 1
+fi
+
+if [[ -z $3 ]]; then
+  export PROJECT_NAME=$(echo $2 | awk -F. '{print $1}')
+fi
+
+if [[ -z $4 ]]; then
+  export POOL_NAME=$(echo $2 | awk -F. '{ for (i=NF-2;i>0;i--){ printf "%s", $(NF-i) "." }; printf "%s", $(NF)}')
+fi
+
+function add_hostname {
+  echo "Creating webserver record for $1 hostname"
+
+  crtgen "${HOSTNAME}"
+
+  if [[ -f "/usr/local/etc/nginx/servers_custom/${HOSTNAME}.conf" ]]; then
+    echo "Hostname already exists";
+    exit 0
+  fi
+
+  gomplate -f "/usr/local/etc/nginx/custom_server.conf.tpl" --left-delim '<?' --right-delim '?>' -o "/usr/local/etc/nginx/servers_custom/${HOSTNAME}.conf"
+
+  if [[ ! -d "{{ www_dir }}/${POOL_NAME}/${PROJECT_NAME}" ]]; then
+    mkdir -p "{{ www_dir }}/${POOL_NAME}/${PROJECT_NAME}"
+    echo "It's works!" | tee "{{ www_dir }}/${POOL_NAME}/${PROJECT_NAME}/index.php" > /dev/null
+  fi
+
+  echo "Restarting nginx..."
+  supervisorctl restart nginx
+}
+
+function remove_hostname {
+  echo "Creating webserver record for $1 hostname"
+
+  rm "/usr/local/etc/nginx/servers_custom/${HOSTNAME}.conf"
+
+  echo "Restarting nginx..."
+  supervisorctl restart nginx
+}
+
+case "$1" in
+"add")
+    add_hostname
+    ;;
+"remove")
+    remove_hostname
+    ;;
+*)
+    usage
+    ;;
+esac

@@ -8,28 +8,20 @@ macOS Development Environment
 2. Execute: `xcode-select --install` (it's starts XCODE installation process)
 3. Execute: `cd /tmp`
 4. Execute: `git clone https://github.com/SergeyCherepanov/dev-env-osx.git`
-5. Execute: `bash dev-env-osx/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,nodejs,zsh" --skip-tags=reinstall`  
+5. Execute: `bash dev-env-osx/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh"` to make full install
 (Wait for finish. Should be without "Fatal" messages)
 6. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
-7. Open **System Preferences** > **LaunchRocket**
-8. Press **Scan homebrew** and choose checkbox **At Login** near all you need services
-9. Choose checkbox **As Root** for **Nginx** and **Dnsmasq**
-
-## Reinstall
-For reinstall already installed environment just add the `reinstall` tag to arguments
-```
-bash dev-env-osx/run.sh --tags "php56,php70,php71,php72,percona56,nodejs,zsh,reinstall"
-```
 
 ## Tags
-*  `php56` - will install PHP version 5.6  
-*  `php70` - will install PHP version 7.0  
-*  `php71` - will install PHP version 7.1  
-*  `php72` - will install PHP version 7.2  
-*  `percona56` - will install Percona Server (mysql) version 5.6  
-*  `nodejs` - will NodeJS and NPM  
+> You can choose one or all of them, tags don't have conflict
 *  `zsh` - will install and configure ZSH with PowerLine and Oh-My-Zsh  
-*  `reinstall`- will remove already installed packages with data and do clean installation
+*  `php56` - will installs PHP version 5.6  
+*  `php70` - will installs PHP version 7.0  
+*  `php71` - will installs PHP version 7.1  
+*  `php72` - will installs PHP version 7.2  
+*  `percona56` - will installs Percona Server (mysql) version 5.6
+*  `percona57` - will installs Percona Server (mysql) version 5.7  
+*  `nodejs` - will installs NodeJS and NPM  
 
 ## Usage
 Add folders with you source code into **www** folder in your home dir: **~/www/{pool}/{project_name}/**
@@ -53,21 +45,26 @@ To do this, just create put source code of your project to `~/www/com/google` an
 
 > Keep in mind the local live domains currently not supports ssl
 
+### SSL
+
+Root ca certificate is located in /usr/local/etc/openssl/localCA/cacert.pem
+
 ## PHP Multi-Version Support
 
-There is two ways for using the different php versions for your project
-
-1. Direct call of project via version domain, for example:  
-`wordpress.56.dev.com` (php 5.6)  
-`wordpress.70.dev.com` (php 7.0)  
-`wordpress.71.dev.com` (php 7.1)  
-`wordpress.72.dev.com` (php 7.2)  
-
-2. Define php version via  empty flag file in project root, for example:  
+Too choose a version of php you need define it via empty flag file in the project root directory, for example:  
 `~/www/dev/wordpress/.php56` (php 5.6)  
 `~/www/dev/wordpress/.php70` (php 7.0)  
 `~/www/dev/wordpress/.php71` (php 7.1)  
 `~/www/dev/wordpress/.php72` (php 7.2)  
+
+## Services
+
+To start/stop/restart service use `supervisorctl`
+
+## Mysql
+
+* Mysql 5.6 binds to 3306 port  
+* Mysql 5.7 binds to 3307 port  
 
 ## PHP Mail
 

@@ -7,7 +7,7 @@
   tags:
     - always
     
-- name: "Adding Prezto modules to {{ ansible_env.HOME }}/.zpreztorc"
+- name: "Adding GOPATH to env"
   blockinfile:
     dest: '{{ ansible_env.HOME }}/{{item}}'
     marker: "# {mark} golang"
@@ -15,3 +15,5 @@
       export GOPATH="${HOME}/go"
       export PATH="${PATH}:${GOPATH}/bin"
   with_items: ['.zshrc', '.bashrc']
+  tags:
+    - always

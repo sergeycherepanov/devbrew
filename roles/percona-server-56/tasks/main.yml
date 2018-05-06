@@ -1,85 +1,127 @@
 ---
-- name: "Uninstalling Percona(Mysql) Server (homebrew/versions/percona-server55)"
-  homebrew: "name=homebrew/versions/percona-server55 state=absent"
-  tags:
-    - reinstall
-    - percona56
-
-- name: "Uninstalling Percona(Mysql) Server (percona-server)"
-  homebrew: "name=percona-server state=absent"
-  tags:
-    - reinstall
-    - percona56
-
-- name: "Installing Percona(Mysql) Server (homebrew/versions/percona-server56)"
-  homebrew: "name=homebrew/versions/percona-server56 state=present"
+- name: "Ensure Percona(Mysql) Server {{ mysql_formula }}"
+  homebrew: 
+    name: "{{ mysql_formula }}"
+    state: latest
   tags:
     - percona56
 
-- name: "link percona-server"
-  command: "brew link percona-server@5.6 --force"
+- name: "Resolve mysql base dir"
+  shell: "ls {{ homebrew_install_path }}/opt/percona-server*/bin/mysqld | xargs -I{} bash -c '{} --version' | grep -i 'ver {{ mysql_version }}' | head -1 | awk '{print $1}' | xargs dirname | xargs dirname"
+  register: mysql_base_dir_output
+  tags:
+    - percona56
+
+- name: Register mysql_base_dir fact
+  set_fact: 
+    mysql_base_dir: "{{ mysql_base_dir_output.stdout | trim }}"
+  tags:
+    - percona56
+
+- name: "Create directories"
+  file: 
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ mysql_etc_dir }}"
+    - "{{ mysql_data_dir }}"
+    - "{{ mysql_log_dir }}"
+    - "{{ mysql_run_dir }}"
+  tags:
+    - percona56
+
+- name: "Ensure proper ownership on"
+  file:
+    path: "{{ mysql_etc_dir }}"
+    state: directory
+    owner: "{{ mysql_user }}"
+    group: admin
+    recurse: true
+  become: yes
+  with_items:
+    - "{{ mysql_etc_dir }}"
+    - "{{ mysql_data_dir }}"
+    - "{{ mysql_log_dir }}"
+    - "{{ mysql_run_dir }}"
+  tags:
+    - percona56
+
+- stat:
+    path: "{{ mysql_etc_dir }}/my.cnf"
+  register: state
   tags:
     - percona56
 
 - name: "Create my.cnf"
   template: 
     src: my.cnf.j2
-    dest: "{{ homebrew_install_path }}/etc/my.cnf"
+    dest: "{{ mysql_etc_dir }}/my.cnf"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
     mode: 0744
+  when: not state.stat.exists
   tags:
     - percona56
 
-- name: "Creates {{ homebrew_install_path }}/var/log/mysql"
+- find: 
+    paths: "{{ mysql_data_dir }}"
+  register: mysql_data_dir_files
+  tags:
+    - percona56
+
+- name: Touch error.log file
   file: 
-    path: "{{ homebrew_install_path }}/var/log/mysql"
-    state: directory
-  tags:
-    - percona56
-
-- name: "Creates {{ homebrew_install_path }}/var/run/mysqld"
-  file: 
-    path: "{{ homebrew_install_path }}/var/run/mysqld"
-    state: directory
-  tags:
-    - percona56
-
-- name: "Check is {{ homebrew_install_path }}/lib/mysql exists"
-  stat: 
-    path: "{{ homebrew_install_path }}/lib/mysql"
-  register: mysql_datadir
-  tags:
-    - percona56
-  
-- name: "Get current time for backup name"
-  set_fact: current_time="{{lookup('pipe','date +%Y%m%d%H%M%S')}}"
-  when: mysql_datadir.stat.exists
-  tags:
-    - percona56
-
-- name: "Backup {{ homebrew_install_path }}/lib/mysql to {{ homebrew_install_path }}/lib/mysql.back.{{ current_time }}"
-  command: creates="{{ homebrew_install_path }}/lib/mysql.back.{{ current_time }}" mv {{ homebrew_install_path }}/lib/mysql {{ homebrew_install_path }}/lib/mysql.back.{{ current_time }}
-  when: mysql_datadir.stat.exists
-  tags:
-    - percona56
-
-- name: "Create {{ homebrew_install_path }}/lib/mysql"
-  file: 
-    path: "{{ homebrew_install_path }}/lib/mysql" 
-    state: directory
-  when: mysql_datadir.stat.exists is defined and not mysql_datadir.stat.exists
+    path: "{{ mysql_log_dir }}/error.log"
+    state: touch
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
   tags:
     - percona56
 
 - name: "Install db (mysqld --initialize-insecure)"
-  shell: "mysql_install_db --basedir={{ homebrew_install_path }} --datadir={{ homebrew_install_path }}/lib/mysql/"
-  when: mysql_datadir.stat.exists is defined and not mysql_datadir.stat.exists
+  shell: "{{ mysql_base_dir }}/bin/mysql_install_db --basedir={{ mysql_base_dir }} --datadir={{ mysql_data_dir }}"
+  when: mysql_data_dir_files.matched|int == 0
   tags:
     - percona56
 
-#- name: "Copy the daemon configuration file into place."
-#  shell: "cp $(brew list percona-server | grep /homebrew.mxcl.percona-server.plist$) {{ ansible_env.HOME }}/Library/LaunchAgents/homebrew.mxcl.percona-server.plist"
+- stat: 
+    path: "{{ homebrew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
+  register: state
+  tags:
+    - percona56
 
-#- name: "Start Percona(Mysql) Server automatically."
-#  shell: "launchctl load -w {{ ansible_env.HOME }}/Library/LaunchAgents/homebrew.mxcl.percona-server.plist"
+- name: "Create {{ homebrew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
+  when: not state.stat.exists
+  tags:
+    - percona56
+
+- ini_file:
+    path: "{{ homebrew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
+    section: "program:{{ mysql_supervisord_name }}"
+    option: "command" 
+    value: "{{ homebrew_install_path }}/bin/pidproxy /usr/local/var/run/mysql/{{ mysql_version_num }}/mysqld.proxy.pid {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf"
+  tags:
+    - percona56
+
+- homebrew: 
+    name: "{{ mysql_formula }}"
+    state: unlinked
+  tags:
+    - percona56
+
+- name: "Absent {{ homebrew_install_path }}/var/mysql"
+  file:
+    state: absent
+    path: "{{ homebrew_install_path }}/var/mysql/"
+  tags:
+    - percona56
+
+- name: Setting plugin=mysql_native_password and update root password
+  shell: "{{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables > /dev/null 2>&1 & sleep 10 && {{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -e 'update user set plugin=\"mysql_native_password\"; update user set authentication_string=password(\"{{ mysql_root_password }}\") where user=\"root\";' mysql && pgrep mysql | xargs kill -15 && sleep 5"
+  args:
+    chdir: /tmp
+  tags:
+    - percona56

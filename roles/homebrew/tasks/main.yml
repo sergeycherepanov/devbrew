@@ -14,21 +14,29 @@
   tags:
     - always
 
-- name: Setup homebrew install path.
-  file:
-    path: "{{ homebrew_install_path }}"
-    owner: "{{ ansible_env.USER }}"
-    group: admin
-    mode: 0775
-    state: directory
-    recurse: yes
-  become: yes
-  become_method: sudo
+#- name: Setup homebrew install path.
+#  file:
+#    path: "{{ homebrew_install_path }}/*"
+#    owner: "{{ ansible_env.USER }}"
+#    recurse: yes
+#  become: yes
+#  become_method: sudo
+#  tags:
+#    - always
+
+- name: Downloading Homebrew.
+  #shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ homebrew_install_path }}"
+  get_url: 
+    url: "https://github.com/Homebrew/brew/tarball/master"
+    dest: "/tmp/brew-master.tgz"
   tags:
     - always
 
-- name: Ensure Homebrew.
-  shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ homebrew_install_path }}"
+- name: Extracting Homebrew.
+  shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ homebrew_install_path }}"
+  become: yes
+  args:
+    warn: false
   tags:
     - always
 
@@ -42,13 +50,33 @@
   tags:
     - always
 
-- name: Ensure proper ownership on homebrew_install_path subdirs.
+
+- name: Ensure homebrew directories
   file:
-    path: "{{ homebrew_install_path }}"
+    path: "{{ item }}"
     state: directory
-    owner: "{{ homebrew_whoami.stdout }}"
-    group: admin
-    recurse: true
+  with_items:
+    - "{{ homebrew_install_path }}/Cellar"
+    - "{{ homebrew_install_path }}/Caskroom"
+    - "{{ homebrew_install_path }}/Frameworks"
+    - "{{ homebrew_install_path }}/bin"
+    - "{{ homebrew_install_path }}/etc"
+    - "{{ homebrew_install_path }}/docs"
+    - "{{ homebrew_install_path }}/manpages"
+    - "{{ homebrew_install_path }}/include"
+    - "{{ homebrew_install_path }}/lib"
+    - "{{ homebrew_install_path }}/opt"
+    - "{{ homebrew_install_path }}/sbin"
+    - "{{ homebrew_install_path }}/share"
+    - "{{ homebrew_install_path }}/var"
+    - "{{ homebrew_install_path }}/completions"
+  become: yes
+  tags:
+    - always
+
+- name: Ensure proper ownership on homebrew_install_path subdirs.
+  shell: >
+    ls -A "{{ homebrew_install_path }}" | xargs -I {} chown -R "{{ homebrew_whoami.stdout }}:admin" "{{ homebrew_install_path }}/{}"
   become: yes
   tags:
     - always
@@ -125,16 +153,6 @@
 - name: Install from Brewfile.
   command: "brew bundle chdir={{ homebrew_brewfile_dir }}"
   when: homebrew_brewfile.stat.exists and homebrew_use_brewfile
-  tags:
-    - always
-
-- name: "Adding homebrew to PATH in {{ ansible_env.HOME }}/.zshrc"
-  blockinfile:
-    create: yes
-    dest: '{{ ansible_env.HOME }}/.zshrc'
-    marker: "# {mark} homebrew PATH"
-    block: |
-      export PATH="/usr/local/sbin:$PATH"
   tags:
     - always
 

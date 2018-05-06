@@ -1,0 +1,89 @@
+#! /usr/bin/php
+<?php
+class Listener
+{
+    protected $logFile;
+    protected $stdIn;
+    protected $stdOut;
+    protected $stdErr;
+    protected $cmd;
+
+    /**
+     * Listener constructor.
+     * @param array $argv
+     */
+    public function __construct(array $argv)
+    {
+        $script = array_shift($argv);
+        $this->stdIn   = STDIN;
+        $this->stdOut  = STDOUT;
+        $this->stdErr  = STDERR;
+        $executable    = array_shift($argv);
+
+        if (!$executable) {
+            $this->err("Usage: $script <cmd> [args]");
+            exit(1);
+        }
+
+        if (!count($argv)) {
+            $cmd = $executable;
+        } else {
+            $argv = array_map(function ($var) {
+                return escapeshellarg($var);
+            }, $argv);
+            $cmd = sprintf('%s %s', $executable, implode(' ', $argv));
+        }
+
+        $cmd = escapeshellarg($cmd);
+        $this->cmd = "/bin/bash -c {$cmd}";
+
+        $this->out("READY\n");
+        while (true) {
+            sleep(1);
+            while (false !== ($contents = fgets($this->stdIn))) {
+                $this->onData($this->parse($contents));
+                $this->out("RESULT 2\nOK");
+                $this->out("READY\n");
+            }
+        }
+    }
+
+    protected function out($msg)
+    {
+        fwrite($this->stdOut, $msg);
+    }
+
+    protected function err($msg)
+    {
+        fwrite($this->stdErr, $msg . PHP_EOL);
+    }
+
+    protected function onData($params)
+    {
+        $output = [];
+        exec($this->cmd, $output);
+        foreach ($output as $line) {
+            $this->err($line);
+        }
+    }
+
+    /**
+     * @param $str
+     * @return array
+     */
+    protected function parse($str)
+    {
+        $matches = [];
+        $eventParams = [];
+        preg_match_all('/([\w-]+)?:([\w-]+)/', $str, $matches);
+        if (isset($matches[0])) {
+            foreach (array_keys($matches[0]) as $index) {
+                $eventParams[$matches[1][$index]] = $matches[2][$index];
+            }
+        }
+
+        return $eventParams;
+    }
+}
+
+new Listener($argv);

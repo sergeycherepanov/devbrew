@@ -1,0 +1,22 @@
+<source>
+  @type tail
+  format json
+  tag nginx.access
+  time_key time_local
+  keep_time_key true
+  path {{ homebrew_install_path }}/var/log/nginx/access_json.log
+  pos_file {{ homebrew_install_path }}/var/log/nginx/access_json.log.pos
+  time_format %d/%b/%Y:%H:%M:%S %z
+  read_from_head false
+
+</source>
+
+<filter nginx.*>
+  @type record_transformer
+  enable_ruby true
+  <record>
+    @target_index logs_nginx
+    severity ${ tag_suffix[1] == 'error' ? 'ERROR' : 'INFO'; }
+    stream nginx_${ tag_suffix[1] }
+  </record>
+</filter>

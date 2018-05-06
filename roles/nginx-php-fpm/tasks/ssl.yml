@@ -1,8 +1,18 @@
 ---
-- name: "Remove old localCA directories"
-  file:
-    path: "{{ homebrew_install_path }}/etc/openssl/localCA"
-    state: absent
+- name: "Install crtgen tool"
+  template: 
+    src: crtgen.j2
+    dest: "{{ homebrew_install_path }}/bin/crtgen"
+    mode: u+rx
+  tags:
+    - always  
+
+- name: "Install hostnames tool"
+  template: 
+    src: "hostnames.j2"
+    dest: "{{ homebrew_install_path }}/bin/hostnames"
+    mode: u+rx
+    trim_blocks: false
   tags:
     - always  
 
@@ -17,12 +27,19 @@
     - "{{ homebrew_install_path }}/etc/openssl/localCA/crl"
     - "{{ homebrew_install_path }}/etc/openssl/localCA/private"
   tags:
+    - always
+
+- stat:
+    path: "{{ homebrew_install_path }}/etc/openssl/localCA/caconfig.cnf"
+  register: state
+  tags:
     - always  
 
 - name: "Creates ca config"
   template: 
     src: ssl/caconfig.cnf.j2
-    dest: "{{ homebrew_install_path }}/etc/openssl/localCA/caconfig.cnf" 
+    dest: "{{ homebrew_install_path }}/etc/openssl/localCA/caconfig.cnf"
+  when: not state.stat.exists
   tags:
     - always  
 
@@ -33,45 +50,59 @@
   with_items: "{{subdomains}}"
   tags:
     - always  
+#
+#- name: "Creates config for domains with versions"
+#  template: 
+#    src: ssl/domain_version.cnf.j2
+#    dest: "{{ homebrew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}.cnf" 
+#  with_nested:
+#    - "{{subdomains}}"
+#    - "{{php_versions}}"
+#  tags:
+#    - always
 
-- name: "Creates config for domains with versions"
-  template: 
-    src: ssl/domain_version.cnf.j2
-    dest: "{{ homebrew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}.cnf" 
-  with_nested:
-    - "{{subdomains}}"
-    - "{{php_versions}}"
+- stat:
+    path: "{{ homebrew_install_path }}/etc/openssl/localCA/index.txt"
+  register: state
   tags:
-    - always
+    - always  
 
 - name: "Create the Certificate Database"
   shell: "echo '01' > {{ homebrew_install_path }}/etc/openssl/localCA/serial && touch {{ homebrew_install_path }}/etc/openssl/localCA/index.txt"
+  when: not state.stat.exists
   tags:
-    - always 
+    - always
+
+- stat:
+    path: "{{ homebrew_install_path }}/etc/openssl/localCA/cacert.pem"
+  register: state
+  tags:
+    - always  
 
 - name: "Generate the Certificate Authority (CA) certificate"
   shell: 'openssl req -x509 -newkey rsa:2048 -out {{ homebrew_install_path }}/etc/openssl/localCA/cacert.pem -outform PEM -days 1825 -nodes'
+  when: not state.stat.exists
   environment:
     OPENSSL_CONF: "{{ homebrew_install_path }}/etc/openssl/localCA/caconfig.cnf"
   tags:
     - always
-    
-- name: "Generate keys and signing for domains"
-  shell: 'OPENSSL_CONF="{{ homebrew_install_path }}/etc/openssl/localCA/{{item}}_{{root_domain}}.cnf" openssl req -newkey rsa:2048 -keyout {{ homebrew_install_path }}/etc/openssl/localCA/private/{{item}}_{{root_domain}}_key.pem -keyform PEM -out {{ homebrew_install_path }}/etc/openssl/localCA/{{item}}_{{root_domain}}_req.pem -outform PEM -nodes && openssl rsa < {{ homebrew_install_path }}/etc/openssl/localCA/private/{{item}}_{{root_domain}}_key.pem > {{ homebrew_install_path }}/etc/openssl/localCA/private/{{item}}_{{root_domain}}_key_encrypted.pem && OPENSSL_CONF="{{ homebrew_install_path }}/etc/openssl/localCA/caconfig.cnf" openssl ca -batch -in {{ homebrew_install_path }}/etc/openssl/localCA/{{item}}_{{root_domain}}_req.pem -out {{ homebrew_install_path }}/etc/openssl/localCA/certs/{{item}}_{{root_domain}}_crt.pem'
-  with_items: "{{subdomains}}"
-  tags:
-    - always
 
-- name: "Generate keys and signing for domains with versions"
-  shell: 'OPENSSL_CONF="{{ homebrew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}.cnf" openssl req -newkey rsa:2048 -keyout {{ homebrew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key.pem -keyform PEM -out {{ homebrew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}_req.pem -outform PEM -nodes && openssl rsa < {{ homebrew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key.pem > {{ homebrew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key_encrypted.pem && OPENSSL_CONF="{{ homebrew_install_path }}/etc/openssl/localCA/caconfig.cnf" openssl ca -batch -in {{ homebrew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}_req.pem -out {{ homebrew_install_path }}/etc/openssl/localCA/certs/{{item.1}}_{{item.0}}_{{root_domain}}_crt.pem'
-  with_nested:
-    - "{{subdomains}}"
-    - "{{php_versions}}"
-  tags:
-    - always
-
-- name: "Adding root certificate to keychain"
+- name: "Adding CA certificate to keychain"
   shell: 'security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ homebrew_install_path }}/etc/openssl/localCA/cacert.pem'
   become: true
   tags:
     - always
+    
+- name: "Generate keys and signing for domains"
+  shell: '{{ homebrew_install_path }}/bin/crtgen {{item}}.{{root_domain}}'
+  with_items: "{{subdomains}}"
+  tags:
+    - always
+#
+#- name: "Generate keys and signing for domains with php versions"
+#  shell: 'OPENSSL_CONF="{{ homebrew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}.cnf" openssl req -newkey rsa:2048 -keyout {{ homebrew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key.pem -keyform PEM -out {{ homebrew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}_req.pem -outform PEM -nodes && openssl rsa < {{ homebrew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key.pem > {{ homebrew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key_encrypted.pem && OPENSSL_CONF="{{ homebrew_install_path }}/etc/openssl/localCA/caconfig.cnf" openssl ca -batch -in {{ homebrew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}_req.pem -out {{ homebrew_install_path }}/etc/openssl/localCA/certs/{{item.1}}_{{item.0}}_{{root_domain}}_crt.pem'
+#  with_nested:
+#    - "{{subdomains}}"
+#    - "{{php_versions}}"
+#  tags:
+#    - always

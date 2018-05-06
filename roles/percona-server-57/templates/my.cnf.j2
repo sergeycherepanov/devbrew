@@ -1,0 +1,59 @@
+[client]
+port               = {{ mysql_listen_port }}
+socket             = {{ mysql_run_dir }}/mysqld.sock
+
+[mysqld_safe]
+socket             = {{ mysql_run_dir }}/mysqld.sock
+nice               = 0
+
+[mysqld]
+user               = {{ www_user }}
+pid-file           = {{ mysql_run_dir }}/mysqld.pid
+socket             = {{ mysql_run_dir }}/mysqld.sock
+port               = {{ mysql_listen_port }}
+basedir            = {{ mysql_base_dir }}
+datadir            = {{ mysql_data_dir }}
+tmpdir             = {{ mysql_tmp_dir }}
+lc-messages-dir    = {{ mysql_base_dir }}/share/mysql
+
+explicit_defaults_for_timestamp = 1
+bind-address = {{ mysql_listen_address }}
+
+# * Fine Tuning
+max_allowed_packet    = 512M
+thread_stack          = 192K
+thread_cache_size     = 8
+interactive_timeout   = 300
+wait_timeout          = 900
+sort_buffer_size      = 16M
+read_rnd_buffer_size  = 16M
+read_buffer_size      = 16M
+join_buffer_size      = 16M
+key_buffer_size       = 256M
+tmp_table_size        = 256M
+max_heap_table_size   = 256M
+query_cache_limit     = 16M
+query_cache_size      = 64M
+query_cache_type      = ON
+log_error             = {{ mysql_log_dir }}/error.log
+expire_logs_days      = 7
+
+innodb_file_per_table           = 1
+innodb_thread_concurrency       = 8
+innodb_lock_wait_timeout        = 300
+innodb_flush_method             = O_DIRECT
+innodb_log_files_in_group       = 2
+innodb_log_file_size            = 256M # if changing, stop database, remove old log files, then start!
+innodb_log_buffer_size          = 16M
+innodb_flush_log_at_trx_commit  = 2
+innodb_buffer_pool_size         = 1G
+innodb_buffer_pool_instances    = 8
+innodb_file_format              = Barracuda
+
+lower_case_table_names=2
+table_open_cache=250
+
+[mysqldump]
+quick
+quote-names
+max_allowed_packet = 16M

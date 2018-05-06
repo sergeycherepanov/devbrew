@@ -1,4 +1,7 @@
 ---
+php_version: php70
+php_version_num: 7.0
+php_version_num_int: 70
 php70_flags: "with-homebrew-curl"
 php70_modules:
   - php70-intl
@@ -8,4 +11,5 @@ php70_modules:
   - php70-tidy
   - php70-opcache
   - php70-pdo-pgsql
+  - php70-mongodb
 php70_pear_packages: []

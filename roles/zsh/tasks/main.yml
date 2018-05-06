@@ -1,5 +1,17 @@
 ---
-- name: "Downloading hack font"
+- name: "Clean /tmp/powerline_fonts if exists"
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - "/tmp/awesome-terminal-fonts"
+    - "/tmp/powerline_fonts"
+    - "/tmp/oh-my-zsh"
+  ignore_errors: yes
+  tags:
+    - zsh
+
+- name: "Downloading 'hack' font"
   git:
     repo: 'https://github.com/powerline/fonts.git'
     dest: '/tmp/powerline_fonts'
@@ -13,7 +25,7 @@
   tags:
     - zsh
 
-- name: "Downloading terminal hack font"
+- name: "Downloading 'hack' font for terminal"
   git:
     repo: 'https://github.com/gabrielelana/awesome-terminal-fonts.git'
     dest: '/tmp/awesome-terminal-fonts'
@@ -49,7 +61,6 @@
   tags:
     - zsh
 
-
 - git:
     repo: 'https://github.com/sorin-ionescu/prezto.git'
     dest: '{{ ansible_env.HOME }}/.zprezto'
@@ -57,15 +68,21 @@
   tags:
     - zsh
   
-- name: "Configure zshrc: {{ ansible_env.HOME }}/.zshrc"
-  shell: |
-    setopt EXTENDED_GLOB
-    for rcfile in ~/.zprezto/runcoms/^README.md(.N); do
-      unlink ~/.${rcfile:t}
-      cp "$rcfile" ~/.${rcfile:t}
-    done
-  args:
-    executable: /usr/local/bin/zsh
+#- name: "Configure zshrc: {{ ansible_env.HOME }}/.zshrc"
+#  shell: |
+#    setopt EXTENDED_GLOB
+#    for rcfile in ~/.zprezto/runcoms/^README.md(.N); do
+#      unlink ~/.${rcfile:t}
+#      cp "$rcfile" ~/.${rcfile:t}
+#    done
+#  args:
+#    executable: /usr/local/bin/zsh
+#  tags:
+#    - zsh
+
+- stat: 
+    path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+  register: state
   tags:
     - zsh
 
@@ -73,6 +90,7 @@
   file:
     state: absent
     path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+  when: state.stat.exists
   tags:
     - zsh
 
@@ -98,6 +116,28 @@
     executable: /bin/zsh
   tags:
     - zsh
+
+- name: "Adding homebrew to PATH in {{ ansible_env.HOME }}/.zshrc"
+  blockinfile:
+    create: yes
+    dest: '{{ ansible_env.HOME }}/.zshrc'
+    marker: "# {mark} homebrew PATH"
+    block: |
+      export PATH="/usr/local/sbin:$PATH"
+  tags:
+    - always
+
+- name: "Adding aliases {{ ansible_env.HOME }}/.zshrc"
+  blockinfile:
+    create: yes
+    dest: '{{ ansible_env.HOME }}/.zshrc'
+    marker: "# {mark} export aliases"
+    block: |
+      if [[ -f ~/.aliases ]]; then
+        source ~/.aliases
+      fi
+  tags:
+    - always
 
 - lineinfile:
     path: '{{ ansible_env.HOME }}/.zshrc'
@@ -128,7 +168,6 @@
       zstyle ':prezto:module:prompt' theme 'paradox'
   tags:
     - zsh
-
 
 - name: "Creating .vim/autoload folder"
   file:

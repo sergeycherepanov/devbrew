@@ -2,8 +2,7 @@
 - name: Ensure php taps are tapped.
   homebrew_tap: "tap={{ item }} state=present"
   with_items:
-    - "homebrew/dupes"
-    - "homebrew/php"
+    - "kyslik/homebrew-php"
   tags:
     - php72
 
@@ -12,17 +11,10 @@
   tags:
     - php72
 
-- name: "Remove previously installed php72 packages"
-  shell: "brew list | grep ^php72 | xargs brew uninstall --ignore-dependencies --force"
-  ignore_errors: yes
-  tags:
-    - reinstall
-    - php72
-
 - name: "Installing php72 with flags: {{ php72_flags }}"
   homebrew:
     name: php72 
-    state: present 
+    state: latest 
     install_options: "{{ php72_flags }}"
   tags:
     - php72
@@ -30,10 +22,16 @@
 - name: "Installing php72 modules"
   homebrew:
     name: "{{ item }}"
-    state: present
+    state: latest
   with_items: "{{ php72_modules }}"
   tags:
     - php72
+
+- name: "Remove outdated php72"
+  shell: "brew upgrade --cleanup php72"
+  ignore_errors: yes
+  tags:
+    - php71
 
 - name: "Installing php72 pear packages modules"
   shell: "pear install {{ item }}"
@@ -42,22 +40,104 @@
     - php72
 
 - name: "Create php-fpm.conf"
-  template: src=php-fpm.conf.j2 dest={{ homebrew_install_path }}/etc/php/7.2/php-fpm.conf owner={{ www_user }} group={{ www_group }}
+  template:
+    src: php-fpm.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/php/7.2/php-fpm.conf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
   tags:
     - php72
 
 - name: "Create php.ini"
-  template: src=php.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.2/php.ini owner={{ www_user }} group={{ www_group }}
+  template:
+    src: php.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/php/7.2/php.ini"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
   tags:
     - php72
+
+#- stat: 
+#    path: "{{ homebrew_install_path }}/etc/php/7.2/php-fpm-xdebug.conf"
+#  register: state
+
+- name: "Create php-fpm-xdebug.conf"
+  template: 
+      src: php-fpm-xdebug.conf.j2
+      dest: "{{ homebrew_install_path }}/etc/php/7.2/php-fpm-xdebug.conf"
+      owner: "{{ www_user }}"
+      group: "{{ www_group }}"
+#  when: not state.stat.exists
+  tags:
+    - php72
+
+#- stat: 
+#    path: "{{ homebrew_install_path }}/etc/php/7.2/php-xdebug.ini"
+#  register: state
+
+- git:
+    repo: 'https://github.com/tideways/php-profiler-extension.git'
+    dest: "/tmp/xhprof{{php_version}}"
+    version: 'master'
+  tags:
+    - php72
+
+- name: "Install xhprof extension"
+  shell: >
+    {{ homebrew_install_path }}/opt/{{php_version}}/bin/phpize &&
+    ./configure --with-php-config={{ homebrew_install_path }}/opt/{{php_version}}/bin/php-config &&
+    make &&
+    make install
+  args:
+    chdir: "/tmp/xhprof{{php_version}}"
+  tags:
+    - php72
+
+- name: "Ensure ext-xhprof.ini"
+  copy:
+    content: "extension=tideways_xhprof.so"
+    dest: "{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xhprof.ini"
+  tags:
+    - php72
+
+- name: "Create php-xdebug.ini"
+  template:
+    src: php.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+#  when: not state.stat.exists
+  tags:
+    - php56
+
+- blockinfile:
+    dest: '{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini'
+    marker: "; {mark} ansible xdebug"
+    block: |
+      [xdebug]
+      zend_extension="/usr/local/opt/{{ php_version }}-xdebug/xdebug.so"
+      xdebug.remote_enable=1
+      xdebug.remote_autostart = 0
+      xdebug.remote_connect_back = 0
+      xdebug.remote_host=127.0.0.1
+      xdebug.remote_port=92{{ php_version_num_int }}
+      xdebug.profiler_enable=0
+      xdebug.profiler_output_dir=/tmp/xdebug{{ php_version_num_int }}
+      xdebug.idekey=PHPSTORM
+      xdebug.overload_var_dump=0
+      xdebug.max_nesting_level=500
+
+#- stat: 
+#    path: "{{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini"
+#  register: state
 
 - name: "Create ext-opcache.ini"
-  template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
-  tags:
-    - php72
-
-- name: "Create ext-xdebug.ini"
-  template: src=ext-xdebug.ini.j2 dest={{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-xdebug.ini owner={{ www_user }} group={{ www_group }}
+  template: 
+    src: "ext-opcache.ini.j2"
+    dest: "{{ homebrew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+#  when: not state.stat.exists
   tags:
     - php72
 
@@ -67,8 +147,13 @@
   tags:
     - php72
 
-- name: "Add symlink"
-  shell: find /usr/local/Cellar/php72 -path '*/bin/php' | awk -F/ '{print "ln -fs " $0 " " "/usr/local/bin/"$5}' | bash
+- name: "Add wrapper"
+  template:
+    src: "php.j2"
+    dest: "{{ homebrew_install_path }}/bin/{{ php_version_legacy }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
   tags:
     - php72
 
@@ -77,3 +162,26 @@
     php_versions: "{{ php_versions + [ '72' ] }} "
   tags:
     - php72
+
+#- stat: 
+#    path: "{{ homebrew_install_path }}/etc/supervisor.d/php72.ini"
+#  tags:
+#    - php72
+#  register: state
+
+- name: "Create etc/supervisor.d/php72.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: "{{ homebrew_install_path }}/etc/supervisor.d/php72.ini"
+#  when: not state.stat.exists
+  tags:
+    - php72
+
+- name: "Creates {{ homebrew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
+  template:
+    src: td-agent.php.conf.j2
+    dest: "{{ homebrew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - always

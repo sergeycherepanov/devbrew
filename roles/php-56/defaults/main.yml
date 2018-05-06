@@ -1,11 +1,16 @@
 ---
-php56_flags: "with-homebrew-curl,with-pear"
-php56_modules:
-  - php56-intl
-  - php56-mcrypt
-  - php56-xdebug
-  - php56-redis
-  - php56-tidy
-  - php56-opcache
-  - php56-pdo-pgsql
-php56_pear_packages: []
+php_version: php56
+php_version_num: 5.6
+php_version_num_int: 56
+php_flags: "with-homebrew-curl,with-pear"
+php_modules:
+  - intl
+  - mcrypt
+  - xdebug
+  - redis
+  - tidy
+  - opcache
+  - pdo-pgsql
+  - xhprof
+  - mongodb
+php_pear_packages: []

@@ -1,5 +1,5 @@
 ---
-- name: "Installing PostgreSQL Server"
+- name: "Ensure postgresql"
   homebrew: 
     name: pgsql
     state: present
