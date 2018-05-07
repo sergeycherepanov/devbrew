@@ -120,7 +120,7 @@
     - percona56
 
 - name: Setting plugin=mysql_native_password and update root password
-  shell: "{{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables > /dev/null 2>&1 & sleep 10 && {{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -e 'update user set plugin=\"mysql_native_password\"; update user set authentication_string=password(\"{{ mysql_root_password }}\") where user=\"root\";' mysql && pgrep mysql | xargs kill -15 && sleep 5"
+  shell: "{{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables > /dev/null 2>&1 & sleep 10 && {{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -e 'update user set plugin=\"mysql_native_password\"; update user set authentication_string=password(\"{{ mysql_root_password }}\"), password_expired=\"N\", password_lifetime=0 where user=\"root\";' mysql && pgrep mysql | xargs kill -15 && sleep 5"
   args:
     chdir: /tmp
   tags:
