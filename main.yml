@@ -26,6 +26,7 @@
     - roles/logrotate
     - roles/nginx
     - roles/efk
+    - roles/efk-nginx
     - roles/fakesendmail
     - roles/dnsmasq
     - roles/percona-server-56
