@@ -124,21 +124,21 @@
     - always
 
 # Cask.
-- name: Get list of apps installed with cask.
-  command: >
-    bash -l -c '{{ homebrew_brew_bin_path }}/brew cask list'
-  register: homebrew_cask_list
-  check_mode: no
-  changed_when: false
-  tags:
-    - always
+#- name: Get list of apps installed with cask.
+#  command: >
+#    bash -l -c '{{ homebrew_brew_bin_path }}/brew cask list'
+#  register: homebrew_cask_list
+#  check_mode: no
+#  changed_when: false
+#  tags:
+#    - always
 
 # Use command module instead of homebrew_cask so appdir can be used.
 - name: Install configured cask applications.
   command: >
     bash -l -c '{{ homebrew_brew_bin_path }}/brew cask reinstall {{ item }} --appdir={{ homebrew_cask_appdir }}'
   with_items: "{{ homebrew_cask_apps }}"
-  when: "item not in homebrew_cask_list.stdout"
+#  when: "item not in homebrew_cask_list.stdout"
   tags:
     - always
 
