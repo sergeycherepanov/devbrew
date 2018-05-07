@@ -85,3 +85,15 @@ or
 ```
 jenv global 1.8
 ```
+
+## Error: /usr/local is not writable.
+
+> If you reach "Error: /usr/local is not writable.", you need to disable the "System Integrity Protection".  
+
+To enable or disable System Integrity Protection, you must boot to Recovery OS and run the csrutil(1) command from the Terminal.  
+
+Boot to Recovery OS by restarting your machine and holding down the Command and R keys at startup.  
+Launch Terminal from the Utilities menu.  
+Enter the following command: `$ csrutil disable`  
+
+After enabling or disabling System Integrity Protection on a machine, a reboot is required.  
