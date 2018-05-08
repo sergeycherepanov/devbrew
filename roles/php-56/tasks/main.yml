@@ -142,9 +142,9 @@
   tags:
     - php56
 
-- name: add 56 to "php_versions" array
+- name: add {{ php_version_num_int }} to "php_versions" array
   set_fact: 
-    php_versions: "{{ php_versions + [ '{{ php_version }}' ] }} "
+    php_versions: "{{ php_versions + [ '{{ php_version_num_int }}' ] }} "
   tags:
     - php56
 

@@ -169,9 +169,9 @@
   tags:
     - php70
 
-- name: add 70 to "php_versions" array
+- name: add '{{ php_version_num_int }}' to "php_versions" array
   set_fact: 
-    php_versions: "{{ php_versions + [ '70' ] }} "
+    php_versions: "{{ php_versions + [ '{{ php_version_num_int }}' ] }} "
   tags:
     - php70
 

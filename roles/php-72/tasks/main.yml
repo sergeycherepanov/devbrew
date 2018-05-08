@@ -157,11 +157,11 @@
   tags:
     - php72
 
-- name: add 72 to "php_versions" array
-  set_fact: 
-    php_versions: "{{ php_versions + [ '72' ] }} "
+- name: add '{{ php_version_num_int }}' to "php_versions" array
+  set_fact:
+    php_versions: "{{ php_versions + [ '{{ php_version_num_int }}' ] }} "
   tags:
-    - php72
+    - php70
 
 #- stat: 
 #    path: "{{ homebrew_install_path }}/etc/supervisor.d/php72.ini"
