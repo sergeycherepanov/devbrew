@@ -14,7 +14,7 @@ fi
 # Install ansible if not found or upgrade if outdated
 ansible --version >/dev/null 2>&1 \
 && php -r "version_compare('"$(ansible --version  | head -1 | awk '{print $2}')"', '${MIN_ANSIBLE_VERSION}', '>=') ? exit(0) : exit(1);" || {
-  sudo -u ${MAC_USER} pip install --ignore-installed --upgrade ansible
+  sudo pip install --ignore-installed --upgrade ansible
 }
 
 sudo -u ${MAC_USER} ansible-playbook -i "localhost," -c local "$DIR/main.yml" -e "mac_user=${MAC_USER}" "$@"
