@@ -60,9 +60,17 @@
   tags:
     - always
 
-- git:
+- name: Cleanup installed nginx-error-pages
+  file:
+    path: "{{ homebrew_install_path }}/opt/nginx-error-pages"
+    state: absent
+  tags:
+    - always
+
+- name: Ensure nginx-error-pages
+  git:
     repo: 'https://github.com/SergeyCherepanov/nginx-error-pages.git'
-    dest: '/usr/local/opt/nginx-error-pages'
+    dest: '{{ homebrew_install_path }}/opt/nginx-error-pages'
     version: 'master'
   tags:
     - always

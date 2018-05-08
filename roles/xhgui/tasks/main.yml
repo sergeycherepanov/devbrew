@@ -1,5 +1,13 @@
 ---
-- git:
+- name: Absent previous installed xhgui
+  file:
+    path: "{{ homebrew_install_path }}/opt/xhgui"
+    state: absent
+  tags:
+    - always
+
+- name: Ensure xhgui
+  git:
     repo: "https://github.com/SergeyCherepanov/xhgui.git"
     dest: "{{ homebrew_install_path }}/opt/xhgui"
     version: "master_20180417"
