@@ -17,8 +17,7 @@
   tags:
     - always
 
-- name: Print php_versions content
-  debug: 
+- debug:
     var: php_versions
   tags:
     - always

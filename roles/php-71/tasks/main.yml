@@ -181,7 +181,12 @@
 
 - name: add '{{ php_version_num_int }}' to "php_versions" array
   set_fact:
-    php_versions: "{{ php_versions + [ '{{ php_version_num_int }}' ] }} "
+    php_versions: "{{ php_versions + [ '{{ php_version_num_int }}' ] }}"
+  tags:
+    - php71
+
+- debug:
+    var: php_versions
   tags:
     - php71
 
