@@ -1,6 +1,6 @@
 sudo: true
-os:
-  - osx
+os: osx
+osx_image: xcode9.3
 branches:
   only:
     - master
@@ -13,5 +13,6 @@ matrix:
     - env: TAGS=nodejs
     - env: TAGS=zsh
     - env: TAGS=percona56
+    - env: TAGS=percona57
 script:
   - travis_wait 60 $TRAVIS_BUILD_DIR/run.sh -v --tags "${TAGS}"
