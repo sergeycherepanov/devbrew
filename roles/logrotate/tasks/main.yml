@@ -16,5 +16,6 @@
 
 - name: "Starting logrotate"
   shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.logrotate.plist"
+  become: true
   tags:
     - always
