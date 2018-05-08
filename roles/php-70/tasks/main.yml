@@ -112,6 +112,9 @@
       xdebug.idekey=PHPSTORM
       xdebug.overload_var_dump=0
       xdebug.max_nesting_level=500
+  tags:
+    - php70
+
 #- stat:
 #    path: "{{ homebrew_install_path }}/etc/php/7.0/conf.d/ext-opcache.ini"
 #  register: state
@@ -196,4 +199,4 @@
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   tags:
-    - always
+    - php70
