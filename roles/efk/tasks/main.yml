@@ -64,6 +64,7 @@
   file:
     path: "/Library/LaunchDaemons/td-agent.plist"
     state: absent
+  become: yes
   tags:
     - always
 
