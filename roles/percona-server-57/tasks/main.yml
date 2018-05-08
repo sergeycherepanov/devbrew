@@ -137,4 +137,13 @@
   args:
     chdir: /tmp
   tags:
-    - percona56
+    - percona57
+
+- name: "Add wrapper"
+  template:
+    src: "mysql.j2"
+    dest: "{{ homebrew_install_path }}/bin/mysql{{ mysql_version_num }}"
+    owner: "{{ mysql_user }}"
+    mode: 0755
+  tags:
+    - percona57
