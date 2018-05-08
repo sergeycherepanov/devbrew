@@ -101,7 +101,7 @@
     group: "{{ www_group }}"
 #  when: not state.stat.exists
   tags:
-    - php56
+    - php71
 
 - blockinfile:
     dest: '{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini'
@@ -181,7 +181,7 @@
   set_fact:
     php_versions: "{{ php_versions + [ '{{ php_version_num_int }}' ] }} "
   tags:
-    - php70
+    - php71
 
 #- stat: 
 #    path: "{{ homebrew_install_path }}/etc/supervisor.d/php71.ini"

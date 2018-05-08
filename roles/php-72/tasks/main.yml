@@ -31,7 +31,7 @@
   shell: "brew upgrade --cleanup php72"
   ignore_errors: yes
   tags:
-    - php71
+    - php72
 
 - name: "Installing php72 pear packages modules"
   shell: "pear install {{ item }}"
@@ -108,7 +108,7 @@
     group: "{{ www_group }}"
 #  when: not state.stat.exists
   tags:
-    - php56
+    - php72
 
 - blockinfile:
     dest: '{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini'
@@ -161,7 +161,7 @@
   set_fact:
     php_versions: "{{ php_versions + [ '{{ php_version_num_int }}' ] }} "
   tags:
-    - php70
+    - php72
 
 #- stat: 
 #    path: "{{ homebrew_install_path }}/etc/supervisor.d/php72.ini"

@@ -31,7 +31,7 @@
   shell: "brew upgrade --cleanup {{ php_version }}"
   ignore_errors: yes
   tags:
-    - php71
+    - php56
 
 - name: "Installing {{ php_version }} pear packages modules"
   shell: "pear install {{ item }}"
