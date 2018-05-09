@@ -39,6 +39,16 @@
   tags:
     - php72
 
+- name: "Add wrapper"
+  template:
+    src: "php.j2"
+    dest: "{{ homebrew_install_path }}/bin/{{ php_version_legacy }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
+  tags:
+    - php72
+
 - name: "Create php-fpm.conf"
   template:
     src: php-fpm.conf.j2
@@ -146,16 +156,6 @@
 - name: "Unlink php72"
   homebrew: "name=php72 state=unlinked"
   ignore_errors: yes
-  tags:
-    - php72
-
-- name: "Add wrapper"
-  template:
-    src: "php.j2"
-    dest: "{{ homebrew_install_path }}/bin/{{ php_version_legacy }}"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
-    mode: 0755
   tags:
     - php72
 

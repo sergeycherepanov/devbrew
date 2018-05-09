@@ -39,6 +39,15 @@
   tags:
     - php70
 
+- name: "Add wrapper"
+  template:
+    src: "php.j2"
+    dest: "{{ homebrew_install_path }}/bin/{{ php_version }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
+  tags:
+    - php70
 #- stat:
 #    path: "{{ homebrew_install_path }}/etc/php/7.0/php-fpm.conf"
 #  register: state
@@ -159,16 +168,6 @@
 - name: "Unlink php70"
   homebrew: "name=php70 state=unlinked"
   ignore_errors: yes
-  tags:
-    - php70
-
-- name: "Add wrapper"
-  template:
-    src: "php.j2"
-    dest: "{{ homebrew_install_path }}/bin/{{ php_version }}"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
-    mode: 0755
   tags:
     - php70
 
