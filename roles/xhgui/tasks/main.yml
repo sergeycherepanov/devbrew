@@ -14,13 +14,13 @@
   tags:
     - always
 
-- name: "Install xhprof extension"
+- name: "Install xhgui"
   shell: >
     {{ homebrew_install_path }}/bin/php71 {{ homebrew_install_path }}/bin/composer install
   args:
     chdir: "{{ homebrew_install_path }}/opt/xhgui"
   tags:
-    - php72
+    - always
 
 - name: "Ensure {{ homebrew_install_path }}/etc/nginx/servers/xhgui.conf"
   template:
