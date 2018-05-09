@@ -2,7 +2,7 @@
 - name: "Ensure Percona(Mysql) Server {{ mysql_formula }}"
   homebrew: 
     name: "{{ mysql_formula }}"
-    state: latest
+    state: present
   tags:
     - percona56
 
