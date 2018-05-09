@@ -4,11 +4,11 @@ php_version_num: 7.1
 php_version_num_int: 71
 php71_flags: "with-homebrew-curl"
 php71_modules:
-#  - php71-intl
+  - php71-intl
   - php71-mcrypt
   - php71-xdebug
   - php71-redis
-#  - php71-tidy
+  - php71-tidy
   - php71-opcache
   - php71-pdo-pgsql
   - php71-mongodb
