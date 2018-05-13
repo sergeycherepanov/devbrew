@@ -16,7 +16,7 @@
 
 - name: "Install xhgui"
   shell: >
-    {{ homebrew_install_path }}/bin/php71 {{ homebrew_install_path }}/bin/composer install
+    php {{ homebrew_install_path }}/bin/composer install
   args:
     chdir: "{{ homebrew_install_path }}/opt/xhgui"
   tags:

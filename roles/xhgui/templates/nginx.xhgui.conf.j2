@@ -8,7 +8,7 @@ server {
     client_max_body_size 256m;
     
     set $port_prefix 90;
-    set $php_version 71;
+    set $php_version {{ default_php }};
     set $php_version_path "{{ homebrew_install_path }}/bin/php${php_version}";
     
     set $documentRoot {{ homebrew_install_path }}/opt/xhgui/webroot;

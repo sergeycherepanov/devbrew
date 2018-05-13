@@ -130,6 +130,18 @@
 #  tags:
 #    - php56
 
+- name: Resolve extension dir
+  shell: "{{ homebrew_install_path }}/bin/php{{ php_version_num_int }} -i | grep -e '^extension_dir' | awk -F'=>' '{print $2}'"
+  register: output
+  tags:
+    - php70
+
+- name: Register php_extension_dir
+  set_fact:
+    php_extension_dir: "{{ output.stdout | trim }}"
+  tags:
+    - php70
+
 - name: "Create ext-opcache.ini"
   template: src=ext-opcache.ini.j2 dest={{ homebrew_install_path }}/etc/php/5.6/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
 #  when: not state.stat.exists
@@ -144,9 +156,15 @@
   tags:
     - php56
 
-- name: add {{ php_version_num_int }} to "php_versions" array
+- name: Adding {{ php_version_num_int }} to "php_versions" array
   set_fact: 
     php_versions: "{{ php_versions + [ php_version_num_int ] }}"
+  tags:
+    - php56
+
+- name: Setting default php to {{ php_version_num_int }}
+  set_fact:
+    default_php: "{{ php_version_num_int }}"
   tags:
     - php56
 
@@ -175,5 +193,10 @@
     dest: "{{ homebrew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
+  tags:
+    - php56
+
+- name: "Linking php"
+  shell: "brew link {{ php_version }}"
   tags:
     - php56
