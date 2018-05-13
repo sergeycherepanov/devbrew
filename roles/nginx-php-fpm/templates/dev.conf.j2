@@ -4,8 +4,8 @@ client_max_body_size 256m;
 
 
 if ($php_version !~* '^({{ php_versions | join("|") }})$') {
-    # set default php version to 7.1
-    set $php_version 71;
+    # set default php version to {{ default_php }}
+    set $php_version {{ default_php }};
 }
 set $php_version_path "{{ homebrew_install_path }}/bin/php${php_version}";
 
