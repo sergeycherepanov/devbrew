@@ -22,6 +22,7 @@ homebrew_installed_packages:
   - pup
   - fswatch
   - shellcheck
+  - libmcrypt
 
 homebrew_upgrade_all_packages: no
 
