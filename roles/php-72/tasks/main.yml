@@ -225,7 +225,7 @@
 - name: "Installing mcrypt for {{ php_version }}"
   shell: 'printf "\n" | pecl install mcrypt-1.0.1'
   register: last_output
-  failed_when: "'already installed' not in last_output.stdout"
+  failed_when: "result.rc != 0 and 'already installed' not in last_output.stdout"
   tags:
     - php72
 
