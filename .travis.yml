@@ -10,9 +10,9 @@ matrix:
     - env: TAGS=php70
     - env: TAGS=php71
     - env: TAGS=php72
-    - env: TAGS=nodejs
-    - env: TAGS=zsh
-    - env: TAGS=percona56
-    - env: TAGS=percona57
+    - env: TAGS=php72,nodejs
+    - env: TAGS=php72,zsh
+    - env: TAGS=php72,percona56
+    - env: TAGS=php72,percona57
 script:
   - travis_wait 60 $TRAVIS_BUILD_DIR/run.sh -v --tags "${TAGS}"
