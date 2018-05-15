@@ -22,6 +22,7 @@
     - roles/git
     - roles/curl
     - roles/jenv
+    - roles/golang
     - roles/supervisord
     - roles/logrotate
     - roles/nginx

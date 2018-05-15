@@ -1,7 +1,7 @@
 ---
 - name: "Installing golang"
   homebrew: 
-    name: go 
+    name: go
     state: present
     install_options: "cross-compile-common"
   tags:
