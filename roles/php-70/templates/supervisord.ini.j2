@@ -1,5 +1,5 @@
 [program:php70-fpm]
-command={{ homebrew_install_path }}/opt/php70/sbin/php-fpm --nodaemonize --fpm-config {{ homebrew_install_path }}/etc/php/7.0/php-fpm.conf
+command={{ homebrew_install_path }}/opt/php70/sbin/php-fpm --nodaemonize --fpm-config {{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-fpm.conf
 directory={{ homebrew_install_path }}/opt/php70
 stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/php70.log
 stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/php70.err
@@ -8,7 +8,7 @@ autorestart=true
 stopasgroup=true
 
 [program:php70-fpm-xdebug]
-command={{ homebrew_install_path }}/opt/php70/sbin/php-fpm --nodaemonize --fpm-config {{ homebrew_install_path }}/etc/php/7.0/php-fpm-xdebug.conf
+command={{ homebrew_install_path }}/opt/php70/sbin/php-fpm --nodaemonize --fpm-config {{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-fpm-xdebug.conf -c {{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini
 directory={{ homebrew_install_path }}/opt/php70
 stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/php70-xdebug.log
 stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/php70-xdebug.err
