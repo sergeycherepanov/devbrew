@@ -5,3 +5,8 @@
     dest: "/Users/{{ www_user }}/.gitignore"
   tags:
     - always
+
+- name: git config
+  shell: "git config --global core.excludesfile /Users/{{ www_user }}/.gitignore"
+  tags:
+    - always
