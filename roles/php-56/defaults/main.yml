@@ -13,4 +13,5 @@ php_modules:
   - pdo-pgsql
   - xhprof
   - mongodb
+  - apcu
 php_pear_packages: []
