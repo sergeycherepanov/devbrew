@@ -99,9 +99,7 @@
 
 # Tap.
 - name: Ensure configured taps are tapped.
-  homebrew_tap: 
-    tap: "{{ item }}"
-    state: present
+  shell: brew tap {{ item }}
   with_items: "{{ homebrew_taps }}"
   tags:
     - always
