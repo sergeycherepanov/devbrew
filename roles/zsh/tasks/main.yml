@@ -33,7 +33,8 @@
   tags:
     - zsh
 
-- copy:
+- name: "Installing 'hack' font"
+  copy:
     src: '/tmp/awesome-terminal-fonts/build/'
     dest: '{{ ansible_env.HOME }}/.fonts/'
   tags:
@@ -235,7 +236,7 @@
   tags:
     - zsh
       
-- name: "Adding powerline to {{ ansible_env.HOME }}/.zshrc"
+- name: "Adding powerline to config {{ ansible_env.HOME }}/.zshrc"
   blockinfile:
     dest: '{{ ansible_env.HOME }}/.zshrc'
     marker: "# {mark} powerline"
@@ -244,5 +245,15 @@
   tags:
     - zsh
       
-      
+- name: "Adding powerline config {{ ansible_env.HOME }}/.vimrc"
+  blockinfile:
+    dest: '{{ ansible_env.HOME }}/.vimrc'
+    marker: "# {mark} powerline"
+    block: |
+      python from powerline.vim import setup as powerline_setup
+      python powerline_setup()
+      python del powerline_setup
+      set laststatus=2
+  tags:
+    - zsh
       
