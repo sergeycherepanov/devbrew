@@ -117,6 +117,12 @@ if ($cookie_xdebug_profile != "") {
     set $auto_prepend_file {{ homebrew_install_path }}/opt/xhgui/external/header.php;
 }
 
+set $forwarded_proto http;
+
+if ($https = "on") {
+    set $forwarded_proto https;
+}
+
 ## Process .php files
 location ~ ^.+\.php {
     # If file not found rewrite to index
@@ -142,5 +148,6 @@ location ~ ^.+\.php {
     fastcgi_param                   SERVER_NAME $host;
     fastcgi_param                   PHP_PATH $php_version_path;
     fastcgi_param                   HTTPS $https;
+    fastcgi_param                   HTTP_X_FORWARDED_PROTO $forwarded_proto;
     fastcgi_param                   PHP_VALUE "auto_prepend_file=$auto_prepend_file";
 }
