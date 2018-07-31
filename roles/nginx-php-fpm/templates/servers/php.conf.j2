@@ -2,7 +2,7 @@ server {
     listen 80;
     port_in_redirect off;
 
-    server_name ~^(?<project_name>.+?)\.*(?<pool>{{item}}).{{root_domain}}$;
+    server_name ~^(?<project_name>.+?)\.+(?<pool>{{item}}).{{root_domain}}$;
     
     include {{ homebrew_install_path }}/etc/nginx/dev.conf;
 }
@@ -11,7 +11,7 @@ server {
     listen 443 http2 ssl;
     port_in_redirect off;
     
-    server_name ~^(?<project_name>.+?)\.*(?<pool>{{item}}).{{root_domain}}$;
+    server_name ~^(?<project_name>.+?)\.+(?<pool>{{item}}).{{root_domain}}$;
     
     ssl on;
     ssl_certificate {{ homebrew_install_path }}/etc/openssl/localCA/certs/{{item}}.{{root_domain}}_crt.pem;
