@@ -111,6 +111,7 @@
 
 - name: "Installing Oh My Zsh"
   shell: '/tmp/oh-my-zsh/tools/install.sh'
+  ignore_errors: True
   environment:
     SHELL: /bin/zsh
   args:
