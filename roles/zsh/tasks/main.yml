@@ -249,7 +249,7 @@
 - name: "Adding powerline config {{ ansible_env.HOME }}/.vimrc"
   blockinfile:
     dest: '{{ ansible_env.HOME }}/.vimrc'
-    marker: "# {mark} powerline"
+    marker: '" {mark} powerline'
     block: |
       python from powerline.vim import setup as powerline_setup
       python powerline_setup()
