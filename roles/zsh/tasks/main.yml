@@ -127,7 +127,7 @@
     block: |
       export PATH="/usr/local/sbin:$PATH"
   tags:
-    - always
+    - zsh
 
 - name: "Adding aliases {{ ansible_env.HOME }}/.zshrc"
   blockinfile:
@@ -139,7 +139,23 @@
         source ~/.aliases
       fi
   tags:
-    - always
+    - zsh
+
+- name: "Setting EDITOR to vim"
+  lineinfile:
+    path: '{{ ansible_env.HOME }}/.zshrc'
+    regexp: '^export EDITOR=.*'
+    line: 'export EDITOR=vim'
+  tags:
+    - zsh
+
+- name: "Setting VISUAL to vim"
+  lineinfile:
+    path: '{{ ansible_env.HOME }}/.zshrc'
+    regexp: '^export VISUAL=.*'
+    line: 'export VISUAL=vim'
+  tags:
+    - zsh
 
 - lineinfile:
     path: '{{ ansible_env.HOME }}/.zshrc'
