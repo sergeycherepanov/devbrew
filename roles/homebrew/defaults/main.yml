@@ -23,6 +23,7 @@ homebrew_installed_packages:
   - fswatch
   - shellcheck
   - libmcrypt
+  - yarn
 
 homebrew_upgrade_all_packages: no
 
