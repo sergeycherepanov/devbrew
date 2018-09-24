@@ -19,6 +19,7 @@
     - roles/homebrew
     - roles/zsh
     - roles/coreutils
+    - roles/flock
     - roles/git
     - roles/curl
     - roles/jenv
