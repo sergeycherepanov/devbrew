@@ -126,7 +126,7 @@
   tags:
     - percona56
 
-- name: Setting mysql
+- name: Starting mysql
   shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables --log-error=/tmp/mysql.err > /dev/null &"
   when: mysql_data_dir_files.matched|int == 0
   args:
