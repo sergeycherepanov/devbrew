@@ -14,9 +14,7 @@
     - always
 
 - name: Extracting flock
-  unarchive:
-    src: /tmp/flock.tgz
-    dest: /tmp/flock
+  shell: "tar xzf /tmp/flock.tgz -C /tmp/flock"
   tags:
     - always
 
