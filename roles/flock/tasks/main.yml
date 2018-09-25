@@ -6,6 +6,13 @@
   tags:
     - always
 
+- name: "Creating /tmp/flock"
+  file:
+    path: "/tmp/flock"
+    state: directory
+  tags:
+    - always
+
 - name: Extracting flock
   unarchive:
     src: /tmp/flock.tgz
