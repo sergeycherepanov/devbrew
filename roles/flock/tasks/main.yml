@@ -7,7 +7,9 @@
     - always
 
 - name: Extracting flock
-  shell: "tar xzf /tmp/flock.tgz --strip 1 -C /tmp/flock"
+  unarchive:
+    src: /tmp/flock.tgz
+    dest: /tmp/flock
   tags:
     - always
 
