@@ -132,17 +132,26 @@
   tags:
     - percona57
 
+- name: "Absent /tmp/mysql.err"
+  file:
+    state: absent
+    path: "/tmp/mysql.err"
+  tags:
+    - percona57
+
 - name: Starting mysql
-  shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables > /dev/null 2>&1 &"
+  shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables --log-error=/tmp/mysql.err > /dev/null &"
   when: mysql_data_dir_files.matched|int == 0
   args:
     chdir: /tmp
   tags:
     - percona57
 
-- pause:
-    seconds: 15
+- name: Waiting mysql
+  shell: "until grep 'ready for connections' /tmp/mysql.err; do sleep 1; done"
   when: mysql_data_dir_files.matched|int == 0
+  args:
+    chdir: /tmp
   tags:
     - percona57
 
