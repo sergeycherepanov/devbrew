@@ -119,7 +119,7 @@
   tags:
     - percona56
 
-- name: Setting plugin=mysql_native_password and update root password
+- name: Setting mysql
   shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables > /dev/null 2>&1 &"
   when: mysql_data_dir_files.matched|int == 0
   args:
