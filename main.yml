@@ -1,52 +1,75 @@
 ---
 - hosts: localhost
-  vars: 
-    - php_versions: []
+  vars:
+  - php_versions: []
+  environment:
+    PATH: "{{ brew_install_path }}/bin:{{ ansible_env.PATH }}"
   pre_tasks:
-    - stat:
-        path: "/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-      register: state
-      tags:
-        - always
+  - name: "Register brew_user fact"
+    set_fact:
+      brew_user: "{{ mac_user|default(ansible_env.USER) }}"
+    tags:
+    - always
 
-    - name: "Stopping supervisord"
-      shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-      when: state.stat.exists
-      become: true
-      tags:
-        - always
+  - name: "Resolve user group"
+    shell: "id -gn"
+    register: result
+    tags:
+    - always
+
+  - name: "Register brew_group fact"
+    set_fact: brew_group="{{ result.stdout }}"
+    tags:
+    - always
+
+  - name: "Resolve home dir"
+    shell: "eval echo ~$USER"
+    register: result
+    tags:
+    - always
+
+  - name: "Register brew_user_home_dir fact"
+    set_fact: brew_user_home_dir="{{ result.stdout }}"
+    tags:
+    - always
+
+  - include_tasks: "{{ ansible_system | lower }}_pre.yml"
+
   roles:
-    - roles/homebrew
-    - roles/zsh
-    - roles/coreutils
-    - roles/git
-    - roles/curl
-    - roles/jenv
-    - roles/golang
-    - roles/supervisord
-    - roles/logrotate
-    - roles/nginx
-    - roles/efk
-    - roles/efk+nginx
-    - roles/fakesendmail
-    - roles/dnsmasq
-    - roles/percona-server-56
-    - roles/percona-server-57
-    - roles/mongodb
-    - roles/redis
-    - roles/php-56
-    - roles/php-70
-    - roles/php-71
-    - roles/php-72
-    - roles/nginx-php-fpm
-    - roles/nodejs
-    - roles/php-tools
-    - roles/xhgui
-    - roles/compass
-    - roles/less
+  - name: homebrew
+    include_role:
+      name: homebrew
+    when: ansible_system == "Darwin"
+  - name: linuxbrew
+    include_role:
+      name: linuxbrew
+    when: ansible_system == "Linux"
+  - roles/zsh
+  - roles/coreutils
+  - roles/git
+  - roles/curl
+  - roles/jenv
+  - roles/golang
+  - roles/supervisord
+  - roles/logrotate
+  - roles/nginx
+  - roles/efk
+  - roles/efk+nginx
+  - roles/fakesendmail
+  - roles/dnsmasq
+  - roles/percona-server-56
+  - roles/percona-server-57
+  - roles/mongodb
+  - roles/redis
+  - roles/php-56
+  - roles/php-70
+  - roles/php-71
+  - roles/php-72
+  - roles/nginx-php-fpm
+  - roles/nodejs
+  - roles/php-tools
+  - roles/xhgui
+  - roles/compass
+  - roles/less
   post_tasks:
-    - name: "Starting supervisord"
-      shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-      become: true
-      tags:
-        - always
+  - include_tasks: "{{ ansible_system | lower }}_post.yml"

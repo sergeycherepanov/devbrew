@@ -12,7 +12,7 @@ default_ca = local_ca
 #
 
 [ local_ca ]
-dir             = {{ homebrew_install_path }}/etc/openssl/localCA
+dir             = {{ brew_install_path }}/etc/openssl/localCA
 certs           = $dir/certs
 crl_dir         = $dir/crl
 database        = $dir/index.txt
@@ -72,7 +72,7 @@ basicConstraints = CA:false
 #
 [ req ]
 default_bits = 2048
-default_keyfile = {{ homebrew_install_path }}/etc/openssl/localCA/private/cakey.pem
+default_keyfile = {{ brew_install_path }}/etc/openssl/localCA/private/cakey.pem
 
 
 #

@@ -2,11 +2,11 @@
 - name: "Configure global .gitignore"
   template: 
     src: .gitignore.j2
-    dest: "/Users/{{ www_user }}/.gitignore"
+    dest: "{{ brew_user_home_dir }}/.gitignore"
   tags:
     - always
 
 - name: git config
-  shell: "git config --global core.excludesfile /Users/{{ www_user }}/.gitignore"
+  shell: "git config --global core.excludesfile {{ brew_user_home_dir }}/.gitignore"
   tags:
     - always

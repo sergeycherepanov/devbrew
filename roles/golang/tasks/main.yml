@@ -9,7 +9,7 @@
     
 - name: "Adding GOPATH to env"
   blockinfile:
-    dest: '{{ ansible_env.HOME }}/{{item}}'
+    dest: '{{ brew_user_home_dir }}/{{item}}'
     marker: "# {mark} golang"
     block: |
       export GOPATH="${HOME}/go"

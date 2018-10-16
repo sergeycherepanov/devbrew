@@ -8,7 +8,7 @@
     
 - name: "Adding jenv to rc"
   blockinfile:
-    dest: '{{ ansible_env.HOME }}/{{item}}'
+    dest: '{{ brew_user_home_dir }}/{{item}}'
     marker: "# {mark} jenv"
     block: |
       export PATH="$HOME/.jenv/bin:$PATH"

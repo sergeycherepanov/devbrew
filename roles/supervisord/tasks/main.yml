@@ -6,32 +6,32 @@
   tags:
     - always
 
-- name: "Creates /usr/local/etc/supervisor.d"
+- name: "Creates {{ brew_install_path }}/etc/supervisor.d"
   file:
-    path: "{{ homebrew_install_path }}/etc/supervisor.d"
+    path: "{{ brew_install_path }}/etc/supervisor.d"
     state: directory
   tags:
     - always
 
 
-- name: "Creates {{ homebrew_install_path }}/var/log/supervisor"
+- name: "Creates {{ brew_install_path }}/var/log/supervisor"
   file:
-    path: "{{ homebrew_install_path }}/var/log/supervisor"
+    path: "{{ brew_install_path }}/var/log/supervisor"
     state: directory
   tags:
     - always
 
 - name: Ensure symlink for supervisord.ini
   file:
-    src: "{{ homebrew_install_path }}/etc/supervisord.ini"
-    dest: "{{ homebrew_install_path }}/etc/supervisord.conf"
+    src: "{{ brew_install_path }}/etc/supervisord.ini"
+    dest: "{{ brew_install_path }}/etc/supervisord.conf"
     state: link
   tags:
     - always
 
 - name: Ensure permissions for supervisord socket
   ini_file:
-    path: "{{ homebrew_install_path }}/etc/supervisord.ini"
+    path: "{{ brew_install_path }}/etc/supervisord.ini"
     section: "unix_http_server"
     option: "chmod" 
     value: "0770"
@@ -40,26 +40,26 @@
 
 - name: Ensure ownership for supervisord socket
   ini_file:
-    path: "{{ homebrew_install_path }}/etc/supervisord.ini"
+    path: "{{ brew_install_path }}/etc/supervisord.ini"
     section: "unix_http_server"
     option: "chown"
-    value: "root:admin"
+    value: "root:{{ brew_group }}"
   tags:
     - always
 
 - name: "Ensure homebrew.mxcl.supervisor.plist"
-  template: 
+  template:
     src: homebrew.mxcl.supervisor.plist.j2
     dest: '/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist'
   become: true
   tags:
     - always
-
+  when: ansible_system == "Darwin"
 
 - name: "Ensure supervisor-listener"
   template: 
     src: supervisor-listener
-    dest: '/usr/local/bin/supervisor-listener'
+    dest: '{{ brew_install_path }}/bin/supervisor-listener'
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
     mode: 0755

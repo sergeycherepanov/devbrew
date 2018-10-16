@@ -1,7 +1,7 @@
 ---
 - name: Absent previous installed xhgui
   file:
-    path: "{{ homebrew_install_path }}/opt/xhgui"
+    path: "{{ brew_install_path }}/opt/xhgui"
     state: absent
   tags:
     - always
@@ -9,23 +9,23 @@
 - name: Ensure xhgui
   git:
     repo: "https://github.com/SergeyCherepanov/xhgui.git"
-    dest: "{{ homebrew_install_path }}/opt/xhgui"
+    dest: "{{ brew_install_path }}/opt/xhgui"
     version: "master_20180417"
   tags:
     - always
 
 - name: "Install xhgui"
   shell: >
-    php {{ homebrew_install_path }}/bin/composer install
+    php {{ brew_install_path }}/bin/composer install
   args:
-    chdir: "{{ homebrew_install_path }}/opt/xhgui"
+    chdir: "{{ brew_install_path }}/opt/xhgui"
   tags:
     - always
 
-- name: "Ensure {{ homebrew_install_path }}/etc/nginx/servers/xhgui.conf"
+- name: "Ensure {{ brew_install_path }}/etc/nginx/servers/xhgui.conf"
   template:
     src: nginx.xhgui.conf.j2
-    dest: "{{ homebrew_install_path }}/etc/nginx/servers/xhgui.conf"
+    dest: "{{ brew_install_path }}/etc/nginx/servers/xhgui.conf"
   tags:
     - always
 

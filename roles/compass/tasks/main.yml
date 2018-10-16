@@ -1,6 +1,6 @@
 ---
 - name: "Installing Compass"
-  shell: "gem install -n /usr/local/bin compass"
+  shell: "gem install -n {{ brew_install_path }}/bin compass"
   become: yes
   become_method: sudo
   tags:

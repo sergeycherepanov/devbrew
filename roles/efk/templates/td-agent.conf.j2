@@ -14,11 +14,11 @@
 #
 #  auto_create_table
 #  buffer_type file
-#  buffer_path {{ homebrew_install_path }}/var/log/efk/td-agent/buffer/td
+#  buffer_path {{ brew_install_path }}/var/log/efk/td-agent/buffer/td
 #
 #  <secondary>
 #    @type file
-#    path {{ homebrew_install_path }}/var/log/efk/td-agent/failed_records
+#    path {{ brew_install_path }}/var/log/efk/td-agent/failed_records
 #  </secondary>
 # </match>
 
@@ -58,7 +58,7 @@
   port 24230
 </source>
 
-@include {{ homebrew_install_path }}/etc/efk/td-agent/conf.d/*.conf
+@include {{ brew_install_path }}/etc/efk/td-agent/conf.d/*.conf
 
 <match **.*>
   @type elasticsearch

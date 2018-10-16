@@ -1,164 +1,157 @@
 ---
-- name: Get current account's username.
-  shell: whoami
-  register: homebrew_whoami
-  changed_when: false
-  check_mode: no
-  tags:
-    - always
-
 - name: "Creates ~/Library/LaunchAgents"
-  file: 
-    path: "{{ ansible_env.HOME }}/Library/LaunchAgents"
+  file:
+    path: "{{ brew_user_home_dir }}/Library/LaunchAgents"
     state: directory
   tags:
-    - always
+  - always
 
-- name: Setup homebrew install path.
+- name: Ensure homebrew install path.
   file:
-    path: "{{ homebrew_install_path }}"
-    owner: "{{ ansible_env.USER }}"
-  ignore_errors: yes
-  become: yes
-  become_method: sudo
-  tags:
-    - always
-
-- name: Downloading Homebrew.
-  #shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ homebrew_install_path }}"
-  get_url: 
-    url: "https://github.com/Homebrew/brew/tarball/master"
-    dest: "/tmp/brew-master.tgz"
-  tags:
-    - always
-
-- name: Extracting Homebrew.
-  shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ homebrew_install_path }}"
-  become: yes
-  args:
-    warn: false
-  tags:
-    - always
-
-- name: Ensure proper permissions on homebrew_brew_bin_path dirs.
-  file:
-    path: "{{ homebrew_brew_bin_path }}"
+    path: "{{ brew_install_path }}"
     mode: 0775
     state: directory
     recurse: true
   become: yes
   tags:
-    - always
+  - always
+
+- name: Setup homebrew install path.
+  file:
+    path: "{{ brew_install_path }}"
+    owner: "{{ brew_user }}"
+  ignore_errors: yes
+  become: yes
+  tags:
+  - always
+
+- name: Downloading Homebrew.
+  #shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ brew_install_path }}"
+  get_url:
+    url: "https://github.com/Homebrew/brew/tarball/master"
+    dest: "/tmp/brew-master.tgz"
+  tags:
+  - always
+
+- name: Extracting Homebrew.
+  shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
+  become: yes
+  args:
+    warn: false
+  tags:
+  - always
+
+- name: Ensure proper permissions on brew_brew_bin_path dirs.
+  file:
+    path: "{{ brew_brew_bin_path }}"
+    mode: 0775
+    state: directory
+    recurse: true
+  become: yes
+  tags:
+  - always
 
 - name: Ensure homebrew directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ homebrew_install_path }}/Cellar"
-    - "{{ homebrew_install_path }}/Caskroom"
-    - "{{ homebrew_install_path }}/Frameworks"
-    - "{{ homebrew_install_path }}/bin"
-    - "{{ homebrew_install_path }}/etc"
-    - "{{ homebrew_install_path }}/docs"
-    - "{{ homebrew_install_path }}/manpages"
-    - "{{ homebrew_install_path }}/include"
-    - "{{ homebrew_install_path }}/lib"
-    - "{{ homebrew_install_path }}/opt"
-    - "{{ homebrew_install_path }}/sbin"
-    - "{{ homebrew_install_path }}/share"
-    - "{{ homebrew_install_path }}/var"
-    - "{{ homebrew_install_path }}/completions"
+  - "{{ brew_install_path }}/Cellar"
+  - "{{ brew_install_path }}/Caskroom"
+  - "{{ brew_install_path }}/Frameworks"
+  - "{{ brew_install_path }}/bin"
+  - "{{ brew_install_path }}/etc"
+  - "{{ brew_install_path }}/docs"
+  - "{{ brew_install_path }}/manpages"
+  - "{{ brew_install_path }}/include"
+  - "{{ brew_install_path }}/lib"
+  - "{{ brew_install_path }}/opt"
+  - "{{ brew_install_path }}/sbin"
+  - "{{ brew_install_path }}/share"
+  - "{{ brew_install_path }}/var"
+  - "{{ brew_install_path }}/completions"
   become: yes
   tags:
-    - always
+  - always
 
-- name: Ensure proper ownership on homebrew_install_path subdirs.
+- name: Ensure proper ownership on brew_install_path subdirs.
   shell: >
-    ls -A "{{ homebrew_install_path }}" | xargs -I {} chown -R "{{ homebrew_whoami.stdout }}:admin" "{{ homebrew_install_path }}/{}"
+    ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}:{{ brew_group }}" "{{ brew_install_path }}/{}"
   become: yes
   tags:
-    - always
+  - always
 
 - name: Check if homebrew binary is already in place.
-  stat: 
-    path: "{{ homebrew_brew_bin_path }}/brew"
-  register: homebrew_binary
+  stat:
+    path: "{{ brew_install_path }}/bin/brew"
+  register: brew_binary
   tags:
-    - always
+  - always
 
-- name: Symlink brew to homebrew_brew_bin_path.
-  file:
-    src: "{{ homebrew_install_path }}/bin/brew"
-    dest: "{{ homebrew_brew_bin_path }}/brew"
-    state: link
-  when: homebrew_binary.stat.exists == false
+- name: "Adding homebrew to /etc/profile"
+  blockinfile:
+    create: yes
+    dest: '/etc/profile'
+    marker: "# {mark} homebrew PATH"
+    block: |
+      export PATH="{{ brew_install_path }}/sbin:{{ brew_install_path }}/bin:$PATH"
   become: yes
   tags:
-    - always
+  - always
 
 # Tap.
 - name: Ensure configured taps are tapped.
   shell: brew tap {{ item }}
-  with_items: "{{ homebrew_taps }}"
+  with_items: "{{ brew_taps }}"
   tags:
-    - always
+  - always
 
 # Brew.
 - name: Ensure configured homebrew packages are installed.
-  homebrew: 
+  homebrew:
     name: "{{ item }}"
     state: present
-  with_items: "{{ homebrew_installed_packages }}"
+  with_items: "{{ brew_installed_packages }}"
   tags:
-    - always
+  - always
 
 - name: Upgrade all homebrew packages (if configured).
   homebrew:
     update_homebrew: yes
     upgrade_all: yes
-  when: homebrew_upgrade_all_packages
+  when: brew_upgrade_all_packages
   tags:
-    - always
+  - always
 
 # Cask.
 #- name: Get list of apps installed with cask.
 #  command: >
-#    bash -l -c '{{ homebrew_brew_bin_path }}/brew cask list'
-#  register: homebrew_cask_list
+#    bash -l -c '{{ brew_brew_bin_path }}/brew cask list'
+#  register: brew_cask_list
 #  check_mode: no
 #  changed_when: false
 #  tags:
 #    - always
 
-# Use command module instead of homebrew_cask so appdir can be used.
+# Use command module instead of brew_cask so appdir can be used.
 - name: Install configured cask applications.
   command: >
-    bash -l -c '{{ homebrew_brew_bin_path }}/brew cask reinstall {{ item }} --appdir={{ homebrew_cask_appdir }}'
-  with_items: "{{ homebrew_cask_apps }}"
-#  when: "item not in homebrew_cask_list.stdout"
+    bash -l -c '{{ brew_brew_bin_path }}/brew cask reinstall {{ item }} --appdir={{ brew_cask_appdir }}'
+  with_items: "{{ brew_cask_apps }}"
+  #  when: "item not in brew_cask_list.stdout"
   tags:
-    - always
+  - always
 
 - name: Check for Brewfile.
   stat:
-    path: "{{ homebrew_brewfile_dir }}/Brewfile"
-  register: homebrew_brewfile
+    path: "{{ brew_brewfile_dir }}/Brewfile"
+  register: brew_brewfile
   tags:
-    - always
+  - always
 
 - name: Install from Brewfile.
-  command: "brew bundle chdir={{ homebrew_brewfile_dir }}"
-  when: homebrew_brewfile.stat.exists and homebrew_use_brewfile
+  command: "brew bundle chdir={{ brew_brewfile_dir }}"
+  when: brew_brewfile.stat.exists and brew_use_brewfile
   tags:
-    - always
+  - always
 
-- name: "Adding homebrew to PATH in {{ ansible_env.HOME }}/.bashrc"
-  blockinfile:
-    create: yes
-    dest: '{{ ansible_env.HOME }}/.bashrc'
-    marker: "# {mark} homebrew PATH"
-    block: |
-      export PATH="/usr/local/sbin:$PATH"
-  tags:
-    - always

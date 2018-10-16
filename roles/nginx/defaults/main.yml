@@ -1,4 +1,4 @@
 ---
-www_user: "{{ mac_user|default(ansible_env.USER) }}"
-www_dir: "/Users/{{ mac_user|default(ansible_env.USER) }}/www"
-www_group: "staff"
+www_user: "{{ brew_user }}"
+www_dir: "{{ brew_user_home_dir }}/www"
+www_group: "{{ brew_group }}"

@@ -1,9 +1,9 @@
 [program:efk-elasticsearch]
-command={{ homebrew_install_path }}/opt/elasticsearch/bin/elasticsearch
-environment=ES_PATH_CONF={{ homebrew_install_path }}/etc/efk/elasticsearch"
-directory={{ homebrew_install_path }}/etc/efk/elasticsearch
-stdout_logfile={{ homebrew_install_path }}/var/log/efk/elasticsearch.log
-stderr_logfile={{ homebrew_install_path }}/var/log/efk/elasticsearch.err
+command={{ brew_install_path }}/opt/elasticsearch/bin/elasticsearch
+environment=ES_PATH_CONF={{ brew_install_path }}/etc/efk/elasticsearch"
+directory={{ brew_install_path }}/etc/efk/elasticsearch
+stdout_logfile={{ brew_install_path }}/var/log/efk/elasticsearch.log
+stderr_logfile={{ brew_install_path }}/var/log/efk/elasticsearch.err
 stderr_logfile_maxbytes=5MB
 stdout_logfile_maxbytes=5MB
 user={{ www_user }}
@@ -12,10 +12,10 @@ autorestart=true
 priority:100
 
 [program:efk-td-agent]
-command=/opt/td-agent/usr/sbin/td-agent --config {{ homebrew_install_path }}/etc/efk/td-agent/td-agent.conf --use-v1-config
+command=/opt/td-agent/usr/sbin/td-agent --config {{ brew_install_path }}/etc/efk/td-agent/td-agent.conf --use-v1-config
 directory=/opt/td-agent/
-stdout_logfile={{ homebrew_install_path }}/var/log/efk/td-agent.log
-stderr_logfile={{ homebrew_install_path }}/var/log/efk/td-agent.err
+stdout_logfile={{ brew_install_path }}/var/log/efk/td-agent.log
+stderr_logfile={{ brew_install_path }}/var/log/efk/td-agent.err
 stderr_logfile_maxbytes=5MB
 stdout_logfile_maxbytes=5MB
 user={{ www_user }}
@@ -23,9 +23,9 @@ autostart=false
 autorestart=true
 
 [program:efk-kibana]
-command={{ homebrew_install_path }}/opt/kibana/bin/kibana --config {{ homebrew_install_path }}/etc/efk/kibana/kibana.yml
-stdout_logfile={{ homebrew_install_path }}/var/log/efk/kibana.log
-stderr_logfile={{ homebrew_install_path }}/var/log/efk/kibana.err
+command={{ brew_install_path }}/opt/kibana/bin/kibana --config {{ brew_install_path }}/etc/efk/kibana/kibana.yml
+stdout_logfile={{ brew_install_path }}/var/log/efk/kibana.log
+stderr_logfile={{ brew_install_path }}/var/log/efk/kibana.err
 stderr_logfile_maxbytes=5MB
 stdout_logfile_maxbytes=5MB
 user={{ www_user }}
@@ -33,9 +33,9 @@ autostart=false
 autorestart=true
 
 #[eventlistener:efk-curator]
-#command=/usr/local/bin/supervisor-listener /usr/local/bin/curator --config {{ homebrew_install_path }}/etc/efk/curator/curator.yml > {{ homebrew_install_path }}/var/log/efk/curator.log
+#command={{ brew_install_path }}/bin/supervisor-listener {{ brew_install_path }}/bin/curator --config {{ brew_install_path }}/etc/efk/curator/curator.yml > {{ brew_install_path }}/var/log/efk/curator.log
 #events=TICK_3600
-#stderr_logfile={{ homebrew_install_path }}/var/log/efk/curator.err
+#stderr_logfile={{ brew_install_path }}/var/log/efk/curator.err
 #stderr_logfile_maxbytes=5MB
 #user={{ www_user }}
 

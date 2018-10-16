@@ -12,7 +12,7 @@
 - name: "Installing nodejs"
   homebrew: 
     name: node 
-    state: latest
+    state: present
 #    install_options: "without-icu4c"
   tags:
     - nodejs

@@ -1,0 +1,38 @@
+---
+brew_install_path: /home/linuxbrew/.linuxbrew
+brew_brew_bin_path: /home/linuxbrew/.linuxbrew/bin
+
+brew_installed_packages:
+  - git
+  - screen
+  - ssh-copy-id
+  - pv
+  - htop
+  - mc
+  - wget
+  - mtr
+  - nmap
+  - watch
+  - hg
+  - bzr
+  - p7zip
+  - autoconf
+  - gomplate
+  - gettext
+  - glances
+  - json-table
+  - pup
+  - fswatch
+  - shellcheck
+  - libmcrypt
+  - yarn
+
+brew_upgrade_all_packages: no
+
+brew_taps:
+- caskroom/cask
+- caskroom/versions
+- caskroom/fonts
+
+brew_use_brewfile: true
+brew_brewfile_dir: '~'

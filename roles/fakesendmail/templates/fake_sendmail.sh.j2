@@ -1,5 +1,5 @@
 #!/bin/sh 
-dir="{{ ansible_env.HOME }}/mail"
+dir="{{ brew_user_home_dir }}/mail"
 [[ -d $dir ]] || mkdir -p $dir
 date=`date \+\%Y\%m\%d\%H\%M\%N` 
 name="$dir/$date.eml"

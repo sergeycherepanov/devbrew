@@ -2,8 +2,8 @@
   @type tail
   format multiline
   tag php.error
-  path {{ homebrew_install_path }}/var/log/php/{{ php_version_num }}/error.log
-  pos_file {{ homebrew_install_path }}/var/log/php/{{ php_version_num }}/error.log.pos
+  path {{ brew_install_path }}/var/log/php/{{ php_version_num }}/error.log
+  pos_file {{ brew_install_path }}/var/log/php/{{ php_version_num }}/error.log.pos
   read_from_head false
   time_format %d-%b-%Y %H:%M:%S %Z
   multiline_flush_interval 2s

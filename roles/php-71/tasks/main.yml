@@ -14,7 +14,7 @@
 - name: "Installing php71 with flags: {{ php71_flags }}"
   homebrew:
     name: php71 
-    state: latest 
+    state: present
     install_options: "{{ php71_flags }}"
   tags:
     - php71
@@ -22,7 +22,7 @@
 - name: "Installing php71 modules"
   homebrew:
     name: "{{ item }}"
-    state: latest
+    state: present
   with_items: "{{ php71_modules }}"
   tags:
     - php71
@@ -42,7 +42,7 @@
 - name: "Add wrapper"
   template:
     src: "php.j2"
-    dest: "{{ homebrew_install_path }}/bin/{{ php_version }}"
+    dest: "{{ brew_install_path }}/bin/{{ php_version }}"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
     mode: 0755
@@ -51,7 +51,7 @@
 
 
 #- stat:
-#    path: "{{ homebrew_install_path }}/etc/php/7.1/php-fpm.conf"
+#    path: "{{ brew_install_path }}/etc/php/7.1/php-fpm.conf"
 #  register: state
 #  tags:
 #    - php71
@@ -59,7 +59,7 @@
 - name: "Create php-fpm.conf"
   template: 
     src: "php-fpm.conf.j2"
-    dest: "{{ homebrew_install_path }}/etc/php/7.1/php-fpm.conf"
+    dest: "{{ brew_install_path }}/etc/php/7.1/php-fpm.conf"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
 #  when: not state.stat.exists
@@ -67,7 +67,7 @@
     - php71
 
 #- stat: 
-#    path: "{{ homebrew_install_path }}/etc/php/7.1/php.ini"
+#    path: "{{ brew_install_path }}/etc/php/7.1/php.ini"
 #  register: state
 #  tags:
 #    - php71
@@ -75,7 +75,7 @@
 - name: "Create php.ini"
   template: 
     src: "php.ini.j2"
-    dest: "{{ homebrew_install_path }}/etc/php/7.1/php.ini"
+    dest: "{{ brew_install_path }}/etc/php/7.1/php.ini"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
 #  when: not state.stat.exists
@@ -83,7 +83,7 @@
     - php71
 
 #- stat: 
-#    path: "{{ homebrew_install_path }}/etc/php/7.1/php-fpm-xdebug.conf"
+#    path: "{{ brew_install_path }}/etc/php/7.1/php-fpm-xdebug.conf"
 #  register: state
 #  tags:
 #    - php71
@@ -91,7 +91,7 @@
 - name: "Create php-fpm-xdebug.conf"
   template: 
     src: php-fpm-xdebug.conf.j2
-    dest: "{{ homebrew_install_path }}/etc/php/7.1/php-fpm-xdebug.conf"
+    dest: "{{ brew_install_path }}/etc/php/7.1/php-fpm-xdebug.conf"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
 #  when: not state.stat.exists
@@ -99,7 +99,7 @@
     - php71
 
 #- stat: 
-#    path: "{{ homebrew_install_path }}/etc/php/7.1/php-xdebug.ini"
+#    path: "{{ brew_install_path }}/etc/php/7.1/php-xdebug.ini"
 #  register: state
 #  tags:
 #    - php71
@@ -107,7 +107,7 @@
 - name: "Create php-xdebug.ini"
   template:
     src: php.ini.j2
-    dest: "{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini"
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
 #  when: not state.stat.exists
@@ -115,11 +115,11 @@
     - php71
 
 - blockinfile:
-    dest: '{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini'
+    dest: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini'
     marker: "; {mark} ansible xdebug"
     block: |
       [xdebug]
-      zend_extension="/usr/local/opt/{{ php_version }}-xdebug/xdebug.so"
+      zend_extension="{{ brew_install_path }}/opt/{{ php_version }}-xdebug/xdebug.so"
       xdebug.remote_enable=1
       xdebug.remote_autostart = 0
       xdebug.remote_connect_back = 0
@@ -134,13 +134,13 @@
     - php71
 
 #- stat: 
-#    path: "{{ homebrew_install_path }}/etc/php/7.1/conf.d/ext-opcache.ini"
+#    path: "{{ brew_install_path }}/etc/php/7.1/conf.d/ext-opcache.ini"
 #  register: state
 #  tags:
 #    - php71
 
 - name: Resolve extension dir
-  shell: "{{ homebrew_install_path }}/bin/php{{ php_version_num_int }} -i | grep -e '^extension_dir' | awk -F'=>' '{print $2}'"
+  shell: "{{ brew_install_path }}/bin/php{{ php_version_num_int }} -i | grep -e '^extension_dir' | awk -F'=>' '{print $2}'"
   register: output
   tags:
     - php71
@@ -160,8 +160,8 @@
 
 - name: "Build xhprof extension"
   shell: >
-    {{ homebrew_install_path }}/opt/{{php_version}}/bin/phpize &&
-    ./configure --with-php-config={{ homebrew_install_path }}/opt/{{php_version}}/bin/php-config &&
+    {{ brew_install_path }}/opt/{{php_version}}/bin/phpize &&
+    ./configure --with-php-config={{ brew_install_path }}/opt/{{php_version}}/bin/php-config &&
     make
   args:
     chdir: "/tmp/xhprof{{php_version}}"
@@ -178,14 +178,14 @@
 - name: "Ensure ext-xhprof.ini"
   copy:
     content: "extension=tideways_xhprof.so"
-    dest: "{{ homebrew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xhprof.ini"
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xhprof.ini"
   tags:
     - php71
 
 - name: "Create ext-opcache.ini"
   template: 
     src: "ext-opcache.ini.j2"
-    dest: "{{ homebrew_install_path }}/etc/php/7.1/conf.d/ext-opcache.ini"
+    dest: "{{ brew_install_path }}/etc/php/7.1/conf.d/ext-opcache.ini"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
 #  when: not state.stat.exists
@@ -216,7 +216,7 @@
     - php71
 
 #- stat: 
-#    path: "{{ homebrew_install_path }}/etc/supervisor.d/php71.ini"
+#    path: "{{ brew_install_path }}/etc/supervisor.d/php71.ini"
 #  register: state
 #  tags:
 #    - php71
@@ -224,15 +224,15 @@
 - name: "Create etc/supervisor.d/php71.ini"
   template:
     src: supervisord.ini.j2
-    dest: "{{ homebrew_install_path }}/etc/supervisor.d/php71.ini"
+    dest: "{{ brew_install_path }}/etc/supervisor.d/php71.ini"
 #  when: not state.stat.exists
   tags:
     - php71
 
-- name: "Creates {{ homebrew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
+- name: "Creates {{ brew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
   template:
     src: td-agent.php.conf.j2
-    dest: "{{ homebrew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
+    dest: "{{ brew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   tags:

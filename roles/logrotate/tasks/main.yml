@@ -2,20 +2,22 @@
 - name: "Ensure logrotate"
   homebrew: 
     name: logrotate 
-    state: latest
+    state: present
   tags:
     - always
 
-- name: "Ensure homebrew.mxcl.supervisor.plist"
+- name: "Ensure homebrew.mxcl.logrotate.plist"
   template: 
     src: homebrew.mxcl.logrotate.plist.j2
     dest: '/Library/LaunchDaemons/homebrew.mxcl.logrotate.plist'
   become: true
   tags:
     - always
+  when: ansible_system == "Darwin"
 
 - name: "Starting logrotate"
   shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.logrotate.plist"
   become: true
   tags:
     - always
+  when: ansible_system == "Darwin"

@@ -5,7 +5,7 @@
     state: directory
   with_items:
     - "{{ www_dir }}"
-    - "{{ homebrew_install_path }}/etc/nginx/servers_custom"
+    - "{{ brew_install_path }}/etc/nginx/servers_custom"
   tags:
     - always
 
@@ -16,25 +16,25 @@
   tags:
     - always
 
-- name: "Creates {{ homebrew_install_path }}/etc/nginx/nginx.conf"
+- name: "Creates {{ brew_install_path }}/etc/nginx/nginx.conf"
   template:
     src: nginx.conf.j2
-    dest: "{{ homebrew_install_path }}/etc/nginx/nginx.conf"
+    dest: "{{ brew_install_path }}/etc/nginx/nginx.conf"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   tags:
     - always
 
-- name: "Creates {{ homebrew_install_path }}/etc/nginx/conf.d"
+- name: "Creates {{ brew_install_path }}/etc/nginx/conf.d"
   file:
-    path: "{{ homebrew_install_path }}/etc/nginx/conf.d"
+    path: "{{ brew_install_path }}/etc/nginx/conf.d"
     state: directory
     mode: 0755
   tags:
     - always
 
 - stat: 
-    path: "{{ homebrew_install_path }}/etc/supervisor.d/nginx.ini"
+    path: "{{ brew_install_path }}/etc/supervisor.d/nginx.ini"
   tags:
     - always
   register: state
@@ -42,15 +42,15 @@
 - name: "Create etc/supervisor.d/nginx.ini"
   template:
     src: supervisord.ini.j2
-    dest: "{{ homebrew_install_path }}/etc/supervisor.d/nginx.ini"
+    dest: "{{ brew_install_path }}/etc/supervisor.d/nginx.ini"
   when: not state.stat.exists
   tags:
     - always
 
-- name: "Creates {{ homebrew_install_path }}/etc/logrotate.d/nginx.conf"
+- name: "Creates {{ brew_install_path }}/etc/logrotate.d/nginx.conf"
   template:
     src: logrotate.nginx.conf.j2
-    dest: "{{ homebrew_install_path }}/etc/logrotate.d/nginx.conf"
+    dest: "{{ brew_install_path }}/etc/logrotate.d/nginx.conf"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   tags:

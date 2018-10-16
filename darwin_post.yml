@@ -1,0 +1,6 @@
+---
+- name: "Starting supervisord"
+  shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+  become: true
+  tags:
+  - always

@@ -1,3 +1,4 @@
 .idea
 *.retry
 test.yml
+run.test.sh

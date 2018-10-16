@@ -1,0 +1,167 @@
+---
+- name: Ensure linuxbrew install path.
+  file:
+    path: "{{ brew_install_path }}"
+    mode: 0775
+    state: directory
+    recurse: true
+  become: yes
+  tags:
+  - always
+
+- name: Setup linuxbrew install path.
+  file:
+    path: "{{ brew_install_path }}"
+    owner: "{{ brew_user }}"
+  ignore_errors: yes
+  become: yes
+  become_method: sudo
+  tags:
+  - always
+
+- name: Downloading Linuxbrew.
+  #shell: "curl -L https://github.com/linuxbrew/brew/tarball/master | tar xz --strip 1 -C {{ brew_install_path }}"
+  get_url:
+    url: "https://github.com/Linuxbrew/brew/tarball/master"
+    dest: "/tmp/brew-master.tgz"
+  tags:
+  - always
+
+- name: Extracting linuxbrew.
+  shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
+  become: yes
+  args:
+    warn: false
+  tags:
+  - always
+
+- name: Ensure proper permissions on brew_brew_bin_path dirs.
+  file:
+    path: "{{ brew_brew_bin_path }}"
+    mode: 0775
+    state: directory
+    recurse: true
+  become: yes
+  tags:
+  - always
+
+- name: Ensure linuxbrew directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+  - "{{ brew_install_path }}/Cellar"
+  - "{{ brew_install_path }}/Caskroom"
+  - "{{ brew_install_path }}/Frameworks"
+  - "{{ brew_install_path }}/bin"
+  - "{{ brew_install_path }}/etc"
+  - "{{ brew_install_path }}/docs"
+  - "{{ brew_install_path }}/manpages"
+  - "{{ brew_install_path }}/include"
+  - "{{ brew_install_path }}/lib"
+  - "{{ brew_install_path }}/opt"
+  - "{{ brew_install_path }}/sbin"
+  - "{{ brew_install_path }}/share"
+  - "{{ brew_install_path }}/var"
+  - "{{ brew_install_path }}/completions"
+  become: yes
+  tags:
+  - always
+
+- name: Ensure proper ownership on brew_install_path subdirs
+  shell: >
+    ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}:{{ brew_group }}" "{{ brew_install_path }}/{}"
+  become: yes
+  tags:
+  - always
+
+#- name: Check if linuxbrew binary is already in place
+#  stat:
+#    path: "/usr/local/bin/brew"
+#  register: brew_binary
+#  tags:
+#  - always
+
+#- name: Symlink brew to /usr/local/bin/brew
+#  file:
+#    src: "{{ brew_install_path }}/bin/brew"
+#    dest: "/usr/local/bin/brew"
+#    state: link
+#  when: brew_binary.stat.exists == false
+#  become: yes
+#  tags:
+#  - always
+
+- name: Check if linuxbrew binary is already in place.
+  stat:
+    path: "{{ brew_install_path }}/bin/brew"
+  register: brew_binary
+  tags:
+  - always
+
+- name: "Adding linuxbrew to /etc/profile"
+  blockinfile:
+    create: yes
+    dest: '/etc/profile'
+    marker: "# {mark} homebrew PATH"
+    block: |
+      export PATH="{{ brew_install_path }}/sbin:{{ brew_install_path }}/bin:$PATH"
+  become: yes
+  tags:
+  - always
+
+## Tap.
+#- name: Ensure configured taps are tapped.
+#  shell: brew tap {{ item }}
+#  with_items: "{{ brew_taps }}"
+#  tags:
+#    - always
+
+# Brew.
+- name: Ensure configured linuxbrew packages are installed.
+  homebrew:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ brew_installed_packages }}"
+  tags:
+  - always
+
+- name: Upgrade all linuxbrew packages (if configured).
+  homebrew:
+    update_homebrew: yes
+    upgrade_all: yes
+  when: brew_upgrade_all_packages
+  tags:
+  - always
+
+# Cask.
+#- name: Get list of apps installed with cask.
+#  command: >
+#    bash -l -c '{{ brew_brew_bin_path }}/brew cask list'
+#  register: brew_cask_list
+#  check_mode: no
+#  changed_when: false
+#  tags:
+#    - always
+
+## Use command module instead of brew_cask so appdir can be used.
+#- name: Install configured cask applications.
+#  command: >
+#    bash -l -c '{{ brew_brew_bin_path }}/brew cask reinstall {{ item }} --appdir={{ brew_cask_appdir }}'
+#  with_items: "{{ brew_cask_apps }}"
+##  when: "item not in brew_cask_list.stdout"
+#  tags:
+#    - always
+
+- name: Check for Brewfile.
+  stat:
+    path: "{{ brew_brewfile_dir }}/Brewfile"
+  register: brew_brewfile
+  tags:
+  - always
+
+- name: Install from Brewfile.
+  command: "brew bundle chdir={{ brew_brewfile_dir }}"
+  when: brew_brewfile.stat.exists and brew_use_brewfile
+  tags:
+  - always
