@@ -113,7 +113,7 @@
   - zsh
 
 - name: "Changing default shell to zsh "
-  shell: 'chsh -s /bin/zsh {{ brew_user }}'
+  shell: 'chsh -s {{ brew_brew_bin_path }}/zsh {{ brew_user }}'
   become: true
   become_user: root
   tags:
@@ -254,12 +254,34 @@
   tags:
   - zsh
 
+- name: "Resolve local python path"
+  shell: "cd $(dirname {{ brew_brew_bin_path }}/python); cd $(dirname $(readlink {{ brew_brew_bin_path }}/python)); pwd"
+  register: result
+  tags:
+  - always
+
+- name: "Register local_python_path fact"
+  set_fact: local_python_path="{{ result.stdout }}"
+  tags:
+  - always
+
+- name: "Resolve site-packages location"
+  shell: "{{ local_python_path }}/python -m site --user-site"
+  register: result
+  tags:
+  - always
+
+- name: "Register site_packages_dir fact"
+  set_fact: site_packages_dir="{{ result.stdout }}"
+  tags:
+  - always
+
 - name: "Adding local_python to PATH in {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
     dest: '{{ brew_user_home_dir }}/.zshrc'
     marker: "# {mark} local_python PATH"
     block: |
-      export PATH="{{ brew_user_home_dir }}/Library/Python/2.7/bin:$PATH"
+      export PATH="{{ local_python_path }}/bin:$PATH"
   tags:
   - zsh
 
@@ -268,7 +290,7 @@
     dest: '{{ brew_user_home_dir }}/.zshrc'
     marker: "# {mark} powerline"
     block: |
-      source {{ brew_user_home_dir }}/Library/Python/2.7/lib/python/site-packages/powerline/bindings/zsh/powerline.zsh
+      source {{ site_packages_dir }}/powerline/bindings/zsh/powerline.zsh
   tags:
   - zsh
 

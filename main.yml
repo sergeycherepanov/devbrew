@@ -39,38 +39,40 @@
   - name: homebrew
     include_role:
       name: homebrew
-    when: ansible_system == "Darwin"
+    when: "ansible_system == 'Darwin'"
+
   - name: linuxbrew
     include_role:
       name: linuxbrew
-    when: ansible_system == "Linux"
-  - roles/zsh
-  - roles/coreutils
-  - roles/flock
-  - roles/git
-  - roles/curl
-  - roles/jenv
-  - roles/golang
-  - roles/supervisord
-  - roles/logrotate
-  - roles/nginx
-  - roles/efk
-  - roles/efk+nginx
-  - roles/fakesendmail
-  - roles/dnsmasq
-  - roles/percona-server-56
-  - roles/percona-server-57
-  - roles/mongodb
-  - roles/redis
-  - roles/php-56
-  - roles/php-70
-  - roles/php-71
-  - roles/php-72
-  - roles/nginx-php-fpm
-  - roles/nodejs
-  - roles/php-tools
-  - roles/xhgui
-  - roles/compass
-  - roles/less
+    when: "ansible_system == 'Linux'"
+  - zsh
+  - coreutils
+  - role: flock
+    when: "ansible_system == 'Darwin'"
+  - git
+  - curl
+  - jenv
+  - golang
+  - supervisord
+  - logrotate
+  - nginx
+  - efk
+  - efk+nginx
+  - fakesendmail
+  - dnsmasq
+  - percona-server-56
+  - percona-server-57
+  - mongodb
+  - redis
+  - php-56
+  - php-70
+  - php-71
+  - php-72
+  - nginx-php-fpm
+  - nodejs
+  - php-tools
+  - xhgui
+  - compass
+  - less
   post_tasks:
   - include_tasks: "{{ ansible_system | lower }}_post.yml"

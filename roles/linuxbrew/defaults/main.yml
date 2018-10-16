@@ -3,6 +3,7 @@ brew_install_path: /home/linuxbrew/.linuxbrew
 brew_brew_bin_path: /home/linuxbrew/.linuxbrew/bin
 
 brew_installed_packages:
+  - vim
   - git
   - screen
   - ssh-copy-id

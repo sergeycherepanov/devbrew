@@ -1,10 +1,24 @@
 ---
+- name: "Ensure typing via pip"
+  pip:
+    name: typing
+    state: present
+  tags:
+  - always
+
+- name: "Ensure Cheetah via pip"
+  pip:
+    name: Cheetah
+    state: present
+  tags:
+  - always
+
 - name: "Ensure mongodb"
-  homebrew: 
+  homebrew:
     name: mongodb
     state: present
   tags:
-    - always
+  - always
 
 - name: "Create {{ brew_install_path }}/etc/supervisor.d/mongodb.ini"
   template:
@@ -12,4 +26,4 @@
     dest: "{{ brew_install_path }}/etc/supervisor.d/mongodb.ini"
   when: not state.stat.exists
   tags:
-    - always
+  - always
