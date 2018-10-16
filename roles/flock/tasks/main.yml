@@ -1,0 +1,25 @@
+---
+- name: Downloading flock
+  get_url:
+    url: "https://github.com/discoteq/flock/releases/download/v0.2.3/flock-0.2.3.tar.gz"
+    dest: "/tmp/flock.tgz"
+  tags:
+    - always
+
+- name: "Creating /tmp/flock"
+  file:
+    path: "/tmp/flock"
+    state: directory
+  tags:
+    - always
+
+- name: Extracting flock
+  shell: "tar xzf /tmp/flock.tgz -C /tmp/flock"
+  tags:
+    - always
+
+- name: Building flock
+  shell: "cd /tmp/flock/flock-0.2.3 && ./configure && make && make install"
+  tags:
+    - always
+
