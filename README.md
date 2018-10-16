@@ -14,12 +14,13 @@ macOS Development Environment
 
 ## Installation on Linux (Ubuntu/Debian)
 1. Open the terminal
-2. Install depndency: `sudo apt install -y curl git gcc libcurl3-dev` (it's starts XCODE installation process)
-3. Execute: `cd /tmp`
-4. Execute: `git clone https://github.com/SergeyCherepanov/dev-env-osx.git`
-5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh"` to make full install
+2. Install dependencies: `sudo apt install -yq curl git python-pip && pip install ansible`
+3. Install ansible: `pip install ansible`
+4. Execute: `cd /tmp`
+5. Execute: `git clone https://github.com/SergeyCherepanov/dev-env-osx.git`
+6. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh"` to make full install
 (Wait for finish. Should be without "Fatal" messages)
-6. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
+7. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
 
 ## Tags
 > You can choose one or all of them, tags don't have conflict

@@ -255,7 +255,8 @@
   - zsh
 
 - name: "Resolve local python path"
-  shell: "cd $(dirname {{ brew_brew_bin_path }}/python); cd $(dirname $(readlink {{ brew_brew_bin_path }}/python)); pwd"
+#  shell: "cd $(dirname {{ brew_brew_bin_path }}/python); cd $(dirname $(readlink {{ brew_brew_bin_path }}/python)); pwd"
+  shell: "cd $(dirname $(which python2)); cd $(dirname $(readlink $(which python2))); pwd"
   register: result
   tags:
   - always

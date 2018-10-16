@@ -32,9 +32,9 @@
     set_fact: brew_user_home_dir="{{ result.stdout }}"
     tags:
     - always
-
   - include_tasks: "{{ ansible_system | lower }}_pre.yml"
-
+    tags:
+    - always
   roles:
   - name: homebrew
     include_role:
@@ -76,3 +76,11 @@
   - less
   post_tasks:
   - include_tasks: "{{ ansible_system | lower }}_post.yml"
+    tags:
+    - always
+  - name: "Unlinking python@2"
+    homebrew:
+      name: "python@2"
+      state: unlinked
+    tags:
+    - always

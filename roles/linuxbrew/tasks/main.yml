@@ -110,6 +110,11 @@
   tags:
   - always
 
+- name: Updating brew repo
+  shell: 'brew update'
+  tags:
+  - always
+
 ## Tap.
 #- name: Ensure configured taps are tapped.
 #  shell: brew tap {{ item }}

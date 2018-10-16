@@ -4,12 +4,13 @@
   MAC_USER=${SUDO_USER-${USER}}
   MIN_ANSIBLE_VERSION="2.4.4.0"
   PYTHON_VERSION="2.7.15"
-  PYTHON_PKG="python-2.7.15-macosx10.9.pkg"
+  PYTHON_PKG_LINUX="Python-${PYTHON_VERSION}.tgz"
+  PYTHON_PKG_MACOS="python-${PYTHON_VERSION}-macosx10.9.pkg"
 
   if [[ "Darwin" == "$(uname)" ]]; then
     # Install python if outdated
     if ! php -r "version_compare('"$(python --version 2>&1 | awk '{print $2}')"', '${PYTHON_VERSION}', '>=') ? exit(0) : exit(1);" || ! which pip > /dev/null; then
-      curl -o "/tmp/${PYTHON_PKG}" "https://www.python.org/ftp/python/${PYTHON_VERSION}/${PYTHON_PKG}"
+      curl -o "/tmp/${PYTHON_PKG}" "https://www.python.org/ftp/python/${PYTHON_VERSION}/${PYTHON_PKG_MACOS}"
       sudo installer -pkg "/tmp/${PYTHON_PKG}" -target /
     fi
     cd $(dirname $(which python)); cd $(dirname $(readlink $(which python)))
@@ -24,7 +25,16 @@
     if [[ "Linux" == "$(uname)" ]]; then
       source /etc/os-release
       if [[ "debian" == "${ID_LIKE}" ]]; then
-        sudo apt install -yq curl git python-pip
+        if which python > /dev/null && dpkg --compare-versions "$(python --version 2>&1 | awk '{print $2}')" lt "${PYTHON_VERSION}"; then
+          cd /tmp
+          sudo apt install -yq curl git
+          curl -o "/tmp/${PYTHON_PKG_LINUX}" "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz"
+          sudo tar xzf "${PYTHON_PKG_LINUX}"
+          cd Python-2.7.15
+          sudo ./configure --enable-optimizations
+          sudo make
+          sudo make install
+        fi
         sudo pip install ansible
         ANSIBLE_PLAYBOOK_BIN="$(which ansible-playbook)"
       else

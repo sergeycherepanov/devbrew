@@ -15,7 +15,7 @@
 
 - name: "Ensure mongodb"
   homebrew:
-    name: mongodb
+    name: mongodb@3.6
     state: present
   tags:
   - always

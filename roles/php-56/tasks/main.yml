@@ -6,8 +6,8 @@
   tags:
     - php56
 
-- name: "Unlink all already installed php packages"
-  shell: "brew list | grep php | xargs brew unlink --no-run-if-empty"
+- name: "Unlinking all already installed php packages"
+  shell: "brew list | grep php | xargs --no-run-if-empty brew unlink"
   tags:
     - php56
 

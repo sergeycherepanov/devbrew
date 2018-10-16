@@ -1,10 +1,4 @@
 ---
-- name: "Unlinking python@2"
-  homebrew:
-    name: "python@2"
-    state: unlinked
-  tags:
-  - always
 - name: "Starting supervisord"
   shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
   become: true
