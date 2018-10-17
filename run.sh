@@ -10,8 +10,8 @@ PYTHON_PKG_MACOS="python-${PYTHON_VERSION}-macosx10.9.pkg"
 if [[ "Darwin" == "$(uname)" ]]; then
   # Install python if outdated
   if ! php -r "version_compare('"$(python --version 2>&1 | awk '{print $2}')"', '${PYTHON_VERSION}', '>=') ? exit(0) : exit(1);" || ! which pip > /dev/null; then
-    curl -o "/tmp/${PYTHON_PKG}" "https://www.python.org/ftp/python/${PYTHON_VERSION}/${PYTHON_PKG_MACOS}"
-    sudo installer -pkg "/tmp/${PYTHON_PKG}" -target /
+    curl -o "/tmp/${PYTHON_PKG_MACOS}" "https://www.python.org/ftp/python/${PYTHON_VERSION}/${PYTHON_PKG_MACOS}"
+    sudo installer -pkg "/tmp/${PYTHON_PKG_MACOS}" -target /
   fi
   cd $(dirname $(which python)); cd $(dirname $(readlink $(which python)))
 
