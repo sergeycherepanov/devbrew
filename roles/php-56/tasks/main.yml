@@ -1,8 +1,15 @@
 ---
+- name: Ensure php taps are untapped.
+  homebrew_tap: "tap={{ item }} state=absent"
+  with_items:
+  - "kyslik/homebrew-php"
+  tags:
+  - php56
+
 - name: Ensure php taps are tapped.
   homebrew_tap: "tap={{ item }} state=present"
   with_items:
-    - "kyslik/homebrew-php"
+    - "sergeycherepanov/php"
   tags:
     - php56
 

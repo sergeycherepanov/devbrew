@@ -90,8 +90,35 @@
 - name: "Adding CA certificate to keychain"
   shell: 'security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
   become: true
+  when: ansible_system == "Darwin"
   tags:
     - always
+
+- name: "Ensure /usr/share/ca-certificates/extra"
+  file:
+    path: "/usr/share/ca-certificates/extra"
+    state: directory
+    mode: 0755
+  become: yes
+  when: ansible_system == "Linux"
+  tags:
+  - always
+
+- name: "Copy root certificate /usr/share/ca-certificates/extra"
+  copy:
+    src: '{{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
+    dest: '/usr/share/ca-certificates/extra/'
+  become: yes
+  when: ansible_system == "Linux"
+  tags:
+  - always
+
+- name: "dpkg-reconfigure ca-certificates"
+  shell: 'dpkg-reconfigure -f noninteractive ca-certificates'
+  become: yes
+  when: ansible_system == "Linux"
+  tags:
+  - always
     
 - name: "Generate keys and signing for domains"
   shell: '{{ brew_install_path }}/bin/crtgen {{item}}.{{root_domain}}'

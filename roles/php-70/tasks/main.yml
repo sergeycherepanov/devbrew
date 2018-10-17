@@ -1,23 +1,30 @@
 ---
+- name: Ensure php taps are untapped.
+  homebrew_tap: "tap={{ item }} state=absent"
+  with_items:
+  - "kyslik/homebrew-php"
+  tags:
+  - php70
+
 - name: Ensure php taps are tapped.
   homebrew_tap: "tap={{ item }} state=present"
   with_items:
-    - "kyslik/homebrew-php"
+  - "sergeycherepanov/php"
   tags:
-    - php70
+  - php70
 
 - name: "Unlinking all already installed php packages"
   shell: "brew list | grep php | xargs --no-run-if-empty brew unlink"
   tags:
-    - php70
+  - php70
 
 - name: "Installing php70 with flags: {{ php70_flags }}"
-  homebrew: 
-    name: php70 
+  homebrew:
+    name: php70
     state: present
     install_options: "{{ php70_flags }}"
   tags:
-    - php70
+  - php70
 
 - name: "Installing php70 modules"
   homebrew:
@@ -25,19 +32,19 @@
     state: present
   with_items: "{{ php70_modules }}"
   tags:
-    - php70
+  - php70
 
 - name: "Remove outdated php70"
   shell: "brew upgrade --cleanup php70"
   ignore_errors: yes
   tags:
-    - php70
+  - php70
 
 - name: "Installing php70 pear packages modules"
   shell: "pear install {{ item }}"
   with_items: "{{ php70_pear_packages }}"
   tags:
-    - php70
+  - php70
 
 - name: "Add wrapper"
   template:
@@ -47,7 +54,7 @@
     group: "{{ www_group }}"
     mode: 0755
   tags:
-    - php70
+  - php70
 #- stat:
 #    path: "{{ brew_install_path }}/etc/php/7.0/php-fpm.conf"
 #  register: state
@@ -56,9 +63,9 @@
 
 - name: "Create php-fpm.conf"
   template: src=php-fpm.conf.j2 dest={{ brew_install_path }}/etc/php/7.0/php-fpm.conf owner={{ www_user }} group={{ www_group }}
-#  when: not state.stat.exists
+  #  when: not state.stat.exists
   tags:
-    - php70
+  - php70
 
 #- stat:
 #    path: "{{ brew_install_path }}/etc/php/7.0/php.ini"
@@ -68,9 +75,9 @@
 
 - name: "Create php.ini"
   template: src=php.ini.j2 dest={{ brew_install_path }}/etc/php/7.0/php.ini owner={{ www_user }} group={{ www_group }}
-#  when: not state.stat.exists
+  #  when: not state.stat.exists
   tags:
-    - php70
+  - php70
 
 #- stat:
 #    path: "{{ brew_install_path }}/etc/php/7.0/php-fpm-xdebug.conf"
@@ -79,14 +86,14 @@
 #    - php70
 
 - name: "Create php-fpm-xdebug.conf"
-  template: 
-      src: php-fpm-xdebug.conf.j2
-      dest: "{{ brew_install_path }}/etc/php/7.0/php-fpm-xdebug.conf"
-      owner: "{{ www_user }}"
-      group: "{{ www_group }}"
-#  when: not state.stat.exists
+  template:
+    src: php-fpm-xdebug.conf.j2
+    dest: "{{ brew_install_path }}/etc/php/7.0/php-fpm-xdebug.conf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  #  when: not state.stat.exists
   tags:
-    - php70
+  - php70
 
 #- stat:
 #    path: "{{ brew_install_path }}/etc/php/7.0/php-xdebug.ini"
@@ -101,9 +108,9 @@
     dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
-#  when: not state.stat.exists
+  #  when: not state.stat.exists
   tags:
-    - php70
+  - php70
 
 - blockinfile:
     dest: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini'
@@ -122,7 +129,7 @@
       xdebug.overload_var_dump=0
       xdebug.max_nesting_level=500
   tags:
-    - php70
+  - php70
 
 #- stat:
 #    path: "{{ brew_install_path }}/etc/php/7.0/conf.d/ext-opcache.ini"
@@ -134,20 +141,20 @@
   shell: "{{ brew_install_path }}/bin/php{{ php_version_num_int }} -i | grep -e '^extension_dir' | awk -F'=>' '{print $2}'"
   register: output
   tags:
-    - php70
+  - php70
 
 - name: Register php_extension_dir
   set_fact:
     php_extension_dir: "{{ output.stdout | trim }}"
   tags:
-    - php70
+  - php70
 
 - git:
     repo: 'https://github.com/tideways/php-profiler-extension.git'
     dest: "/tmp/xhprof{{php_version}}"
     version: 'master'
   tags:
-    - php70
+  - php70
 
 - name: "Install xhprof extension"
   shell: >
@@ -158,14 +165,14 @@
   args:
     chdir: "/tmp/xhprof{{php_version}}"
   tags:
-    - php70
+  - php70
 
 - name: "Ensure ext-xhprof.ini"
   copy:
     content: "extension=tideways_xhprof.so"
     dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xhprof.ini"
   tags:
-    - php70
+  - php70
 
 - name: "Create ext-opcache.ini"
   template:
@@ -173,32 +180,32 @@
     dest: "{{ brew_install_path }}/etc/php/7.0/conf.d/ext-opcache.ini"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
-#  when: not state.stat.exists
+  #  when: not state.stat.exists
   tags:
-    - php70
+  - php70
 
 - name: "Unlink php70"
   homebrew: "name=php70 state=unlinked"
   ignore_errors: yes
   tags:
-    - php70
+  - php70
 
 - name: Adding '{{ php_version_num_int }}' to "php_versions" array
-  set_fact: 
+  set_fact:
     php_versions: "{{ php_versions + [ php_version_num_int ] }}"
   tags:
-    - php70
+  - php70
 
 - name: Setting default php to {{ php_version_num_int }}
   set_fact:
     default_php: "{{ php_version_num_int }}"
   tags:
-    - php70
+  - php70
 
 - debug:
     var: php_versions
   tags:
-    - php70
+  - php70
 
 #- stat:
 #    path: "{{ brew_install_path }}/etc/supervisor.d/php70.ini"
@@ -210,9 +217,9 @@
   template:
     src: supervisord.ini.j2
     dest: "{{ brew_install_path }}/etc/supervisor.d/php70.ini"
-#  when: not state.stat.exists
+  #  when: not state.stat.exists
   tags:
-    - php70
+  - php70
 
 - name: "Creates {{ brew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
   template:
@@ -221,9 +228,9 @@
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   tags:
-    - php70
+  - php70
 
 - name: "Linking php"
   shell: "brew link {{ php_version }}"
   tags:
-    - php70
+  - php70
