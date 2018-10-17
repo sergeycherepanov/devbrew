@@ -1,4 +1,13 @@
 ---
+- name: "Stopping supervisord-devbrew"
+  systemd:
+    name: supervisord-devbrew
+    state: stopped
+  ignore_errors: yes
+  become: yes
+  tags:
+  - always
+
 - name: "Ensure linux requirements via apt"
   apt:
     name: "{{ item }}"

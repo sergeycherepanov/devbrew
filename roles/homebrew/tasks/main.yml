@@ -101,6 +101,7 @@
 
 - name: Updating brew repo
   shell: 'brew update'
+  ignore_errors: yes
   tags:
   - always
 

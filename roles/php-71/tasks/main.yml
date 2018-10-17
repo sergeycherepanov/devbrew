@@ -14,7 +14,14 @@
   - php71
 
 - name: "Unlinking all already installed php packages"
+  shell: "brew list | grep php | xargs brew unlink"
+  when: ansible_system == "Darwin"
+  tags:
+  - php71
+
+- name: "Unlinking all already installed php packages"
   shell: "brew list | grep php | xargs --no-run-if-empty brew unlink"
+  when: ansible_system == "Linux"
   tags:
   - php71
 
@@ -58,7 +65,7 @@
 
 
 #- stat:
-#    path: "{{ brew_install_path }}/etc/php/7.1/php-fpm.conf"
+#    path: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm.conf"
 #  register: state
 #  tags:
 #    - php71
@@ -66,7 +73,7 @@
 - name: "Create php-fpm.conf"
   template:
     src: "php-fpm.conf.j2"
-    dest: "{{ brew_install_path }}/etc/php/7.1/php-fpm.conf"
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm.conf"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   #  when: not state.stat.exists
@@ -74,7 +81,7 @@
   - php71
 
 #- stat: 
-#    path: "{{ brew_install_path }}/etc/php/7.1/php.ini"
+#    path: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php.ini"
 #  register: state
 #  tags:
 #    - php71
@@ -82,7 +89,7 @@
 - name: "Create php.ini"
   template:
     src: "php.ini.j2"
-    dest: "{{ brew_install_path }}/etc/php/7.1/php.ini"
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php.ini"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   #  when: not state.stat.exists
@@ -90,7 +97,7 @@
   - php71
 
 #- stat: 
-#    path: "{{ brew_install_path }}/etc/php/7.1/php-fpm-xdebug.conf"
+#    path: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm-xdebug.conf"
 #  register: state
 #  tags:
 #    - php71
@@ -98,7 +105,7 @@
 - name: "Create php-fpm-xdebug.conf"
   template:
     src: php-fpm-xdebug.conf.j2
-    dest: "{{ brew_install_path }}/etc/php/7.1/php-fpm-xdebug.conf"
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm-xdebug.conf"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   #  when: not state.stat.exists
@@ -106,10 +113,19 @@
   - php71
 
 #- stat: 
-#    path: "{{ brew_install_path }}/etc/php/7.1/php-xdebug.ini"
+#    path: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini"
 #  register: state
 #  tags:
 #    - php71
+
+- name: "Disabling xdebug by default"
+  lineinfile:
+    path: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xdebug.ini'
+    regexp: '^(zend_extension=.*)'
+    line: ';\1'
+    backrefs: yes
+  tags:
+  - zsh
 
 - name: "Create php-xdebug.ini"
   template:
@@ -141,7 +157,7 @@
   - php71
 
 #- stat: 
-#    path: "{{ brew_install_path }}/etc/php/7.1/conf.d/ext-opcache.ini"
+#    path: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-opcache.ini"
 #  register: state
 #  tags:
 #    - php71
@@ -192,7 +208,7 @@
 - name: "Create ext-opcache.ini"
   template:
     src: "ext-opcache.ini.j2"
-    dest: "{{ brew_install_path }}/etc/php/7.1/conf.d/ext-opcache.ini"
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-opcache.ini"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   #  when: not state.stat.exists

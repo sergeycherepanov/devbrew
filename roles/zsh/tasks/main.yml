@@ -277,12 +277,23 @@
   tags:
   - always
 
-- name: "Adding local_python to PATH in {{ brew_user_home_dir }}/.zshrc"
+- name: "Resolve python user base dir"
+  shell: "{{ local_python_path }}/python -m site --user-base"
+  register: result
+  tags:
+  - always
+
+- name: "Register python_user_base_dir fact"
+  set_fact: python_user_base_dir="{{ result.stdout }}"
+  tags:
+  - always
+
+- name: "Adding python_user_base_dir to PATH in {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
     dest: '{{ brew_user_home_dir }}/.zshrc'
-    marker: "# {mark} local_python PATH"
+    marker: "# {mark} python_user_base_dir PATH"
     block: |
-      export PATH="{{ local_python_path }}/bin:$PATH"
+      export PATH="{{ python_user_base_dir }}/bin:$PATH"
   tags:
   - zsh
 

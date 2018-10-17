@@ -1,6 +1,5 @@
 ---
-brew_install_path: /usr/local
-brew_brew_bin_path: /usr/local/bin
+brew_brew_bin_path: "{{ brew_install_path }}/bin"
 
 brew_installed_packages:
   - ssh-copy-id
@@ -35,7 +34,6 @@ brew_taps:
 brew_cask_apps:
   - font-hack-nerd-font
   - iterm2
-  - java8
 
 brew_cask_appdir: /Applications
 

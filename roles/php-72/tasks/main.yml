@@ -14,7 +14,14 @@
   - php72
 
 - name: "Unlinking all already installed php packages"
+  shell: "brew list | grep php | xargs brew unlink"
+  when: ansible_system == "Darwin"
+  tags:
+  - php72
+
+- name: "Unlinking all already installed php packages"
   shell: "brew list | grep php | xargs --no-run-if-empty brew unlink"
+  when: ansible_system == "Linux"
   tags:
   - php72
 
@@ -59,7 +66,7 @@
 - name: "Create php-fpm.conf"
   template:
     src: php-fpm.conf.j2
-    dest: "{{ brew_install_path }}/etc/php/7.2/php-fpm.conf"
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm.conf"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   tags:
@@ -68,20 +75,20 @@
 - name: "Create php.ini"
   template:
     src: php.ini.j2
-    dest: "{{ brew_install_path }}/etc/php/7.2/php.ini"
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php.ini"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   tags:
   - php72
 
 #- stat: 
-#    path: "{{ brew_install_path }}/etc/php/7.2/php-fpm-xdebug.conf"
+#    path: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm-xdebug.conf"
 #  register: state
 
 - name: "Create php-fpm-xdebug.conf"
   template:
     src: php-fpm-xdebug.conf.j2
-    dest: "{{ brew_install_path }}/etc/php/7.2/php-fpm-xdebug.conf"
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm-xdebug.conf"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   #  when: not state.stat.exists
@@ -89,7 +96,7 @@
   - php72
 
 #- stat: 
-#    path: "{{ brew_install_path }}/etc/php/7.2/php-xdebug.ini"
+#    path: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini"
 #  register: state
 
 - name: Resolve extension dir
@@ -135,6 +142,15 @@
   tags:
   - php72
 
+- name: "Disabling xdebug by default"
+  lineinfile:
+    path: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xdebug.ini'
+    regexp: '^(zend_extension=.*)'
+    line: ';\1'
+    backrefs: yes
+  tags:
+  - zsh
+
 - name: "Create php-xdebug.ini"
   template:
     src: php.ini.j2
@@ -165,16 +181,24 @@
   - php72
 
 #- stat: 
-#    path: "{{ brew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini"
+#    path: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-opcache.ini"
 #  register: state
 
 - name: "Create ext-opcache.ini"
   template:
     src: "ext-opcache.ini.j2"
-    dest: "{{ brew_install_path }}/etc/php/7.2/conf.d/ext-opcache.ini"
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-opcache.ini"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   #  when: not state.stat.exists
+  tags:
+  - php72
+
+- name: "Updating php.ini"
+  lineinfile:
+    path: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/php.ini'
+    line: 'extension="mcrypt.so"'
+    state: absent
   tags:
   - php72
 
@@ -226,24 +250,5 @@
 
 - name: "Linking php"
   shell: "brew link {{ php_version }}"
-  tags:
-  - php72
-
-- name: "Installing mcrypt for {{ php_version }}"
-  shell: 'printf "\n" | {{ brew_install_path }}/opt/{{php_version}}/bin/pecl install mcrypt-1.0.1'
-  register: last_result
-  failed_when: "last_result.rc != 0 and 'already installed' not in last_result.stdout"
-  tags:
-  - php72
-
-#- name: "Linking mcrypt extension"
-#  shell: "ln -sf $({{ brew_install_path }}/opt/{{php_version}}/bin/pear config-show | grep -o -e 'ext_dir.*' | awk '{print $2}')/mcrypt.so {{ php_extension_dir }}/mcrypt.so"
-#  tags:
-#  - php72
-
-- name: "Ensure ext-mcrypt.ini"
-  copy:
-    content: "extension=mcrypt.so"
-    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-mcrypt.ini"
   tags:
   - php72

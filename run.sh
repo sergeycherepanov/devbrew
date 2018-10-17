@@ -21,6 +21,7 @@ if [[ "Darwin" == "$(uname)" ]]; then
     sudo -H ./pip install --force-reinstall --upgrade ansible
   }
   ANSIBLE_PLAYBOOK_BIN="./ansible-playbook"
+  BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/usr/local}"
 else
   if [[ "Linux" == "$(uname)" ]]; then
     source /etc/os-release
@@ -39,6 +40,7 @@ else
         sudo pip install --force-reinstall --upgrade ansible
       fi
       ANSIBLE_PLAYBOOK_BIN="$(which ansible-playbook)"
+      BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/home/linuxbrew/.linuxbrew}"
     else
       echo "Unsupported system: '$(uname):${ID_LIKE}'"
       exit 1
@@ -49,4 +51,4 @@ else
   fi
 fi
 
-sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} -i "localhost," -c local "${DIR}/main.yml" -e "mac_user=${MAC_USER}" "$@"
+sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} -i "localhost," -c local "${DIR}/main.yml" -e "mac_user=${MAC_USER}" -e "brew_install_path=${BREW_INSTALL_PATH}" "$@"

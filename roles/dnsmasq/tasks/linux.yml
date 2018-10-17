@@ -1,0 +1,22 @@
+---
+- name: "Configure *.dev.com zone resolver"
+  copy:
+    content: "address=/.dev.com/127.0.0.1"
+    dest: "/etc/NetworkManager/dnsmasq.d/dev.com.conf"
+  become: yes
+  tags:
+  - always
+
+- name: "Configure *.loc.com zone resolver"
+  copy:
+    content: "address=/.dev.loc/127.0.0.1"
+    dest: "/etc/NetworkManager/dnsmasq.d/dev.loc.conf"
+  become: yes
+  tags:
+  - always
+
+- file:
+    state: absent
+    path: "{{ brew_install_path }}/etc/supervisor.d/dnsmasq.ini"
+  tags:
+  - always

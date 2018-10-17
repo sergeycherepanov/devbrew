@@ -1,6 +1,5 @@
 ---
-brew_install_path: /home/linuxbrew/.linuxbrew
-brew_brew_bin_path: /home/linuxbrew/.linuxbrew/bin
+brew_brew_bin_path: "{{ brew_install_path }}/bin"
 
 brew_installed_packages:
   - vim

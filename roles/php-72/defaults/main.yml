@@ -6,6 +6,7 @@ php_version_num_int: 72
 php72_flags: "with-homebrew-curl,with-pear"
 php72_modules:
 - php72-intl
+- php72-mcrypt
 - php72-xdebug
 - php72-redis
 - php72-tidy
