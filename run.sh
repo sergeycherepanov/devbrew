@@ -28,13 +28,18 @@ else
     if [[ "debian" == "${ID_LIKE}" ]]; then
       if ! which python > /dev/null || dpkg --compare-versions "$(python --version 2>&1 | awk '{print $2}')" lt "${PYTHON_VERSION}"; then
         cd /tmp
-        sudo apt install -yq curl git
+        sudo apt update
+        sudo apt install -yq curl git zlib1g-dev openssl
         curl -o "/tmp/${PYTHON_PKG_LINUX}" "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz"
         sudo tar xzf "${PYTHON_PKG_LINUX}"
         cd Python-2.7.15
-        sudo ./configure --enable-optimizations
+        sudo ./configure --enable-optimizations --with-zlib=/usr/include
         sudo make
         sudo make install
+        if ! which pip > /dev/null; then
+          sudo apt install python-setuptools
+          sudo easy_install pip
+        fi
       fi
       if ! which ansible > /dev/null || dpkg --compare-versions "$(ansible --version 2>&1 | head -n1 | awk '{print $2}')" lt "${MIN_ANSIBLE_VERSION}"; then
         sudo pip install --force-reinstall --upgrade ansible
