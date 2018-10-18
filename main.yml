@@ -2,8 +2,6 @@
 - hosts: localhost
   vars:
   - php_versions: []
-  environment:
-    PATH: "{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:{{ ansible_env.PATH }}"
   pre_tasks:
   - name: "Register brew_user fact"
     set_fact:

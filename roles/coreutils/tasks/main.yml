@@ -11,7 +11,7 @@
     dest: '{{ brew_user_home_dir }}/.zshrc'
     marker: "# {mark} coreutils PATH"
     block: |
-      export PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
+      export PATH="$({{ brew_brew_bin_path }}/brew --prefix coreutils)/libexec/gnubin:$PATH"
   tags:
     - always
 
@@ -20,6 +20,6 @@
     dest: '{{ brew_user_home_dir }}/.bashrc'
     marker: "# {mark} coreutils PATH"
     block: |
-      export PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
+      export PATH="$({{ brew_brew_bin_path }}/brew --prefix coreutils)/libexec/gnubin:$PATH"
   tags:
     - always

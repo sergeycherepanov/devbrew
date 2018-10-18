@@ -1,5 +1,5 @@
 # dev-env-osx
-macOS/Linux PHP/JS Development Environment Based on Homebrew(Linuxbrew)
+macOS/Linux NGINX/PHP/JS/MySql Development Environment Based on Homebrew(Linuxbrew)
 
 [![Build Status](https://travis-ci.org/SergeyCherepanov/dev-env-osx.svg?branch=master)](https://travis-ci.org/SergeyCherepanov/dev-env-osx)
 
@@ -16,7 +16,7 @@ macOS/Linux PHP/JS Development Environment Based on Homebrew(Linuxbrew)
 
 ## Installation on MacOS
 1. Open the terminal (just type **terminal** into spotlight)
-2. Execute: `xcode-select --install` (it's starts XCODE installation process)
+2. Install cli tools: `xcode-select --install` (it's starts XCODE installation process)
 3. Execute: `cd /tmp`
 4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
 5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh"` to make full install
@@ -25,11 +25,10 @@ macOS/Linux PHP/JS Development Environment Based on Homebrew(Linuxbrew)
 
 ## Installation on Linux (Ubuntu/Debian)
 1. Open the terminal
-2. Install dependencies: `sudo apt install -yq curl git python-pip`
-3. Install ansible: `pip install ansible`
-4. Execute: `cd /tmp`
-5. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
-6. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh"` to make full install
+2. Install dependencies: `sudo apt install -yq curl git`
+3. Execute: `cd /tmp`
+4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
+5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh"` to make full install
 (Wait for finish. Should be without "Fatal" messages)
 7. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
 
@@ -68,7 +67,8 @@ To do this, just create put source code of your project to `~/www/com/google` an
 
 ### SSL
 
-Root ca certificate is located in {{ brew_install_path }}/etc/openssl/localCA/cacert.pem
+The root ca certificate is located in: `%BREW_INSTALL_PATH%/etc/openssl/localCA/cacert.pem`  
+Where BREW_INSTALL_PATH by default is /usr/local for macOS and /home/linuxbrew/.linuxbrew for linux.  
 
 ## PHP Multi-Version Support
 
@@ -84,28 +84,12 @@ To start/stop/restart service use `supervisorctl`
 
 ## Mysql
 
-* Mysql 5.6 binds to 3306 port  
-* Mysql 5.7 binds to 3307 port  
+* Mysql (Percona) Server 5.6 binds to 3306 port (user: `root`, password: `root`)  
+* Mysql (Percona) Server 5.7 binds to 3307 port (user: `root`, password: `root`)  
 
 ## PHP Mail
 
 In ~/mail directory will be drops letter what be sent via php **mail** function
-
-## Change cli Java version
-
-List available versions
-```
-jenv versions
-```
-
-Set 1.8 as default
-```
-jenv local 1.8
-```
-or
-```
-jenv global 1.8
-```
 
 ### Error: /usr/local is not writable.
 
