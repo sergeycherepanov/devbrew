@@ -1,79 +1,130 @@
 ---
-- name: "Installing supervisor"
-  homebrew: 
-    name: supervisor 
+- name: "Removing supervisor in userspace"
+  pip:
+    name: supervisor
+    state: absent
+  become: yes
+  tags:
+  - always
+
+- name: "Installing supervisor globally"
+  pip:
+    name: supervisor
     state: present
+    extra_args: --force-reinstall
+  become: yes
   tags:
-    - always
+  - always
 
-- name: "Creates /usr/local/etc/supervisor.d"
+- name: "Ensure supctl wrapper"
+  copy:
+    mode: 0755
+    owner: root
+    group: "{{ brew_group }}"
+    dest: "{{ brew_brew_bin_path }}/supctl"
+    content: |
+      #!/bin/sh
+      exec supervisorctl $@ -c {{ brew_install_path }}/etc/supervisord.ini
+  become: yes
+  tags:
+  - always
+
+- name: "Resolving supervisord path"
+  shell: "which supervisord"
+  register: supervisord_path_output
+  tags:
+  - always
+
+- name: "Register supervisord_path fact"
+  set_fact: supervisord_path="{{ supervisord_path_output.stdout }}"
+  tags:
+  - always
+
+- name: "Resolving pidproxy path"
+  shell: "which pidproxy"
+  register: pidproxy_output
+  tags:
+  - always
+
+- name: "Register supervisor_pidproxy_path fact"
+  set_fact: supervisor_pidproxy_path="{{ pidproxy_output.stdout }}"
+  tags:
+  - always
+
+- name: "Creates {{ brew_install_path }}/etc/supervisor.d"
   file:
-    path: "{{ homebrew_install_path }}/etc/supervisor.d"
+    path: "{{ brew_install_path }}/etc/supervisor.d"
     state: directory
   tags:
-    - always
+  - always
 
 
-- name: "Creates {{ homebrew_install_path }}/var/log/supervisor"
+- name: "Creates {{ brew_install_path }}/var/log/supervisor"
   file:
-    path: "{{ homebrew_install_path }}/var/log/supervisor"
+    path: "{{ brew_install_path }}/var/log/supervisor"
     state: directory
   tags:
-    - always
+  - always
+
+- name: Ensure supervisord.ini
+  template:
+    src: supervisord.ini.j2
+    dest: '{{ brew_install_path }}/etc/supervisord.ini'
+  tags:
+  - always
 
 - name: Ensure symlink for supervisord.ini
   file:
-    src: "{{ homebrew_install_path }}/etc/supervisord.ini"
-    dest: "{{ homebrew_install_path }}/etc/supervisord.conf"
+    src: "{{ brew_install_path }}/etc/supervisord.ini"
+    dest: "{{ brew_install_path }}/etc/supervisord.conf"
     state: link
   tags:
-    - always
+  - always
 
 - name: Ensure permissions for supervisord socket
   ini_file:
-    path: "{{ homebrew_install_path }}/etc/supervisord.ini"
+    path: "{{ brew_install_path }}/etc/supervisord.ini"
     section: "unix_http_server"
-    option: "chmod" 
+    option: "chmod"
     value: "0770"
   tags:
-    - always
+  - always
 
 - name: Ensure ownership for supervisord socket
   ini_file:
-    path: "{{ homebrew_install_path }}/etc/supervisord.ini"
+    path: "{{ brew_install_path }}/etc/supervisord.ini"
     section: "unix_http_server"
     option: "chown"
-    value: "root:admin"
+    value: "root:{{ brew_group }}"
   tags:
-    - always
+  - always
 
-- name: "Ensure homebrew.mxcl.supervisor.plist"
-  template: 
+- name: "Ensure /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+  template:
     src: homebrew.mxcl.supervisor.plist.j2
     dest: '/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist'
   become: true
   tags:
-    - always
+  - always
+  when: ansible_system == "Darwin"
 
+- name: "Ensure /lib/systemd/system/supervisord-devbrew.service"
+  template:
+    src: supervisord-devbrew.service.j2
+    dest: /lib/systemd/system/supervisord-devbrew.service
+    owner: root
+    group: root
+  when: ansible_system == "Linux"
+  become: yes
+  tags:
+  - always
 
 - name: "Ensure supervisor-listener"
-  template: 
+  template:
     src: supervisor-listener
-    dest: '/usr/local/bin/supervisor-listener'
+    dest: '{{ brew_install_path }}/bin/supervisor-listener'
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
     mode: 0755
   tags:
-    - always
-#
-#- name: "Stopping supervisord"
-#  shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-#  become: true
-#  tags:
-#    - always
-
-#- name: "Starting supervisord"
-#  shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-#  become: true
-#  tags:
-#    - always
+  - always

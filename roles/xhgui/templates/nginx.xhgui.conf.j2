@@ -9,9 +9,9 @@ server {
     
     set $port_prefix 90;
     set $php_version {{ default_php }};
-    set $php_version_path "{{ homebrew_install_path }}/bin/php${php_version}";
+    set $php_version_path "{{ brew_install_path }}/bin/php${php_version}";
     
-    set $documentRoot {{ homebrew_install_path }}/opt/xhgui/webroot;
+    set $documentRoot {{ brew_install_path }}/opt/xhgui/webroot;
     
     root   $documentRoot;
     index  index.php index.html;

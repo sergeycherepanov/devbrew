@@ -4,72 +4,107 @@
     state: absent
     path: "{{ item }}"
   with_items:
-    - "/tmp/awesome-terminal-fonts"
-    - "/tmp/powerline_fonts"
-    - "/tmp/oh-my-zsh"
+  - "/tmp/awesome-terminal-fonts"
+  - "/tmp/powerline_fonts"
+  - "/tmp/oh-my-zsh"
   ignore_errors: yes
   tags:
-    - zsh
+  - zsh
 
 - name: "Downloading 'hack' font"
   git:
     repo: 'https://github.com/powerline/fonts.git'
     dest: '/tmp/powerline_fonts'
     version: 'master'
+  when: ansible_system == "Linux"
   tags:
-    - zsh
+  - zsh
 
 - copy:
     src: '/tmp/powerline_fonts/Hack/'
-    dest: '{{ ansible_env.HOME }}/Library/Fonts/'
+    dest: '/usr/share/fonts/'
+  when: ansible_system == "Linux"
+  become: yes
   tags:
-    - zsh
+  - zsh
 
-- name: "Downloading 'hack' font for terminal"
+- copy:
+    src: '/tmp/powerline_fonts/Hack/'
+    dest: '{{ brew_user_home_dir }}/.fonts/'
+  when: ansible_system == "Linux"
+  tags:
+  - zsh
+
+- name: "Downloading 'awesome-terminal-fonts'"
   git:
     repo: 'https://github.com/gabrielelana/awesome-terminal-fonts.git'
     dest: '/tmp/awesome-terminal-fonts'
     version: 'master'
   tags:
-    - zsh
+  - zsh
 
-- name: "Installing 'hack' font"
+- name: "Installing 'awesome-terminal-fonts' to {{ brew_user_home_dir }}/.fonts/"
   copy:
     src: '/tmp/awesome-terminal-fonts/build/'
-    dest: '{{ ansible_env.HOME }}/.fonts/'
+    dest: '{{ brew_user_home_dir }}/.fonts/'
   tags:
-    - zsh
- 
+  - zsh
+
+- name: "Installing 'awesome-terminal-fonts' /usr/share/fonts/"
+  copy:
+    src: '/tmp/awesome-terminal-fonts/build/'
+    dest: '/usr/share/fonts/'
+  when: ansible_system == "Linux"
+  become: yes
+  tags:
+  - zsh
+
+- name: "Rebuild font cache"
+  shell: "fc-cache -f -v"
+  when: ansible_system == "Linux"
+  become: yes
+  tags:
+  - zsh
+
 - name: "Installing powerline-status via pip"
   pip:
     name: powerline-status
     state: present
     extra_args: --user
   tags:
-    - zsh
+  - zsh
 
 - name: "Installing zsh via homebrew"
-  homebrew: 
+  homebrew:
     name: zsh
     state: present
   tags:
-    - zsh
+  - zsh
+
+- name: "Adding zsh to /etc/shells"
+  lineinfile:
+    path: '/etc/shells'
+    line: '{{ brew_brew_bin_path }}/zsh'
+  become: yes
+  tags:
+  - zsh
 
 - name: "Installing zsh-completions via homebrew"
-  homebrew: 
+  homebrew:
     name: zsh-completions
     state: present
   tags:
-    - zsh
+  - zsh
 
-- git:
+- name: "Installing prezto"
+  git:
     repo: 'https://github.com/sorin-ionescu/prezto.git'
-    dest: '{{ ansible_env.HOME }}/.zprezto'
+    dest: '{{ brew_user_home_dir }}/.zprezto'
     version: 'master'
   tags:
-    - zsh
-  
-#- name: "Configure zshrc: {{ ansible_env.HOME }}/.zshrc"
+  - zsh
+
+#- name: "Configure zshrc: {{ brew_user_home_dir }}/.zshrc"
 #  shell: |
 #    setopt EXTENDED_GLOB
 #    for rcfile in ~/.zprezto/runcoms/^README.md(.N); do
@@ -77,96 +112,97 @@
 #      cp "$rcfile" ~/.${rcfile:t}
 #    done
 #  args:
-#    executable: /usr/local/bin/zsh
+#    executable: {{ brew_install_path }}/bin/zsh
 #  tags:
 #    - zsh
 
-- stat: 
-    path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+- stat:
+    path: "{{ brew_user_home_dir }}/.oh-my-zsh"
   register: state
   tags:
-    - zsh
+  - zsh
 
-- name: "Clean {{ ansible_env.HOME }}/.oh-my-zsh"
+- name: "Clean {{ brew_user_home_dir }}/.oh-my-zsh"
   file:
     state: absent
-    path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+    path: "{{ brew_user_home_dir }}/.oh-my-zsh"
   when: state.stat.exists
   tags:
-    - zsh
+  - zsh
 
-- git:
+- name: "Downloading oh-my-zsh"
+  git:
     repo: 'https://github.com/robbyrussell/oh-my-zsh.git'
     dest: '/tmp/oh-my-zsh'
     version: 'master'
   tags:
-    - zsh
+  - zsh
 
 - name: "Changing default shell to zsh "
-  shell: 'chsh -s /bin/zsh {{ mac_user|default(ansible_env.USER) }}'
+  shell: 'chsh -s {{ brew_brew_bin_path }}/zsh {{ brew_user }}'
   become: true
   become_user: root
   tags:
-    - zsh
+  - zsh
 
 - name: "Installing Oh My Zsh"
   shell: '/tmp/oh-my-zsh/tools/install.sh'
   ignore_errors: True
   environment:
-    SHELL: /bin/zsh
+    SHELL: "{{ brew_brew_bin_path }}/zsh"
   args:
-    executable: /bin/zsh
+    executable: "{{ brew_brew_bin_path }}/zsh"
   tags:
-    - zsh
+  - zsh
 
-- name: "Adding homebrew to PATH in {{ ansible_env.HOME }}/.zshrc"
+#- name: "Adding homebrew to PATH in {{ brew_user_home_dir }}/.zshrc"
+#  blockinfile:
+#    create: yes
+#    dest: '{{ brew_user_home_dir }}/.zshrc'
+#    marker: "# {mark} homebrew PATH"
+#    block: |
+#      export PATH="{{ brew_install_path }}/sbin:{{ brew_install_path }}/bin:$PATH"
+#  tags:
+#  - zsh
+
+- name: "Adding aliases {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
     create: yes
-    dest: '{{ ansible_env.HOME }}/.zshrc'
-    marker: "# {mark} homebrew PATH"
-    block: |
-      export PATH="/usr/local/sbin:$PATH"
-  tags:
-    - zsh
-
-- name: "Adding aliases {{ ansible_env.HOME }}/.zshrc"
-  blockinfile:
-    create: yes
-    dest: '{{ ansible_env.HOME }}/.zshrc'
+    dest: '{{ brew_user_home_dir }}/.zshrc'
     marker: "# {mark} export aliases"
     block: |
       if [[ -f ~/.aliases ]]; then
         source ~/.aliases
       fi
   tags:
-    - zsh
+  - zsh
 
 - name: "Setting EDITOR to vim"
   lineinfile:
-    path: '{{ ansible_env.HOME }}/.zshrc'
+    path: '{{ brew_user_home_dir }}/.zshrc'
     regexp: '^export EDITOR=.*'
     line: 'export EDITOR=vim'
   tags:
-    - zsh
+  - zsh
 
 - name: "Setting VISUAL to vim"
   lineinfile:
-    path: '{{ ansible_env.HOME }}/.zshrc'
+    path: '{{ brew_user_home_dir }}/.zshrc'
     regexp: '^export VISUAL=.*'
     line: 'export VISUAL=vim'
   tags:
-    - zsh
+  - zsh
 
 - lineinfile:
-    path: '{{ ansible_env.HOME }}/.zshrc'
+    path: '{{ brew_user_home_dir }}/.zshrc'
     regexp: '^DEFAULT_USER=.*'
     line: 'DEFAULT_USER="$USER"'
   tags:
-    - zsh
+  - zsh
 
-- name: "Adding Prezto modules to {{ ansible_env.HOME }}/.zpreztorc"
+- name: "Adding Prezto modules to {{ brew_user_home_dir }}/.zpreztorc"
   blockinfile:
-    dest: '{{ ansible_env.HOME }}/.zshrc'
+    dest: '{{ brew_user_home_dir }}/.zshrc'
     marker: "# {mark} Prezto Modules"
     block: |
       zstyle ':prezto:load' pmodule \
@@ -182,10 +218,10 @@
         'syntax-highlighting' \
         'history-substring-search' \
         'prompt'
-      
+
       zstyle ':prezto:module:prompt' theme 'paradox'
   tags:
-    - zsh
+  - zsh
 
 - name: "Creating .vim/autoload folder"
   file:
@@ -193,33 +229,33 @@
     state: directory
     mode: 0755
   with_items:
-    - "{{ ansible_env.HOME }}/.vim/autoload"
-    - "{{ ansible_env.HOME }}/.vim/bundle"
+  - "{{ brew_user_home_dir }}/.vim/autoload"
+  - "{{ brew_user_home_dir }}/.vim/bundle"
   tags:
-    - zsh
+  - zsh
 
 - name: "Install pathogen.vim"
   get_url:
     url: "https://tpo.pe/pathogen.vim"
-    dest: "{{ ansible_env.HOME }}/.vim/autoload/pathogen.vim"
+    dest: "{{ brew_user_home_dir }}/.vim/autoload/pathogen.vim"
   tags:
-    - zsh
+  - zsh
 
 - name: "Adding pathogen.vim to .vimrc"
   blockinfile:
     create: yes
-    dest: '{{ ansible_env.HOME }}/.vimrc'
+    dest: '{{ brew_user_home_dir }}/.vimrc'
     marker: '" {mark} pathogen.vim'
     block: |
       execute pathogen#infect()
       syntax on
       filetype plugin indent on
   tags:
-    - zsh
+  - zsh
 
-- name: "Adding locales to PATH in {{ ansible_env.HOME }}/.zshrc"
+- name: "Adding locales to PATH in {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
-    dest: '{{ ansible_env.HOME }}/.zshrc'
+    dest: '{{ brew_user_home_dir }}/.zshrc'
     marker: "# {mark} locales PATH"
     insertbefore: BOF
     block: |
@@ -227,11 +263,11 @@
       export LANG=en_US.UTF-8
       source $HOME/.fonts/*.sh
   tags:
-    - zsh
+  - zsh
 
-- name: "Adding Prezto to {{ ansible_env.HOME }}/.zshrc"
+- name: "Adding Prezto to {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
-    dest: '{{ ansible_env.HOME }}/.zshrc'
+    dest: '{{ brew_user_home_dir }}/.zshrc'
     marker: "# {mark} Prezto init"
     insertbefore: BOF
     block: |
@@ -239,32 +275,66 @@
       if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
         source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
       fi
-      
+
       # Customize to your needs...
   tags:
-    - zsh
+  - zsh
 
-- name: "Adding local_python to PATH in {{ ansible_env.HOME }}/.zshrc"
-  blockinfile:
-    dest: '{{ ansible_env.HOME }}/.zshrc'
-    marker: "# {mark} local_python PATH"
-    block: |
-      export PATH="{{ ansible_env.HOME }}/Library/Python/2.7/bin:$PATH"
+- name: "Resolve local python path"
+#  shell: "cd $(dirname {{ brew_brew_bin_path }}/python); cd $(dirname $(readlink {{ brew_brew_bin_path }}/python)); pwd"
+  shell: "cd $(dirname $(which python2)); cd $(dirname $(readlink $(which python2))); pwd"
+  register: result
   tags:
-    - zsh
-      
-- name: "Adding powerline to config {{ ansible_env.HOME }}/.zshrc"
+  - always
+
+- name: "Register local_python_path fact"
+  set_fact: local_python_path="{{ result.stdout }}"
+  tags:
+  - always
+
+- name: "Resolve site-packages location"
+  shell: "{{ local_python_path }}/python -m site --user-site"
+  register: result
+  tags:
+  - always
+
+- name: "Register site_packages_dir fact"
+  set_fact: site_packages_dir="{{ result.stdout }}"
+  tags:
+  - always
+
+- name: "Resolve python user base dir"
+  shell: "{{ local_python_path }}/python -m site --user-base"
+  register: result
+  tags:
+  - always
+
+- name: "Register python_user_base_dir fact"
+  set_fact: python_user_base_dir="{{ result.stdout }}"
+  tags:
+  - always
+
+- name: "Adding python_user_base_dir to PATH in {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
-    dest: '{{ ansible_env.HOME }}/.zshrc'
+    dest: '{{ brew_user_home_dir }}/.zshrc'
+    marker: "# {mark} python_user_base_dir PATH"
+    block: |
+      export PATH="{{ python_user_base_dir }}/bin:$PATH"
+  tags:
+  - zsh
+
+- name: "Adding powerline to config {{ brew_user_home_dir }}/.zshrc"
+  blockinfile:
+    dest: '{{ brew_user_home_dir }}/.zshrc'
     marker: "# {mark} powerline"
     block: |
-      source {{ ansible_env.HOME }}/Library/Python/2.7/lib/python/site-packages/powerline/bindings/zsh/powerline.zsh
+      source {{ site_packages_dir }}/powerline/bindings/zsh/powerline.zsh
   tags:
-    - zsh
-      
-- name: "Adding powerline config {{ ansible_env.HOME }}/.vimrc"
+  - zsh
+
+- name: "Adding powerline config {{ brew_user_home_dir }}/.vimrc"
   blockinfile:
-    dest: '{{ ansible_env.HOME }}/.vimrc'
+    dest: '{{ brew_user_home_dir }}/.vimrc'
     marker: '" {mark} powerline'
     block: |
       python from powerline.vim import setup as powerline_setup
@@ -272,5 +342,4 @@
       python del powerline_setup
       set laststatus=2
   tags:
-    - zsh
-      
+  - zsh

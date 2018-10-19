@@ -7,7 +7,7 @@
     - percona57
 
 - name: "Resolve mysql base dir"
-  shell: "ls {{ homebrew_install_path }}/opt/percona-server*/bin/mysqld | xargs -I{} bash -c '{} --version' | grep -i 'ver {{ mysql_version }}' | head -1 | awk '{print $1}' | xargs dirname | xargs dirname"
+  shell: "ls {{ brew_install_path }}/opt/percona-server*/bin/mysqld | xargs -I{} bash -c '{} --version' | grep -i 'ver {{ mysql_version }}' | head -1 | awk '{print $1}' | xargs dirname | xargs dirname"
   register: mysql_base_dir_output
   tags:
     - percona57
@@ -48,7 +48,7 @@
     path: "{{ mysql_etc_dir }}"
     state: directory
     owner: "{{ mysql_user }}"
-    group: admin
+    group: "{{ mysql_group }}"
     recurse: true
   become: yes
   with_items:
@@ -98,24 +98,24 @@
     - percona57
 
 - stat: 
-    path: "{{ homebrew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
+    path: "{{ brew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
   register: state
   tags:
     - percona57
 
-- name: "Create {{ homebrew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
+- name: "Create {{ brew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
   template:
     src: supervisord.ini.j2
-    dest: "{{ homebrew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
+    dest: "{{ brew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
   when: not state.stat.exists
   tags:
     - percona57
 
 - ini_file:
-    path: "{{ homebrew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
+    path: "{{ brew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
     section: "program:{{ mysql_supervisord_name }}"
     option: "command" 
-    value: "{{ homebrew_install_path }}/bin/pidproxy /usr/local/var/run/mysql/{{ mysql_version_num }}/mysqld.proxy.pid {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf"
+    value: "{{ brew_install_path }}/bin/pidproxy {{ brew_install_path }}/var/run/mysql/{{ mysql_version_num }}/mysqld.proxy.pid {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf"
   tags:
     - percona57
 
@@ -125,10 +125,10 @@
   tags:
     - percona57
 
-- name: "Absent {{ homebrew_install_path }}/var/mysql"
+- name: "Absent {{ brew_install_path }}/var/mysql"
   file:
     state: absent
-    path: "{{ homebrew_install_path }}/var/mysql/"
+    path: "{{ brew_install_path }}/var/mysql/"
   tags:
     - percona57
 
@@ -166,7 +166,7 @@
 - name: "Add wrapper"
   template:
     src: "mysql.j2"
-    dest: "{{ homebrew_install_path }}/bin/mysql{{ mysql_version_num }}"
+    dest: "{{ brew_install_path }}/bin/mysql{{ mysql_version_num }}"
     owner: "{{ mysql_user }}"
     mode: 0755
   tags:

@@ -6,9 +6,9 @@
   tags:
     - always
 
-- name: "Create {{ homebrew_install_path }}/etc/supervisor.d/redisdb.ini"
+- name: "Create {{ brew_install_path }}/etc/supervisor.d/redisdb.ini"
   template:
     src: supervisord.ini.j2
-    dest: "{{ homebrew_install_path }}/etc/supervisor.d/redisdb.ini"
+    dest: "{{ brew_install_path }}/etc/supervisor.d/redisdb.ini"
   tags:
     - always

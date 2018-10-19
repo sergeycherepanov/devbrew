@@ -1,0 +1,62 @@
+---
+- name: "Stopping supervisord-devbrew"
+  systemd:
+    name: supervisord-devbrew
+    state: stopped
+  ignore_errors: yes
+  become: yes
+  tags:
+  - always
+
+- name: "Ensure linux requirements via apt"
+  apt:
+    name:
+    - libcurl3-dev
+    - libpcap-dev
+    - systemtap-sdt-dev
+    - libpng-dev
+    - zlib1g-dev
+    - libldap2-dev
+    - libldap-2.4-2
+    - libtool-bin
+    - libzip-dev
+    - lbzip2
+    - libxml2-dev
+    - bzip2
+    - re2c
+    - libbz2-dev
+    - apache2-dev
+    - libjpeg-dev
+    - libxpm-dev
+    - libxpm-dev
+    - libgmp-dev
+    - libgmp3-dev
+    - libmcrypt-dev
+    - libmysqlclient-dev
+    - libpspell-dev
+    - librecode-dev
+    - libsasl2-dev
+    state: present
+  become: yes
+  tags:
+  - always
+
+- name: Ensure symlink for libs
+  shell: "{{ item }}"
+  become: yes
+  with_items:
+    - "ln -sf /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so"
+    - "ln -sf /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so"
+    - "ln -sf /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h"
+  tags:
+  - always
+
+#- name: "Updating /etc/environment"
+#  lineinfile:
+#    path: '/etc/environment'
+#    regexp: '^PATH="(.*)"'
+#    line: 'PATH="{{ brew_install_path }}/bin:\1"'
+#    backrefs: yes
+#  become: yes
+#  tags:
+#    - always

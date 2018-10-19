@@ -1,0 +1,11 @@
+[Unit]
+Description=Supervisord for the devbrew
+
+[Service]
+User=root
+Group=root
+ExecStart={{ supervisord_path }} -c {{ brew_install_path }}/etc/supervisord.ini --nodaemon
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

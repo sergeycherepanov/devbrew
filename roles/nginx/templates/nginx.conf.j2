@@ -1,9 +1,9 @@
 user  {{ www_user }} {{ www_group }};
 worker_processes auto;
 
-error_log {{ homebrew_install_path }}/var/log/nginx/error.log;
-error_log {{ homebrew_install_path }}/var/log/nginx/error.log  notice;
-error_log {{ homebrew_install_path }}/var/log/nginx/error.log  info;
+error_log {{ brew_install_path }}/var/log/nginx/error.log;
+error_log {{ brew_install_path }}/var/log/nginx/error.log  notice;
+error_log {{ brew_install_path }}/var/log/nginx/error.log  info;
 
 events {
     worker_connections  1024;
@@ -33,7 +33,7 @@ http {
       '"pipe": "$pipe"'
       '}';
 
-    access_log {{ homebrew_install_path }}/var/log/nginx/access_json.log access_json;
+    access_log {{ brew_install_path }}/var/log/nginx/access_json.log access_json;
 
     include servers/*.conf;
     include servers_custom/*.conf;

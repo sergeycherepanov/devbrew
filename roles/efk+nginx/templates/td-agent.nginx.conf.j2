@@ -4,8 +4,8 @@
   tag nginx.access
   time_key time_local
   keep_time_key true
-  path {{ homebrew_install_path }}/var/log/nginx/access_json.log
-  pos_file {{ homebrew_install_path }}/var/log/nginx/access_json.log.pos
+  path {{ brew_install_path }}/var/log/nginx/access_json.log
+  pos_file {{ brew_install_path }}/var/log/nginx/access_json.log.pos
   time_format %d/%b/%Y:%H:%M:%S %z
   read_from_head false
 

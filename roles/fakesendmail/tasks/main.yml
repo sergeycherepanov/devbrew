@@ -1,6 +1,6 @@
 ---
 - stat: 
-    path: "{{ homebrew_brew_bin_path }}/fake_sendmail.sh"
+    path: "{{ brew_brew_bin_path }}/fake_sendmail.sh"
   register: state
   tags:
     - always
@@ -8,7 +8,7 @@
 - name: "Create fake_sendmail.sh"
   template: 
     src: fake_sendmail.sh.j2
-    dest: "{{ homebrew_brew_bin_path }}/fake_sendmail.sh"
+    dest: "{{ brew_brew_bin_path }}/fake_sendmail.sh"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
     mode: 0744
@@ -16,9 +16,9 @@
   tags:
     - always
   
-- name: "Creates {{ ansible_env.HOME }}/mail directory"
+- name: "Creates {{ brew_user_home_dir }}/mail directory"
   file:
-    path: "{{ ansible_env.HOME }}/mail"
+    path: "{{ brew_user_home_dir }}/mail"
     state: directory
   tags:
     - always

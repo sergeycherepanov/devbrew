@@ -1,7 +1,7 @@
 [program:redisdb]
-command={{ homebrew_install_path }}/opt/redis/bin/redis-server {{ homebrew_install_path }}/etc/redis.conf --daemonize no
-directory={{ homebrew_install_path }}/var
-stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/redisdb.log
-stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/redisdb.err
+command={{ brew_install_path }}/opt/redis/bin/redis-server {{ brew_install_path }}/etc/redis.conf --daemonize no
+directory={{ brew_install_path }}/var
+stdout_logfile={{ brew_install_path }}/var/log/supervisor/redisdb.log
+stderr_logfile={{ brew_install_path }}/var/log/supervisor/redisdb.err
 autorestart=true
 user={{ www_user }}

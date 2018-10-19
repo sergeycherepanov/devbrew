@@ -4,5 +4,5 @@ server {
 
     server_name ~^(?<project_name>.+?)\.(?<php_version>[0-9]*)\.*(?<pool>\w+)$;
     
-    include {{ homebrew_install_path }}/etc/nginx/dev.conf;
+    include {{ brew_install_path }}/etc/nginx/dev.conf;
 }

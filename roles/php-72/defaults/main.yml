@@ -1,12 +1,17 @@
 ---
-php_version: php@7.2
+php_version: php72
 php_version_legacy: php72
 php_version_num: 7.2
 php_version_num_int: 72
-php72_flags: "with-homebrew-curl"
+php72_flags: "with-homebrew-curl,with-pear"
 php72_modules:
-  - php72-xdebug
-  - php72-redis
-  - php72-mongodb
-  - php72-apcu
+- php72-intl
+- php72-mcrypt
+- php72-xdebug
+- php72-redis
+- php72-tidy
+- php72-opcache
+- php72-pdo-pgsql
+- php72-mongodb
+- php72-apcu
 php72_pear_packages: []

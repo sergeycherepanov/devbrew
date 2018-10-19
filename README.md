@@ -1,16 +1,36 @@
 # dev-env-osx
-macOS Development Environment
+macOS/Linux NGINX/PHP/JS/MySql Development Environment Based on Homebrew(Linuxbrew)
 
-[![Build Status](https://travis-ci.org/SergeyCherepanov/dev-env-osx.svg?branch=master)](https://travis-ci.org/SergeyCherepanov/dev-env-osx)  
+[![Build Status](https://travis-ci.org/SergeyCherepanov/dev-env-osx.svg?branch=master)](https://travis-ci.org/SergeyCherepanov/dev-env-osx)
 
-## Installation 
+## Supported applications and frameworks
+* Magento Commerce, Magento Commerce 2
+* Symfony 2,3,4
+* Laravel
+* Wordpress
+* OroPlatform, OroCRM, OroCommerce
+* Akeneo PIM
+
+## Modules which will be enabled by default for all versions of php (5.6, 7.0, 7.1, 7.2)
+`apcu`, `bcmath`, `calendar`, `Core`, `ctype`, `curl`, `date`, `dba`, `dom`, `exif`, `fileinfo`, `filter`, `ftp`, `gd`, `gettext`, `hash`, `iconv`, `igbinary`, `intl`, `json`, `ldap`, `libxml`, `mbstring`, `mcrypt`, `mongodb`, `mysqli`, `mysqlnd`, `odbc`, `openssl`, `pcntl`, `pcre`, `PDO`, `pdo_mysql`, `PDO_ODBC`, `pdo_pgsql`, `pdo_sqlite`, `Phar`, `posix`, `readline`, `redis`, `Reflection`, `session`, `shmop`, `SimpleXML`, `soap`, `sockets`, `sodium`, `SPL`, `sqlite3`, `standard`, `sysvmsg`, `sysvsem`, `sysvshm`, `tideways_xhprof`, `tidy`, `tokenizer`, `wddx`, `xml`, `xmlreader`, `xmlrpc`, `xmlwriter`, `Zend OPcache`, `zip`, `zlib`
+
+## Installation on MacOS
 1. Open the terminal (just type **terminal** into spotlight)
-2. Execute: `xcode-select --install` (it's starts XCODE installation process)
+2. Install cli tools: `xcode-select --install` (it's starts XCODE installation process)
 3. Execute: `cd /tmp`
-4. Execute: `git clone https://github.com/SergeyCherepanov/dev-env-osx.git`
-5. Execute: `bash dev-env-osx/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh"` to make full install
+4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
+5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh"` to make full install
 (Wait for finish. Should be without "Fatal" messages)
 6. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
+
+## Installation on Linux (Ubuntu/Debian)
+1. Open the terminal
+2. Install dependencies: `sudo apt update && sudo apt install -yq curl git`
+3. Execute: `cd /tmp`
+4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
+5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh"` to make full install
+(Wait for finish. Should be without "Fatal" messages)
+7. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
 
 ## Tags
 > You can choose one or all of them, tags don't have conflict
@@ -47,7 +67,8 @@ To do this, just create put source code of your project to `~/www/com/google` an
 
 ### SSL
 
-Root ca certificate is located in /usr/local/etc/openssl/localCA/cacert.pem
+The root ca certificate is located in: `%BREW_INSTALL_PATH%/etc/openssl/localCA/cacert.pem`  
+Where BREW_INSTALL_PATH by default is /usr/local for macOS and /home/linuxbrew/.linuxbrew for linux.  
 
 ## PHP Multi-Version Support
 
@@ -63,30 +84,14 @@ To start/stop/restart service use `supervisorctl`
 
 ## Mysql
 
-* Mysql 5.6 binds to 3306 port  
-* Mysql 5.7 binds to 3307 port  
+* Mysql (Percona) Server 5.6 binds to 3306 port (user: `root`, password: `root`)  
+* Mysql (Percona) Server 5.7 binds to 3307 port (user: `root`, password: `root`)  
 
 ## PHP Mail
 
 In ~/mail directory will be drops letter what be sent via php **mail** function
 
-## Change cli Java version
-
-List available versions
-```
-jenv versions
-```
-
-Set 1.8 as default
-```
-jenv local 1.8
-```
-or
-```
-jenv global 1.8
-```
-
-## Error: /usr/local is not writable.
+### Error: /usr/local is not writable.
 
 > If you reach "Error: /usr/local is not writable.", you need to disable the "System Integrity Protection".  
 
@@ -97,3 +102,9 @@ Launch Terminal from the Utilities menu.
 Enter the following command: `$ csrutil disable`  
 
 After enabling or disabling System Integrity Protection on a machine, a reboot is required.  
+
+### Configure: error: Cannot find libz"
+This error happens sometime on Mojave, just reinstall headers:
+```
+sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+```

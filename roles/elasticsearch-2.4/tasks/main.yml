@@ -7,7 +7,7 @@
     - always
 
 - name: setup elasticsearch plugins
-  shell: "/usr/local/opt/elasticsearch@2.4/libexec/bin/plugin install {{ item }}"
+  shell: "{{ brew_install_path }}/opt/elasticsearch@2.4/libexec/bin/plugin install {{ item }}"
   with_items:
     - "delete-by-query"
   tags:

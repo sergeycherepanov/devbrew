@@ -1,59 +1,120 @@
 ---
 - hosts: localhost
-  vars: 
-    - php_versions: []
+  # strategy: debug
+  environment:
+    PATH: "{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:{{ ansible_env.PATH}}"
+  vars:
+  - php_versions: []
   pre_tasks:
-    - stat:
-        path: "/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-      register: state
-      tags:
-        - always
+  - name: "Register brew_user fact"
+    set_fact:
+      brew_user: "{{ mac_user|default(ansible_env.USER) }}"
+    tags:
+    - always
 
-    - name: "Stopping supervisord"
-      shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-      when: state.stat.exists
-      become: true
-      tags:
-        - always
+  - name: "Resolve user group"
+    shell: "id -gn"
+    register: result
+    tags:
+    - always
+
+  - name: "Register brew_group fact"
+    set_fact: brew_group="{{ result.stdout }}"
+    tags:
+    - always
+
+  - name: "Resolve home dir"
+    shell: "eval echo ~$USER"
+    register: result
+    tags:
+    - always
+
+  - name: "Register brew_user_home_dir fact"
+    set_fact: brew_user_home_dir="{{ result.stdout }}"
+    tags:
+    - always
+
+  - include_tasks: "{{ ansible_system | lower }}_pre.yml"
+    tags:
+    - always
+
+  - name: "Adding brew bin to PATH"
+    blockinfile:
+      dest: '{{ item }}'
+      marker: "# {mark} brew PATH"
+      block: |
+        export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
+      create: yes
+      mode: 0644
+      insertbefore: BOF
+    become: yes
+    with_items:
+      - /root/.bashrc
+      - /root/.zshrc
+    tags:
+      - always
+
+  - name: "Adding brew bin to PATH"
+    blockinfile:
+      dest: '{{ item }}'
+      marker: "# {mark} brew PATH"
+      block: |
+        export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
+      create: yes
+      mode: 0644
+      insertbefore: BOF
+    with_items:
+    - "{{ brew_user_home_dir }}/.bashrc"
+    - "{{ brew_user_home_dir }}/.zshrc"
+    tags:
+    - always
+
   roles:
-    - roles/homebrew
-    - roles/zsh
-    - roles/coreutils
-    - roles/flock
-    - roles/git
-    - roles/curl
-    - roles/jenv
-    - roles/golang
-    - roles/supervisord
-    - roles/logrotate
-    - roles/nginx
-    - roles/efk
-    - roles/efk+nginx
-    - roles/fakesendmail
-    - roles/dnsmasq
-    - roles/percona-server-56
-    - roles/percona-server-57
-    - roles/mongodb
-    - roles/redis
-    - roles/php-56
-    - roles/php-70
-    - roles/php-71
-    - roles/php-72
-    - roles/nginx-php-fpm
-    - roles/nodejs
-    - roles/php-tools
-    - roles/xhgui
-    - roles/compass
-    - roles/less
+  - name: homebrew
+    include_role:
+      name: homebrew
+    when: "ansible_system == 'Darwin'"
+
+  - name: linuxbrew
+    include_role:
+      name: linuxbrew
+    when: "ansible_system == 'Linux'"
+  - zsh
+  - coreutils
+  - role: flock
+    when: "ansible_system == 'Darwin'"
+  - git
+  - curl
+  - jenv
+  - golang
+  - supervisord
+  - logrotate
+  - nginx
+  - efk
+  - efk+nginx
+  - fakesendmail
+  - dnsmasq
+  - percona-server-56
+  - percona-server-57
+  - mongodb
+  - redis
+  - php-56
+  - php-70
+  - php-71
+  - php-72
+  - nginx-php-fpm
+  - nodejs
+  - php-tools
+  - xhgui
+  - compass
+  - less
   post_tasks:
-    - name: "Unlinking python@2"
-      homebrew:
-        name: "python@2"
-        state: unlinked
-      tags:
-        - always
-    - name: "Starting supervisord"
-      shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-      become: true
-      tags:
-        - always
+  - include_tasks: "{{ ansible_system | lower }}_post.yml"
+    tags:
+    - always
+#  - name: "Unlinking python@2"
+#    homebrew:
+#      name: "python@2"
+#      state: unlinked
+#    tags:
+#    - always

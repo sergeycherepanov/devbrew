@@ -11,9 +11,9 @@
         <string>homebrew.mxcl.supervisor</string>
         <key>ProgramArguments</key>
         <array>
-            <string>{{ homebrew_install_path }}/opt/supervisor/bin/supervisord</string>
+            <string>{{ supervisord_path }}</string>
             <string>-c</string>
-            <string>{{ homebrew_install_path }}/etc/supervisord.ini</string>
+            <string>{{ brew_install_path }}/etc/supervisord.ini</string>
             <string>--nodaemon</string>
         </array>
         <key>ExitTimeOut</key>

@@ -1,0 +1,38 @@
+---
+brew_brew_bin_path: "{{ brew_install_path }}/bin"
+brew_installed_packages:
+  - vim
+  - git
+  - screen
+  - ssh-copy-id
+  - pv
+  - htop
+  - mc
+  - wget
+  - mtr
+  - nmap
+  - watch
+  - hg
+  - bzr
+  - p7zip
+  - autoconf
+  - gomplate
+  - gettext
+  - glances
+  - json-table
+  - pup
+  - fswatch
+  - shellcheck
+  - libmcrypt
+  - yarn
+  - python@2
+
+brew_upgrade_all_packages: no
+
+brew_taps:
+- caskroom/cask
+- caskroom/versions
+- caskroom/fonts
+
+brew_use_brewfile: true
+brew_brewfile_dir: '~'

@@ -1,8 +1,7 @@
 ---
-homebrew_install_path: /usr/local
-homebrew_brew_bin_path: /usr/local/bin
+brew_brew_bin_path: "{{ brew_install_path }}/bin"
 
-homebrew_installed_packages:
+brew_installed_packages:
   - ssh-copy-id
   - pv
   - htop
@@ -24,20 +23,21 @@ homebrew_installed_packages:
   - shellcheck
   - libmcrypt
   - yarn
+  - python@2
 
-homebrew_upgrade_all_packages: no
+brew_upgrade_all_packages: no
 
-homebrew_taps:
+brew_taps:
   - caskroom/cask
   - caskroom/versions
   - caskroom/fonts
 
-homebrew_cask_apps:
+brew_cask_apps:
   - font-hack-nerd-font
   - iterm2
   - java8
 
-homebrew_cask_appdir: /Applications
+brew_cask_appdir: /Applications
 
-homebrew_use_brewfile: true
-homebrew_brewfile_dir: '~'
+brew_use_brewfile: true
+brew_brewfile_dir: '~'

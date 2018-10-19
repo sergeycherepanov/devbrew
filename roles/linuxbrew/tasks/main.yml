@@ -1,0 +1,207 @@
+---
+- name: Ensure linuxbrew install path.
+  file:
+    path: "{{ brew_install_path }}"
+    mode: 0775
+    state: directory
+    recurse: true
+  become: yes
+  tags:
+  - always
+
+- name: Setup linuxbrew install path.
+  file:
+    path: "{{ brew_install_path }}"
+    owner: "{{ brew_user }}"
+  ignore_errors: yes
+  become: yes
+  become_method: sudo
+  tags:
+  - always
+
+- name: Downloading Linuxbrew.
+  get_url:
+    url: "https://github.com/Linuxbrew/brew/tarball/master"
+    dest: "/tmp/brew-master.tgz"
+  tags:
+  - always
+
+- name: Extracting linuxbrew.
+  shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
+  become: yes
+  args:
+    warn: false
+  tags:
+  - always
+
+- name: Ensure proper permissions on brew_brew_bin_path dirs.
+  file:
+    path: "{{ brew_brew_bin_path }}"
+    mode: 0775
+    state: directory
+    recurse: true
+  become: yes
+  tags:
+  - always
+
+- name: Ensure linuxbrew directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+  - "{{ brew_install_path }}/Cellar"
+  - "{{ brew_install_path }}/Caskroom"
+  - "{{ brew_install_path }}/Frameworks"
+  - "{{ brew_install_path }}/bin"
+  - "{{ brew_install_path }}/etc"
+  - "{{ brew_install_path }}/docs"
+  - "{{ brew_install_path }}/manpages"
+  - "{{ brew_install_path }}/include"
+  - "{{ brew_install_path }}/lib"
+  - "{{ brew_install_path }}/opt"
+  - "{{ brew_install_path }}/sbin"
+  - "{{ brew_install_path }}/share"
+  - "{{ brew_install_path }}/var"
+  - "{{ brew_install_path }}/completions"
+  become: yes
+  tags:
+  - always
+
+- name: Ensure proper ownership on brew_install_path subdirs
+  shell: >
+    ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}:{{ brew_group }}" "{{ brew_install_path }}/{}"
+  become: yes
+  tags:
+  - always
+
+#- name: Check if linuxbrew binary is already in place
+#  stat:
+#    path: "/usr/local/bin/brew"
+#  register: brew_binary
+#  tags:
+#  - always
+
+#- name: Symlink brew to /usr/local/bin/brew
+#  file:
+#    src: "{{ brew_install_path }}/bin/brew"
+#    dest: "/usr/local/bin/brew"
+#    state: link
+#  when: brew_binary.stat.exists == false
+#  become: yes
+#  tags:
+#  - always
+
+- name: "Ensure brew wrapper in /usr/local/bin/brew"
+  copy:
+    mode: 0755
+    group: root
+    dest: "/usr/local/bin/brew"
+    content: |
+      #!/bin/sh
+      # --- [ Check/Sync Environment ] ---
+      # here I use LINUXBREW_PREFIX as the major ENV,
+      # and HOMEBREW_PREFIX is for compatibility.
+      if [ -z ${LINUXBREW_PREFIX} ] && [ -z ${HOMEBREW_PREFIX}]; then
+        # when both ENV are not set, use default.
+        export LINUXBREW_PREFIX="{{ brew_install_path }}"
+        export HOMEBREW_PREFIX=${LINUXBREW_PREFIX}
+      elif [ -z ${HOMEBREW_PREFIX} ];then
+        # LINUXBREW_PREFIX is set.
+        export HOMEBREW_PREFIX=${LINUXBREW_PREFIX}
+      elif [ -z ${LINUXBREW_PREFIX} ];then
+        # HOMEBREW_PREFIX is set.
+        export LINUXBREW_PREFIX=${HOMEBREW_PREFIX}
+      else #[ ! -z ${LINUXBREW_PREFIX} ] && [ ! -z ${HOMEBREW_PREFIX}]
+        # both ENV are set (even if they are conflicting to each other),
+        # then we use LINUXBREW_PREFIX.  And export nothing
+        true
+      fi
+      export BREW_EXEC="${LINUXBREW_PREFIX}/bin/brew"   # real brew executable
+      # root ?
+      if [ `whoami` = "root" ]; then
+        # well, the upstream install script will stop when detected root.
+        # However, not stopping users who created linuxbrew for root user.
+        printf "W: be careful as root.\n"
+      fi
+
+      # ruby ?
+      if [ ! -x $(which ruby) ]; then
+        printf "E: ruby interpreter not available, abort.\n"
+        false
+      fi
+
+      # If there is brew instance available, just run it.
+      if [ -x ${BREW_EXEC} ]; then
+        exec ${BREW_EXEC} $@
+      elif [ -d ${LINUXBREW_PREFIX} ]; then
+        printf "E: Linuxbrew directory detected, but it seems to be broken.\n"
+        false
+      else
+        printf "E: Linuxbrew binary wasn't found.\n"
+      fi
+  become: yes
+  tags:
+  - always
+
+- name: Updating brew repo
+  shell: 'brew update'
+  ignore_errors: yes
+  retries: 2
+  delay: 1
+  tags:
+  - always
+
+## Tap.
+#- name: Ensure configured taps are tapped.
+#  shell: brew tap {{ item }}
+#  with_items: "{{ brew_taps }}"
+#  tags:
+#    - always
+
+# Brew.
+- name: Ensure configured linuxbrew packages are installed
+  homebrew:
+    name: "{{ brew_installed_packages }}"
+    state: present
+  tags:
+  - always
+
+- name: Upgrade all linuxbrew packages (if configured).
+  homebrew:
+    update_homebrew: yes
+    upgrade_all: yes
+  when: brew_upgrade_all_packages
+  tags:
+  - always
+
+# Cask.
+#- name: Get list of apps installed with cask.
+#  command: >
+#    bash -l -c '{{ brew_brew_bin_path }}/brew cask list'
+#  register: brew_cask_list
+#  check_mode: no
+#  changed_when: false
+#  tags:
+#    - always
+
+## Use command module instead of brew_cask so appdir can be used.
+#- name: Install configured cask applications.
+#  command: >
+#    bash -l -c '{{ brew_brew_bin_path }}/brew cask reinstall {{ item }} --appdir={{ brew_cask_appdir }}'
+#  with_items: "{{ brew_cask_apps }}"
+##  when: "item not in brew_cask_list.stdout"
+#  tags:
+#    - always
+
+- name: Check for Brewfile.
+  stat:
+    path: "{{ brew_brewfile_dir }}/Brewfile"
+  register: brew_brewfile
+  tags:
+  - always
+
+- name: Install from Brewfile.
+  command: "brew bundle chdir={{ brew_brewfile_dir }}"
+  when: brew_brewfile.stat.exists and brew_use_brewfile
+  tags:
+  - always

@@ -1,0 +1,9 @@
+---
+- name: "Enabling/Starting supervisord-devbrew"
+  systemd:
+    name: supervisord-devbrew
+    state: started
+    enabled: yes
+  become: yes
+  tags:
+  - always

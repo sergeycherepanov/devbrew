@@ -1,40 +1,72 @@
 ---
 - name: "Installing composer"
-  homebrew: 
+  homebrew:
     name: composer
     state: present
   tags:
-    - always
-    
+  - always
+
+- name: "Create dir for wrappers"
+  file:
+    path: "{{ brew_install_path }}/opt/composer/{{ item }}/bin"
+    state: directory
+  with_items: "{{ php_versions }}"
+  tags:
+  - always
+
+- name: "Ensure composer wrappers for all php version"
+  copy:
+    mode: 0755
+    dest: "{{ brew_install_path }}/opt/composer/{{ item }}/bin/composer"
+    content: |
+      #!/bin/sh
+      composer=$(which composer)
+      export PATH="{{ brew_install_path }}/opt/{{ item }}/bin:{{ brew_install_path }}/opt/composer/{{ item }}/bin:$PATH"
+      exec php $composer "$@"
+  with_items: "{{ php_versions }}"
+  tags:
+  - always
+
+- name: "Ensure symlinks"
+  file:
+    dest: "{{ brew_brew_bin_path }}/composer{{ item }}"
+    src: "{{ brew_install_path }}/opt/composer/{{ item }}/bin/composer"
+    state: link
+    force: yes
+  with_items: "{{ php_versions }}"
+  tags:
+  - always
+
 - name: "Installing fxp/composer-asset-plugin:~1.3"
   shell: 'composer global require fxp/composer-asset-plugin:~1.3'
+  shell: 'env > /tmp/envdebug && $(which composer) global require fxp/composer-asset-plugin:~1.3'
   tags:
-    - always
+  - always
 
 - name: "Installing phpmd"
-  homebrew: 
+  homebrew:
     name: phpmd
     state: present
   tags:
-    - always
+  - always
 
 - name: "Link phpmd"
-  homebrew: 
+  homebrew:
     name: phpmd
     state: linked
   tags:
-    - always
+  - always
 
 - name: "Installing phpcs"
-  homebrew: 
+  homebrew:
     name: php-code-sniffer
     state: present
   tags:
-    - always
+  - always
 
 - name: "Link php-code-sniffer"
-  homebrew: 
+  homebrew:
     name: php-code-sniffer
     state: linked
   tags:
-    - always
+  - always

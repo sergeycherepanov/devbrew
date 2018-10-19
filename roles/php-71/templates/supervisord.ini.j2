@@ -1,17 +1,17 @@
 [program:php71-fpm]
-command={{ homebrew_install_path }}/opt/php71/sbin/php-fpm --nodaemonize --fpm-config {{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-fpm.conf
-directory={{ homebrew_install_path }}/opt/php71
-stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/php71.log
-stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/php71.err
+command={{ brew_install_path }}/opt/php71/sbin/php-fpm --nodaemonize --fpm-config {{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm.conf
+directory={{ brew_install_path }}/opt/php71
+stdout_logfile={{ brew_install_path }}/var/log/supervisor/php71.log
+stderr_logfile={{ brew_install_path }}/var/log/supervisor/php71.err
 user={{ www_user }}
 autorestart=true
 stopasgroup=true
 
 [program:php71-fpm-xdebug]
-command={{ homebrew_install_path }}/opt/php71/sbin/php-fpm --nodaemonize --fpm-config {{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-fpm-xdebug.conf -c {{ homebrew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini
-directory={{ homebrew_install_path }}/opt/php71
-stdout_logfile={{ homebrew_install_path }}/var/log/supervisor/php71-xdebug.log
-stderr_logfile={{ homebrew_install_path }}/var/log/supervisor/php71-xdebug.err
+command={{ brew_install_path }}/opt/php71/sbin/php-fpm --nodaemonize --fpm-config {{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm-xdebug.conf -c {{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini
+directory={{ brew_install_path }}/opt/php71
+stdout_logfile={{ brew_install_path }}/var/log/supervisor/php71-xdebug.log
+stderr_logfile={{ brew_install_path }}/var/log/supervisor/php71-xdebug.err
 user={{ www_user }}
 autorestart=true
 stopasgroup=true

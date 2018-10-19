@@ -4,14 +4,14 @@ php_version_num: 5.6
 php_version_num_int: 56
 php_flags: "with-homebrew-curl,with-pear"
 php_modules:
-  - intl
-  - mcrypt
-  - xdebug
-  - redis
-  - tidy
-  - opcache
-  - pdo-pgsql
-  - xhprof
-  - mongodb
-  - apcu
+- intl
+- mcrypt
+- xdebug
+- redis
+- tidy
+- opcache
+- pdo-pgsql
+- xhprof
+- mongodb
+- apcu
 php_pear_packages: []
