@@ -2,7 +2,7 @@
 php_version: php56
 php_version_num: 5.6
 php_version_num_int: 56
-php_flags: "with-homebrew-curl,with-pear"
+php_flags: "with-homebrew-curl,with-pear,with-xsl"
 php_modules:
 - intl
 - mcrypt

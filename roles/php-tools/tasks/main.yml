@@ -21,7 +21,7 @@
     content: |
       #!/bin/sh
       composer=$(which composer)
-      export PATH="{{ brew_install_path }}/opt/{{ item }}/bin:{{ brew_install_path }}/opt/composer/{{ item }}/bin:$PATH"
+      export PATH="{{ brew_install_path }}/opt/php{{ item }}/bin:{{ brew_install_path }}/opt/composer/{{ item }}/bin:$PATH"
       exec php $composer "$@"
   with_items: "{{ php_versions }}"
   tags:
