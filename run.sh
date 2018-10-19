@@ -22,11 +22,11 @@ if [[ "Darwin" == "$(uname)" ]]; then
   cd $(dirname $(which python)); cd $(dirname $(readlink $(which python)))
 
   # Install Ansible if not found or upgrade if outdated
-  $(which ansible) --version >/dev/null 2>&1 \
-  && php -r "version_compare('"$($(which ansible) --version  | head -1 | awk '{print $2}')"', '${MIN_ANSIBLE_VERSION}', '>=') ? exit(0) : exit(1);" || {
+ ./ansible --version >/dev/null 2>&1 \
+  && php -r "version_compare('"$(./ansible --version  | head -1 | awk '{print $2}')"', '${MIN_ANSIBLE_VERSION}', '>=') ? exit(0) : exit(1);" || {
     sudo -H ./pip install --force-reinstall --upgrade ansible
   }
-  ANSIBLE_PLAYBOOK_BIN="$(which ansible-playbook)"
+  ANSIBLE_PLAYBOOK_BIN="./ansible-playbook"
   BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/usr/local}"
 else
   if [[ "Linux" == "$(uname)" ]]; then

@@ -1,5 +1,5 @@
 [program:mongodb]
-command={{ brew_install_path }}/opt/mongodb/bin/mongod --config {{ brew_install_path }}/etc/mongod.conf
+command={{ mongodb_path }}/bin/mongod --config {{ brew_install_path }}/etc/mongod.conf
 directory={{ brew_install_path }}
 stdout_logfile={{ brew_install_path }}/var/log/supervisor/mongod.log
 stderr_logfile={{ brew_install_path }}/var/log/supervisor/mongod.err

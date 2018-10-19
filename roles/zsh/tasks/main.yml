@@ -155,15 +155,15 @@
   tags:
   - zsh
 
-- name: "Adding homebrew to PATH in {{ brew_user_home_dir }}/.zshrc"
-  blockinfile:
-    create: yes
-    dest: '{{ brew_user_home_dir }}/.zshrc'
-    marker: "# {mark} homebrew PATH"
-    block: |
-      export PATH="{{ brew_install_path }}/sbin:{{ brew_install_path }}/bin:$PATH"
-  tags:
-  - zsh
+#- name: "Adding homebrew to PATH in {{ brew_user_home_dir }}/.zshrc"
+#  blockinfile:
+#    create: yes
+#    dest: '{{ brew_user_home_dir }}/.zshrc'
+#    marker: "# {mark} homebrew PATH"
+#    block: |
+#      export PATH="{{ brew_install_path }}/sbin:{{ brew_install_path }}/bin:$PATH"
+#  tags:
+#  - zsh
 
 - name: "Adding aliases {{ brew_user_home_dir }}/.zshrc"
   blockinfile:

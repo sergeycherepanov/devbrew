@@ -11,7 +11,7 @@
         <string>homebrew.mxcl.supervisor</string>
         <key>ProgramArguments</key>
         <array>
-            <string>/usr/local/bin/supervisord</string>
+            <string>{{ supervisord_path }}</string>
             <string>-c</string>
             <string>{{ brew_install_path }}/etc/supervisord.ini</string>
             <string>--nodaemon</string>

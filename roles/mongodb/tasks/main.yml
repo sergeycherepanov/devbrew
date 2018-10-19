@@ -3,6 +3,7 @@
   pip:
     name: typing
     state: present
+  become: yes
   tags:
   - always
 
@@ -10,6 +11,7 @@
   pip:
     name: Cheetah
     state: present
+  become: yes
   tags:
   - always
 
@@ -20,10 +22,22 @@
   tags:
   - always
 
+
+- name: Resolve mongodb_path
+  shell: "{{ brew_brew_bin_path }}/brew --prefix mongodb@3.6"
+  register: output
+  tags:
+  - always
+
+- name: Register mongodb_path
+  set_fact:
+    mongodb_path: "{{ output.stdout | trim }}"
+  tags:
+  - always
+
 - name: "Create {{ brew_install_path }}/etc/supervisor.d/mongodb.ini"
   template:
     src: supervisord.ini.j2
     dest: "{{ brew_install_path }}/etc/supervisor.d/mongodb.ini"
-  when: not state.stat.exists
   tags:
   - always
