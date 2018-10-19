@@ -146,6 +146,8 @@
 - name: Updating brew repo
   shell: 'brew update'
   ignore_errors: yes
+  retries: 2
+  delay: 1
   tags:
   - always
 

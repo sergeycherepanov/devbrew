@@ -16,16 +16,26 @@
     repo: 'https://github.com/powerline/fonts.git'
     dest: '/tmp/powerline_fonts'
     version: 'master'
+  when: ansible_system == "Linux"
   tags:
   - zsh
 
 - copy:
     src: '/tmp/powerline_fonts/Hack/'
-    dest: '{{ brew_user_home_dir }}/Library/Fonts/'
+    dest: '/usr/share/fonts/'
+  when: ansible_system == "Linux"
+  become: yes
   tags:
   - zsh
 
-- name: "Downloading 'hack' font for terminal"
+- copy:
+    src: '/tmp/powerline_fonts/Hack/'
+    dest: '{{ brew_user_home_dir }}/.fonts/'
+  when: ansible_system == "Linux"
+  tags:
+  - zsh
+
+- name: "Downloading 'awesome-terminal-fonts'"
   git:
     repo: 'https://github.com/gabrielelana/awesome-terminal-fonts.git'
     dest: '/tmp/awesome-terminal-fonts'
@@ -33,10 +43,26 @@
   tags:
   - zsh
 
-- name: "Installing 'hack' font"
+- name: "Installing 'awesome-terminal-fonts' to {{ brew_user_home_dir }}/.fonts/"
   copy:
     src: '/tmp/awesome-terminal-fonts/build/'
     dest: '{{ brew_user_home_dir }}/.fonts/'
+  tags:
+  - zsh
+
+- name: "Installing 'awesome-terminal-fonts' /usr/share/fonts/"
+  copy:
+    src: '/tmp/awesome-terminal-fonts/build/'
+    dest: '/usr/share/fonts/'
+  when: ansible_system == "Linux"
+  become: yes
+  tags:
+  - zsh
+
+- name: "Rebuild font cache"
+  shell: "fc-cache -f -v"
+  when: ansible_system == "Linux"
+  become: yes
   tags:
   - zsh
 

@@ -1,5 +1,5 @@
 [program:nginx]
-command={{ brew_install_path }}/bin/pidproxy {{ brew_install_path }}/var/run/nginx.pid {{ brew_install_path }}/opt/nginx/bin/nginx -g "daemon off;"
+command={{ supervisor_pidproxy_path }} {{ brew_install_path }}/var/run/nginx.pid {{ brew_install_path }}/opt/nginx/bin/nginx -g "daemon off;"
 directory={{ brew_install_path }}
 stdout_logfile={{ brew_install_path }}/var/log/supervisor/nginx.log
 stderr_logfile={{ brew_install_path }}/var/log/supervisor/nginx.err

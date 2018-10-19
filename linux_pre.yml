@@ -51,12 +51,12 @@
   tags:
   - always
 
-- name: "Updating /etc/environment"
-  lineinfile:
-    path: '/etc/environment'
-    regexp: '^PATH="(.*)"'
-    line: 'PATH="{{ brew_install_path }}/bin:\1"'
-    backrefs: yes
-  become: yes
-  tags:
-    - always
+#- name: "Updating /etc/environment"
+#  lineinfile:
+#    path: '/etc/environment'
+#    regexp: '^PATH="(.*)"'
+#    line: 'PATH="{{ brew_install_path }}/bin:\1"'
+#    backrefs: yes
+#  become: yes
+#  tags:
+#    - always

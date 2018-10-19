@@ -16,6 +16,29 @@
   tags:
   - always
 
+- name: "Ensure supctl wrapper"
+  copy:
+    mode: 0755
+    group: root
+    dest: "{{ brew_brew_bin_path }}/supctl"
+    content: |
+      #!/bin/sh
+      exec supervisorctl $@ -c {{ brew_install_path }}/etc/supervisord.ini
+  become: yes
+  tags:
+  - always
+
+- name: "Resolving pidproxy path"
+  shell: "which pidproxy"
+  register: pidproxy_output
+  tags:
+  - always
+
+- name: "Register supervisor_pidproxy_path fact"
+  set_fact: supervisor_pidproxy_path="{{ pidproxy_output.stdout }}"
+  tags:
+  - always
+
 - name: "Creates {{ brew_install_path }}/etc/supervisor.d"
   file:
     path: "{{ brew_install_path }}/etc/supervisor.d"

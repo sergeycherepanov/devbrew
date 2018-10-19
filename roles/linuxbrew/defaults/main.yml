@@ -25,6 +25,7 @@ brew_installed_packages:
   - shellcheck
   - libmcrypt
   - yarn
+  - python@2
 
 brew_upgrade_all_packages: no
 

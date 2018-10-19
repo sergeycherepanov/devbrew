@@ -107,14 +107,14 @@
 - name: "Copy root certificate /usr/share/ca-certificates/extra"
   copy:
     src: '{{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
-    dest: '/usr/share/ca-certificates/extra/'
+    dest: '/usr/local/share/ca-certificates/cacert.crt'
   become: yes
   when: ansible_system == "Linux"
   tags:
   - always
 
-- name: "dpkg-reconfigure ca-certificates"
-  shell: 'dpkg-reconfigure -f noninteractive ca-certificates'
+- name: "update-ca-certificates"
+  shell: 'update-ca-certificates'
   become: yes
   when: ansible_system == "Linux"
   tags:
@@ -125,6 +125,50 @@
   with_items: "{{subdomains}}"
   tags:
     - always
+
+- name: Ensure symlink for /usr/lib/ssl/certs
+  file:
+    src: "{{ brew_install_path }}/etc/openssl/certs"
+    dest: "/usr/lib/ssl/certs"
+    state: link
+    force: yes
+  when: ansible_system == "Linux"
+  become: true
+  tags:
+  - always
+
+- name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/certs"
+  file:
+    src: "{{ brew_install_path }}/etc/openssl/certs"
+    dest: "/usr/lib/ssl/certs"
+    state: link
+    force: yes
+  when: ansible_system == "Linux"
+  become: true
+  tags:
+  - always
+
+- name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/openssl.cnf"
+  file:
+    src: "{{ brew_install_path }}/etc/openssl/openssl.cnf"
+    dest: "/usr/lib/ssl/openssl.cnf"
+    state: link
+    force: yes
+  when: ansible_system == "Linux"
+  become: true
+  tags:
+  - always
+
+- name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/private"
+  file:
+    src: "{{ brew_install_path }}/etc/openssl/private"
+    dest: "/usr/lib/ssl/private"
+    state: link
+    force: yes
+  when: ansible_system == "Linux"
+  become: true
+  tags:
+  - always
 #
 #- name: "Generate keys and signing for domains with php versions"
 #  shell: 'OPENSSL_CONF="{{ brew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}.cnf" openssl req -newkey rsa:2048 -keyout {{ brew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key.pem -keyform PEM -out {{ brew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}_req.pem -outform PEM -nodes && openssl rsa < {{ brew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key.pem > {{ brew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key_encrypted.pem && OPENSSL_CONF="{{ brew_install_path }}/etc/openssl/localCA/caconfig.cnf" openssl ca -batch -in {{ brew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}_req.pem -out {{ brew_install_path }}/etc/openssl/localCA/certs/{{item.1}}_{{item.0}}_{{root_domain}}_crt.pem'

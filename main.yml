@@ -1,5 +1,8 @@
 ---
 - hosts: localhost
+  strategy: debug
+  environment:
+    PATH: "{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:{{ ansible_env.PATH}}"
   vars:
   - php_versions: []
   pre_tasks:
@@ -30,9 +33,26 @@
     set_fact: brew_user_home_dir="{{ result.stdout }}"
     tags:
     - always
+
   - include_tasks: "{{ ansible_system | lower }}_pre.yml"
     tags:
     - always
+
+  - name: "Adding brew bin to PATH"
+    blockinfile:
+      dest: '{{ item }}'
+      marker: "# {mark} brew PATH"
+      block: |
+        export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
+      create: yes
+      mode: 0644
+    become: yes
+    with_items:
+      - /root/.bashrc
+      - /root/.zshrc
+    tags:
+      - always
+
   roles:
   - name: homebrew
     include_role:
