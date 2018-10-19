@@ -50,3 +50,13 @@
     - "ln -sf /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h"
   tags:
   - always
+
+- name: "Updating /etc/environment"
+  lineinfile:
+    path: '/etc/environment'
+    regexp: '^PATH="(.*)"'
+    line: 'PATH="{{ brew_install_path }}/bin:\1"'
+    backrefs: yes
+  become: yes
+  tags:
+    - always

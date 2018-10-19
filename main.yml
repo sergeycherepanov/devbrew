@@ -60,7 +60,8 @@
   - dnsmasq
   - percona-server-56
   - percona-server-57
-  - mongodb
+  - role: mongodb
+    when: ansible_system == "Darwin"
   - redis
   - php-56
   - php-70
