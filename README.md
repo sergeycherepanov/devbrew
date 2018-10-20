@@ -43,6 +43,11 @@ macOS/Linux NGINX/PHP/JS/MySql Development Environment Based on Homebrew(Linuxbr
 *  `percona57` - will installs Percona Server (mysql) version 5.7  
 *  `nodejs` - will installs NodeJS and NPM  
 
+## Manage Services
+
+To start/stop/restart service use `supctl` (it's supervisorctl wrapper)
+
+
 ## Usage
 Add folders with you source code into **www** folder in your home dir: **~/www/{pool}/{project_name}/**
 
@@ -77,10 +82,6 @@ Too choose a version of php you need define it via empty flag file in the projec
 `~/www/dev/wordpress/.php70` (php 7.0)  
 `~/www/dev/wordpress/.php71` (php 7.1)  
 `~/www/dev/wordpress/.php72` (php 7.2)  
-
-## Services
-
-To start/stop/restart service use `supctl` (it's supervisorctl wrapper)
 
 ## Mysql
 
