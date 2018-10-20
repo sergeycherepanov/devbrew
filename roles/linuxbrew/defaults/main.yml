@@ -1,6 +1,7 @@
 ---
 brew_brew_bin_path: "{{ brew_install_path }}/bin"
 brew_installed_packages:
+  - gcc
   - vim
   - git
   - screen
