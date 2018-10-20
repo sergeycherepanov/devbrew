@@ -35,6 +35,14 @@
   tags:
   - always
 
+- name: "Bind dnsmasq to 127.0.0.1"
+  lineinfile:
+    path: '/etc/dnsmasq.conf'
+    line: 'listen-address=127.0.0.1'
+  when: state_dnsmaq_dir.stat.exists
+  tags:
+  - always
+
 - name: "Configure *.dev.com zone resolver"
   copy:
     content: "address=/.dev.com/127.0.0.1"
