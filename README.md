@@ -1,7 +1,7 @@
 # dev-env-osx
 macOS/Linux NGINX/PHP/JS/MySql Development Environment Based on Homebrew(Linuxbrew)
 
-[![Build Status](https://travis-ci.org/SergeyCherepanov/dev-env-osx.svg?branch=master)](https://travis-ci.org/SergeyCherepanov/dev-env-osx)
+[![Build Status](https://travis-ci.org/SergeyCherepanov/devbrew.svg?branch=master)](https://travis-ci.org/SergeyCherepanov/devbrew)
 
 ## Supported applications and frameworks
 * Magento Commerce, Magento Commerce 2
