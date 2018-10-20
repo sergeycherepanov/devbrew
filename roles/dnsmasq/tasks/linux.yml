@@ -26,6 +26,7 @@
     section: "main"
     option: "dns"
     value: "dnsmasq"
+  become: yes
   tags:
   - always
 
