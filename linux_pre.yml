@@ -11,7 +11,6 @@
 - name: "Ensure linux requirements via apt"
   apt:
     name:
-    - dnsmasq
     - libcurl3-dev
     - libpcap-dev
     - systemtap-sdt-dev

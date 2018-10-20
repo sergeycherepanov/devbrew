@@ -1,4 +1,12 @@
 ---
+- name: "Installing dnsmasq"
+  apt:
+    name: dnsmasq
+    state: present
+  become: yes
+  tags:
+  - always
+
 - stat:
     path: "/etc/NetworkManager/dnsmasq.d"
   register: state_networkmanager_dnsmaq_dir
