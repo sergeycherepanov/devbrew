@@ -2,7 +2,9 @@
 php_version: php71
 php_version_num: 7.1
 php_version_num_int: 71
-php71_flags: "with-homebrew-curl,with-pear,with-xsl"
+php71_flags: "with-homebrew-curl,with-pear,with-homebrew-libxslt,with-homebrew-libxml"
+php_dependencies:
+- libxslt
 php71_modules:
 - php71-intl
 - php71-mcrypt

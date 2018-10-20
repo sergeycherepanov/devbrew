@@ -25,6 +25,14 @@
   tags:
   - php70
 
+- name: "Installing {{ php_version }} dependencies"
+  homebrew:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ php_dependencies }}"
+  tags:
+  - php70
+
 - name: "Installing php70 with flags: {{ php70_flags }}"
   homebrew:
     name: php70

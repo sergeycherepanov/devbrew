@@ -51,6 +51,24 @@
     with_items:
       - /root/.bashrc
       - /root/.zshrc
+    when: "ansible_system == 'Linux'"
+    tags:
+      - always
+
+  - name: "Adding brew bin to PATH"
+    blockinfile:
+      dest: '{{ item }}'
+      marker: "# {mark} brew PATH"
+      block: |
+        export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
+      create: yes
+      mode: 0644
+      insertbefore: BOF
+    become: yes
+    with_items:
+      - /var/root/.bashrc
+      - /var/root/.zshrc
+    when: "ansible_system == 'Darwin'"
     tags:
       - always
 
@@ -109,6 +127,36 @@
   - compass
   - less
   post_tasks:
+  - name: "Adding brew bin to PATH"
+    blockinfile:
+      dest: '{{ item }}'
+      marker: "# {mark} brew PATH"
+      block: |
+        export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
+      create: yes
+      mode: 0644
+      insertbefore: BOF
+    become: yes
+    with_items:
+      - /root/.bashrc
+      - /root/.zshrc
+    tags:
+      - always
+
+  - name: "Adding brew bin to PATH"
+    blockinfile:
+      dest: '{{ item }}'
+      marker: "# {mark} brew PATH"
+      block: |
+        export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
+      create: yes
+      mode: 0644
+      insertbefore: BOF
+    with_items:
+    - "{{ brew_user_home_dir }}/.bashrc"
+    - "{{ brew_user_home_dir }}/.zshrc"
+    tags:
+    - always
   - include_tasks: "{{ ansible_system | lower }}_post.yml"
     tags:
     - always

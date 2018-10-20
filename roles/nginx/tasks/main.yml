@@ -6,6 +6,7 @@
   with_items:
     - "{{ www_dir }}"
     - "{{ brew_install_path }}/etc/nginx/servers_custom"
+  ignore_errors: yes
   tags:
     - always
 

@@ -25,6 +25,14 @@
   tags:
   - php56
 
+- name: "Installing {{ php_version }} dependencies"
+  homebrew:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ php_dependencies }}"
+  tags:
+  - php56
+
 - name: "Installing php56 with flags: {{ php_flags }}"
   homebrew:
     name: php56
