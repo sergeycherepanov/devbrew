@@ -39,7 +39,7 @@
 
 - name: "Installing fxp/composer-asset-plugin:~1.3"
   shell: 'composer global require fxp/composer-asset-plugin:~1.3'
-  shell: 'env > /tmp/envdebug && $(which composer) global require fxp/composer-asset-plugin:~1.3'
+  ignore_errors: yes
   tags:
   - always
 
