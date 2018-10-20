@@ -140,6 +140,24 @@
     with_items:
       - /root/.bashrc
       - /root/.zshrc
+    when: "ansible_system == 'Linux'"
+    tags:
+      - always
+
+  - name: "Adding brew bin to PATH"
+    blockinfile:
+      dest: '{{ item }}'
+      marker: "# {mark} brew PATH"
+      block: |
+        export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
+      create: yes
+      mode: 0644
+      insertbefore: BOF
+    become: yes
+    with_items:
+      - /var/root/.bashrc
+      - /var/root/.zshrc
+    when: "ansible_system == 'Darwin'"
     tags:
       - always
 

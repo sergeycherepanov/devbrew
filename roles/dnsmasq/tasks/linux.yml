@@ -20,3 +20,19 @@
     path: "{{ brew_install_path }}/etc/supervisor.d/dnsmasq.ini"
   tags:
   - always
+
+- ini_file:
+    path: "/etc/NetworkManager/NetworkManager.conf"
+    section: "main"
+    option: "dns"
+    value: "dnsmasq"
+  tags:
+  - always
+
+- name: "Restarting network-manager"
+  systemd:
+    name: network-manager
+    state: restarted
+  become: yes
+  tags:
+  - always
