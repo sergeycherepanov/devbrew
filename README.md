@@ -80,7 +80,7 @@ Too choose a version of php you need define it via empty flag file in the projec
 
 ## Services
 
-To start/stop/restart service use `supervisorctl`
+To start/stop/restart service use `supctl` (it's supervisorctl wrapper)
 
 ## Mysql
 
