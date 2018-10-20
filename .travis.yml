@@ -1,18 +1,23 @@
-sudo: true
-os: osx
-osx_image: xcode9.3
+sudo: required
+language: bash
 branches:
   only:
     - master
+env:
+  matrix:
+  - TAGS=php56
+  - TAGS=php70
+  - TAGS=php71
+  - TAGS=php72
+  - TAGS=php72,nodejs
+  - TAGS=php72,zsh
+  - TAGS=php72,percona56
+  - TAGS=php72,percona57
 matrix:
   include:
-    - env: TAGS=php56
-    - env: TAGS=php70
-    - env: TAGS=php71
-    - env: TAGS=php72
-    - env: TAGS=php72,nodejs
-    - env: TAGS=php72,zsh
-    - env: TAGS=php72,percona56
-    - env: TAGS=php72,percona57
+    - os: linux
+      dist: xenial
+    - os:
+      osx_image: xcode9.3
 script:
   - travis_wait 60 $TRAVIS_BUILD_DIR/run.sh -v --tags "${TAGS}"
