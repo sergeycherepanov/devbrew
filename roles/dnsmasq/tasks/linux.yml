@@ -1,8 +1,37 @@
 ---
+- stat:
+    path: "/etc/NetworkManager/dnsmasq.d"
+  register: state_networkmanager_dnsmaq_dir
+  become: yes
+  tags:
+  - always
+
+- stat:
+    path: "/etc/dnsmasq.d"
+  register: state_dnsmaq_dir
+  become: yes
+  tags:
+  - always
+
+- name: Register mysql_base_dir fact
+  set_fact:
+    dnsmasq_conf_dirs: "{{ dnsmasq_conf_dirs + [ state_dnsmaq_dir.stat.path ] }}"
+  when: state_dnsmaq_dir.stat.exists
+  tags:
+  - always
+
+- name: Register mysql_base_dir fact
+  set_fact:
+    dnsmasq_conf_dirs: "{{ dnsmasq_conf_dirs + [ state_networkmanager_dnsmaq_dir.stat.path ] }}"
+  when: state_networkmanager_dnsmaq_dir.stat.exists
+  tags:
+  - always
+
 - name: "Configure *.dev.com zone resolver"
   copy:
     content: "address=/.dev.com/127.0.0.1"
-    dest: "/etc/NetworkManager/dnsmasq.d/dev.com.conf"
+    dest: "{{ item }}/dev.com.conf"
+  with_items: "{{ dnsmasq_conf_dirs }}"
   become: yes
   tags:
   - always
@@ -10,7 +39,8 @@
 - name: "Configure *.loc.com zone resolver"
   copy:
     content: "address=/.dev.loc/127.0.0.1"
-    dest: "/etc/NetworkManager/dnsmasq.d/dev.loc.conf"
+    dest: "{{ item }}/dev.loc.conf"
+  with_items: "{{ dnsmasq_conf_dirs }}"
   become: yes
   tags:
   - always
@@ -26,6 +56,7 @@
     section: "main"
     option: "dns"
     value: "dnsmasq"
+  when: state_networkmanager_dnsmaq_dir.stat.exists
   tags:
   - always
 
@@ -34,5 +65,15 @@
     name: network-manager
     state: restarted
   become: yes
+  when: state_networkmanager_dnsmaq_dir.stat.exists
+  tags:
+  - always
+
+- name: "Restarting dnsmasq"
+  systemd:
+    name: dnsmasq
+    state: restarted
+  become: yes
+  when: state_dnsmaq_dir.stat.exists
   tags:
   - always
