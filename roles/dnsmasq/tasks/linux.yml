@@ -17,6 +17,7 @@
 - stat:
     path: "/etc/dnsmasq.d"
   register: state_dnsmaq_dir
+  when: not state_networkmanager_dnsmaq_dir.stat.exists
   become: yes
   tags:
   - always
@@ -24,7 +25,7 @@
 - name: Register mysql_base_dir fact
   set_fact:
     dnsmasq_conf_dirs: "{{ dnsmasq_conf_dirs + [ state_dnsmaq_dir.stat.path ] }}"
-  when: state_dnsmaq_dir.stat.exists
+  when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
   tags:
   - always
 
@@ -39,7 +40,7 @@
   lineinfile:
     path: '/etc/dnsmasq.conf'
     line: 'listen-address=127.0.0.1'
-  when: state_dnsmaq_dir.stat.exists
+  when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
   become: yes
   tags:
   - always
@@ -77,6 +78,15 @@
   tags:
   - always
 
+- ini_file:
+    path: "/etc/systemd/resolved.conf"
+    section: "Resolve"
+    option: "DNSStubListener"
+    value: "no"
+  when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
+  tags:
+  - always
+
 - name: "Restarting network-manager"
   systemd:
     name: network-manager
@@ -86,11 +96,22 @@
   tags:
   - always
 
+- name: "Disabling systemd-resolved"
+  systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: no
+  become: yes
+  when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
+  ignore_errors: yes
+  tags:
+  - always
+
 - name: "Restarting dnsmasq"
   systemd:
     name: dnsmasq
     state: restarted
   become: yes
-  when: state_dnsmaq_dir.stat.exists
+  when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
   tags:
   - always
