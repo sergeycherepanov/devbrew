@@ -19,7 +19,7 @@ macOS/Linux NGINX/PHP/JS/MySql Development Environment Based on Homebrew(Linuxbr
 2. Install cli tools: `xcode-select --install` (it's starts XCODE installation process)
 3. Execute: `cd /tmp`
 4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
-5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh"` to make full install
+5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
 6. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
 
@@ -28,7 +28,7 @@ macOS/Linux NGINX/PHP/JS/MySql Development Environment Based on Homebrew(Linuxbr
 2. Install dependencies: `sudo apt update && sudo apt install -yq curl git`
 3. Execute: `cd /tmp`
 4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
-5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh"` to make full install
+5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
 7. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
 
@@ -90,6 +90,8 @@ To start/stop/restart service use `supervisorctl`
 ## PHP Mail
 
 In ~/mail directory will be drops letter what be sent via php **mail** function
+
+## Know Issues
 
 ### Error: /usr/local is not writable.
 
