@@ -12,6 +12,7 @@
     mode: 0775
     state: directory
     recurse: true
+  ignore_errors: yes
   become: yes
   tags:
   - always
