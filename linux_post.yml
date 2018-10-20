@@ -7,3 +7,11 @@
   become: yes
   tags:
   - always
+
+- name: "Restarting network-manager"
+  systemd:
+    name: network-manager
+    state: restarted
+  become: yes
+  tags:
+  - always
