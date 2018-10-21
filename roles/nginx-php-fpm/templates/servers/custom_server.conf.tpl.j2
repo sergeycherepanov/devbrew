@@ -1,5 +1,5 @@
 server {
-    listen 80;
+    listen 127.0.0.1:80;
     port_in_redirect off;
     
     server_name <? .Env.HOSTNAME ?> www.<? .Env.HOSTNAME ?>;
