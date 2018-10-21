@@ -92,7 +92,7 @@
     - percona57
 
 - name: "Install db (mysqld --initialize-insecure)"
-  shell: "{{ mysql_base_dir }}/bin/mysql_install_db --basedir={{ mysql_base_dir }} --datadir={{ mysql_data_dir }} --defaults-file={{ mysql_etc_dir }}/my.cnf"
+  shell: "{{ mysql_base_dir }}/bin/mysql_install_db --basedir={{ mysql_base_dir }} --datadir={{ mysql_data_dir }} --lc-messages-dir={{ mysql_base_dir }}/share/mysql"
   when: mysql_data_dir_files.matched|int == 0
   tags:
     - percona57
