@@ -8,7 +8,7 @@ server {
 }
 
 server {
-    listen 443 http2 ssl;
+    listen 127.0.0.1:443 http2 ssl;
     port_in_redirect off;
     
     server_name ~^(?<project_name>.+?)\.+(?<pool>{{item}}).{{root_domain}}$;
