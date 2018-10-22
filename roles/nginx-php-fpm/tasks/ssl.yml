@@ -73,7 +73,8 @@
   tags:
     - always
 
-- stat:
+- name: "Cheking if certificate already generated"
+  stat:
     path: "{{ brew_install_path }}/etc/openssl/localCA/cacert.pem"
   register: state
   tags:
@@ -152,6 +153,17 @@
   file:
     src: "{{ brew_install_path }}/etc/openssl/openssl.cnf"
     dest: "/usr/lib/ssl/openssl.cnf"
+    state: link
+    force: yes
+  when: ansible_system == "Linux"
+  become: true
+  tags:
+  - always
+
+- name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/certs"
+  file:
+    src: "{{ brew_install_path }}/etc/openssl/certs"
+    dest: "/usr/lib/ssl/certs"
     state: link
     force: yes
   when: ansible_system == "Linux"
