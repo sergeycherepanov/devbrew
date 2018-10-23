@@ -3,15 +3,11 @@
     path: "/etc/NetworkManager/dnsmasq.d"
   register: state_networkmanager_dnsmaq_dir
   become: yes
-  tags:
-  - always
 
 - name: Checking if a dnsmasq already in the system
   shell: "which dnsmasq"
   register: which_dnsmasq
   ignore_errors: yes
-  tags:
-  - always
 
 - name: "Installing dnsmasq"
   apt:
@@ -19,29 +15,20 @@
     state: present
   become: yes
   when: which_dnsmasq.rc > 0
-  tags:
-  - always
 
 - stat:
     path: "/etc/dnsmasq.d"
   register: state_dnsmaq_dir
   become: yes
-  tags:
-  - always
 
 - name: Register dnsmasq_conf_dirs fact
   set_fact:
     dnsmasq_conf_dirs: "{{ dnsmasq_conf_dirs + [ state_dnsmaq_dir.stat.path ] }}"
-  when: state_dnsmaq_dir.stat.exists and not state_networkmanager_dnsmaq_dir.stat.exists
-  tags:
-  - always
 
 - name: Register dnsmasq_conf_dirs fact
   set_fact:
     dnsmasq_conf_dirs: "{{ dnsmasq_conf_dirs + [ state_networkmanager_dnsmaq_dir.stat.path ] }}"
   when: state_networkmanager_dnsmaq_dir.stat.exists
-  tags:
-  - always
 
 - name: "Bind dnsmasq to 127.0.0.1"
   lineinfile:
@@ -49,8 +36,6 @@
     line: 'listen-address=127.0.0.1'
   when: state_dnsmaq_dir.stat.exists
   become: yes
-  tags:
-  - always
 
 - name: "Configure *.dev.com zone resolver"
   copy:
@@ -58,8 +43,6 @@
     dest: "{{ item }}/dev.com.conf"
   with_items: "{{ dnsmasq_conf_dirs }}"
   become: yes
-  tags:
-  - always
 
 - name: "Configure *.loc.com zone resolver"
   copy:
@@ -67,15 +50,11 @@
     dest: "{{ item }}/dev.loc.conf"
   with_items: "{{ dnsmasq_conf_dirs }}"
   become: yes
-  tags:
-  - always
 
 - name: "Removing {{ brew_install_path }}/etc/supervisor.d/dnsmasq.ini if exists"
   file:
     state: absent
     path: "{{ brew_install_path }}/etc/supervisor.d/dnsmasq.ini"
-  tags:
-  - always
 
 - name: "Updating /etc/NetworkManager/NetworkManager.conf"
   ini_file:
@@ -85,8 +64,6 @@
     value: "dnsmasq"
   become: yes
   when: state_networkmanager_dnsmaq_dir.stat.exists
-  tags:
-  - always
 
 - name: "Updating /etc/systemd/resolved.conf"
   ini_file:
@@ -96,8 +73,6 @@
     value: "no"
   when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
   become: yes
-  tags:
-  - always
 
 - name: "Disabling systemd-resolved"
   systemd:
@@ -107,26 +82,18 @@
   become: yes
   when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
   ignore_errors: yes
-  tags:
-  - always
 
 - name: Postpone disabling of systemd-resolved
   set_fact:
     systemd_service_restarted: "{{ systemd_service_disabled + [ systemd-resolved ] }}"
   when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
-  tags:
-  - always
 
 - name: Postpone restart for network-manager
   set_fact:
     systemd_service_restarted: "{{ systemd_service_restart + [ network-manager ] }}"
   when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
-  tags:
-  - always
 
 - name: Postpone restart for dnsmasq
   set_fact:
     systemd_service_restarted: "{{ systemd_service_restart + [ dnsmasq ] }}"
   when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
-  tags:
-  - always

@@ -35,13 +35,14 @@ macOS/Linux NGINX/PHP/JS/MySql Development Environment Based on Homebrew(Linuxbr
 ## Tags
 > You can choose one or all of them, tags don't have conflict
 *  `zsh` - will install and configure ZSH with PowerLine and Oh-My-Zsh  
-*  `php56` - will installs PHP version 5.6  
-*  `php70` - will installs PHP version 7.0  
-*  `php71` - will installs PHP version 7.1  
-*  `php72` - will installs PHP version 7.2  
-*  `percona56` - will installs Percona Server (mysql) version 5.6
-*  `percona57` - will installs Percona Server (mysql) version 5.7  
-*  `nodejs` - will installs NodeJS and NPM  
+*  `php56` - will install PHP version 5.6  
+*  `php70` - will install PHP version 7.0  
+*  `php71` - will install PHP version 7.1  
+*  `php72` - will install PHP version 7.2  
+*  `percona56` - will install Percona Server (mysql) version 5.6
+*  `percona57` - will install Percona Server (mysql) version 5.7  
+*  `nodejs` - will install NodeJS and NPM  
+*  `dnsmasq` - will install and configure a dnsmasq service 
 
 ## Manage Services
 
