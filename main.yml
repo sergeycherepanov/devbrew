@@ -5,7 +5,9 @@
     PATH: "{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:{{ ansible_env.PATH}}"
   vars:
   - php_versions: []
+  - systemd_service_disabled: []
   - systemd_service_restarted: []
+  - systemd_service_started: []
   pre_tasks:
   - name: "Register brew_user fact"
     set_fact:

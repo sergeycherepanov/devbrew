@@ -1,16 +1,24 @@
 ---
+- stat:
+    path: "/etc/NetworkManager/dnsmasq.d"
+  register: state_networkmanager_dnsmaq_dir
+  become: yes
+  tags:
+  - always
+
+- name: Checking if a dnsmasq already in the system
+  shell: "which dnsmasq"
+  register: which_dnsmasq
+  ignore_errors: yes
+  tags:
+  - always
+
 - name: "Installing dnsmasq"
   apt:
     name: dnsmasq
     state: present
   become: yes
-  tags:
-  - always
-
-- stat:
-    path: "/etc/NetworkManager/dnsmasq.d"
-  register: state_networkmanager_dnsmaq_dir
-  become: yes
+  when: which_dnsmasq.rc > 0
   tags:
   - always
 
@@ -31,7 +39,7 @@
 - name: Register dnsmasq_conf_dirs fact
   set_fact:
     dnsmasq_conf_dirs: "{{ dnsmasq_conf_dirs + [ state_networkmanager_dnsmaq_dir.stat.path ] }}"
-  when: state_networkmanager_dnsmaq_dir.stat.exists and state_networkmanager_dnsmaq_dir.stat.exists
+  when: state_networkmanager_dnsmaq_dir.stat.exists
   tags:
   - always
 
@@ -39,7 +47,7 @@
   lineinfile:
     path: '/etc/dnsmasq.conf'
     line: 'listen-address=127.0.0.1'
-  when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
+  when: state_dnsmaq_dir.stat.exists
   become: yes
   tags:
   - always
@@ -99,6 +107,13 @@
   become: yes
   when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
   ignore_errors: yes
+  tags:
+  - always
+
+- name: Postpone disabling of systemd-resolved
+  set_fact:
+    systemd_service_restarted: "{{ systemd_service_disabled + [ systemd-resolved ] }}"
+  when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
   tags:
   - always
 
