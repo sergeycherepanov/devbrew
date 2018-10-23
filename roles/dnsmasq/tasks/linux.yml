@@ -17,22 +17,21 @@
 - stat:
     path: "/etc/dnsmasq.d"
   register: state_dnsmaq_dir
-  when: not state_networkmanager_dnsmaq_dir.stat.exists
   become: yes
   tags:
   - always
 
-- name: Register mysql_base_dir fact
+- name: Register dnsmasq_conf_dirs fact
   set_fact:
     dnsmasq_conf_dirs: "{{ dnsmasq_conf_dirs + [ state_dnsmaq_dir.stat.path ] }}"
-  when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
+  when: state_dnsmaq_dir.stat.exists and not state_networkmanager_dnsmaq_dir.stat.exists
   tags:
   - always
 
-- name: Register mysql_base_dir fact
+- name: Register dnsmasq_conf_dirs fact
   set_fact:
     dnsmasq_conf_dirs: "{{ dnsmasq_conf_dirs + [ state_networkmanager_dnsmaq_dir.stat.path ] }}"
-  when: state_networkmanager_dnsmaq_dir.stat.exists
+  when: state_networkmanager_dnsmaq_dir.stat.exists and state_networkmanager_dnsmaq_dir.stat.exists
   tags:
   - always
 
