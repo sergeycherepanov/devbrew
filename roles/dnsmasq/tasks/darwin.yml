@@ -1,11 +1,8 @@
 ---
-
 - name: "Installing DNSMASQ"
   homebrew:
     name: dnsmasq
     state: present
-  tags:
-  - always
 
 #- name: "Truncate configuration file"
 #  shell: "echo '' > {{ brew_install_path }}/etc/dnsmasq.conf"
@@ -18,60 +15,34 @@
     state: directory
   become: yes
   become_method: sudo
-  tags:
-  - always
-
 - name: "Adding *.dev.com zone to dnsmasq configuration file"
   lineinfile:
     path: '{{ brew_install_path }}/etc/dnsmasq.conf'
     line: 'address=/dev.com/127.0.0.1'
-  tags:
-  - always
 
 - name: "Adding *.loc.com zone to dnsmasq configuration file"
   lineinfile:
     path: '{{ brew_install_path }}/etc/dnsmasq.conf'
     line: 'address=/loc.com/127.0.0.1'
-  tags:
-  - always
 
 - name: "Configure *.dev.com zone resolver"
-  #  shell: "echo 'nameserver 127.0.0.1' > /etc/resolver/dev.com"
   copy:
     content: "nameserver 127.0.0.1"
     dest: "/etc/resolver/dev.com"
   become: yes
-  tags:
-  - always
 
 - name: "Configure *.loc.com zone resolver"
-  #  shell: "echo 'nameserver 127.0.0.1' > /etc/resolver/loc.com"
   copy:
     content: "nameserver 127.0.0.1"
     dest: "/etc/resolver/loc.com"
   become: yes
-  tags:
-  - always
-
-# - name: "Copy the daemon configuration file into place."
-#   shell: "cp $(brew list dnsmasq | grep /homebrew.mxcl.dnsmasq.plist$) /Library/LaunchDaemons/"
-#   become: yes
-#   become_method: sudo
-# - name: "Start Dnsmasq automatically."
-#   shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist"
-#   become: yes
-#   become_method: sudo
 
 - stat:
     path: "{{ brew_install_path }}/etc/supervisor.d/dnsmasq.ini"
   register: state
-  tags:
-  - always
 
 - name: "Create etc/supervisor.d/dnsmasq.ini"
   template:
     src: supervisord.ini.j2
     dest: "{{ brew_install_path }}/etc/supervisor.d/dnsmasq.ini"
   when: not state.stat.exists
-  tags:
-  - always

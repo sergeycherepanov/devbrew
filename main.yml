@@ -95,7 +95,6 @@
     include_role:
       name: homebrew
     when: "ansible_system == 'Darwin'"
-
   - name: linuxbrew
     include_role:
       name: linuxbrew
@@ -114,7 +113,9 @@
   - efk
   - efk+nginx
   - fakesendmail
-  - dnsmasq
+  - role: dnsmasq
+    tags:
+    - always
   - percona-server-56
   - percona-server-57
   - mongodb
