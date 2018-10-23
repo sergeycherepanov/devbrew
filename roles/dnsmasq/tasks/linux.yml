@@ -91,15 +91,6 @@
   tags:
   - always
 
-- name: "Restarting network-manager"
-  systemd:
-    name: network-manager
-    state: restarted
-  become: yes
-  when: state_networkmanager_dnsmaq_dir.stat.exists
-  tags:
-  - always
-
 - name: "Disabling systemd-resolved"
   systemd:
     name: systemd-resolved
@@ -111,11 +102,16 @@
   tags:
   - always
 
-- name: "Restarting dnsmasq"
-  systemd:
-    name: dnsmasq
-    state: restarted
-  become: yes
+- name: Postpone restart for network-manager
+  set_fact:
+    systemd_service_restarted: "{{ systemd_service_restart + [ network-manager ] }}"
+  when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
+  tags:
+  - always
+
+- name: Postpone restart for dnsmasq
+  set_fact:
+    systemd_service_restarted: "{{ systemd_service_restart + [ dnsmasq ] }}"
   when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
   tags:
   - always

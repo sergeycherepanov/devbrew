@@ -1,4 +1,13 @@
 ---
+- name: "Restarting services"
+  systemd:
+    name: {{ item }}
+    state: restarted
+  become: yes
+  with_items: "{{ systemd_service_restarted }}"
+  tags:
+  - always
+
 - name: "Enabling/Starting supervisord-devbrew"
   systemd:
     name: supervisord-devbrew
