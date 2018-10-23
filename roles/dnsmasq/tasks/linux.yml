@@ -75,6 +75,7 @@
     section: "main"
     option: "dns"
     value: "dnsmasq"
+  become: yes
   when: state_networkmanager_dnsmaq_dir.stat.exists
   tags:
   - always
