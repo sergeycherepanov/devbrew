@@ -115,7 +115,7 @@
   - fakesendmail
   - role: dnsmasq
     tags:
-    - always
+    - dnsmasq
   - percona-server-56
   - percona-server-57
   - mongodb
