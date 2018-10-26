@@ -1,5 +1,5 @@
-# dev-env-osx
-macOS/Linux NGINX/PHP/JS/MySql Development Environment Based on Homebrew(Linuxbrew)
+# DevBrew
+macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment Based on Homebrew(Linuxbrew)
 
 [![Build Status](https://travis-ci.org/SergeyCherepanov/devbrew.svg?branch=master)](https://travis-ci.org/SergeyCherepanov/devbrew)
 
@@ -31,6 +31,9 @@ macOS/Linux NGINX/PHP/JS/MySql Development Environment Based on Homebrew(Linuxbr
 5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
 7. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
+
+## Installation on Windows Subsystem for Linux
+Coming soon...
 
 ## Tags
 > You can choose one or all of them, tags don't have conflict
