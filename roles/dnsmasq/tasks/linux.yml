@@ -81,14 +81,14 @@
 - name: Postpone disabling of systemd-resolved
   set_fact:
     systemd_service_disabled: "{{ systemd_service_disabled + [ 'systemd-resolved' ] }}"
-  when: 'systemd-resolved' in ansible_facts.services
+  when: "'systemd-resolved' in ansible_facts.services"
 
 - name: Postpone restart for network-manager
   set_fact:
-    systemd_service_restarted: "{{ systemd_service_restart + [ 'network-manager' ] }}"
+    systemd_service_restarted: "{{ systemd_service_restarted + [ 'network-manager' ] }}"
   when: state_networkmanager_dnsmaq_dir is defined and state_networkmanager_dnsmaq_dir.stat.exists
 
 - name: Postpone restart for dnsmasq
   set_fact:
-    systemd_service_restarted: "{{ systemd_service_restart + [ 'dnsmasq' ] }}"
+    systemd_service_restarted: "{{ systemd_service_restarted + [ 'dnsmasq' ] }}"
   when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
