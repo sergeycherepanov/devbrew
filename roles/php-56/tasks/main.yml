@@ -125,7 +125,7 @@
     line: ';\1'
     backrefs: yes
   tags:
-  - zsh
+  - php56
 
 - name: "Create php-xdebug.ini"
   template:

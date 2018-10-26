@@ -133,7 +133,7 @@
     line: ';\1'
     backrefs: yes
   tags:
-  - zsh
+  - php71
 
 - name: "Create php-xdebug.ini"
   template:
