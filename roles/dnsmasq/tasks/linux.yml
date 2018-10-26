@@ -80,8 +80,8 @@
 
 - name: Postpone disabling of systemd-resolved
   set_fact:
-    systemd_service_restarted: "{{ systemd_service_disabled + [ 'systemd-resolved' ] }}"
-  when: 'systemd-resolved' in services
+    systemd_service_disabled: "{{ systemd_service_disabled + [ 'systemd-resolved' ] }}"
+  when: 'systemd-resolved' in ansible_facts.services
 
 - name: Postpone restart for network-manager
   set_fact:
