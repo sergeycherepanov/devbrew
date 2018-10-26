@@ -19,13 +19,12 @@
 - name: "Ensure supctl wrapper"
   copy:
     mode: 0755
-    owner: root
+    owner: "{{ brew_user }}"
     group: "{{ brew_group }}"
     dest: "{{ brew_brew_bin_path }}/supctl"
     content: |
       #!/bin/sh
-      exec supervisorctl $@ -c {{ brew_install_path }}/etc/supervisord.ini
-  become: yes
+      exec supervisorctl -c {{ brew_install_path }}/etc/supervisord.ini $@
   tags:
   - always
 

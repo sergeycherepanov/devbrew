@@ -1,5 +1,5 @@
 server {
-  listen 80;
+  listen 127.0.0.1:80;
   server_name kibana.local;
   location / {
     proxy_pass       http://localhost:15601;

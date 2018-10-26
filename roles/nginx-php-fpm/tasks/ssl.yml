@@ -73,7 +73,8 @@
   tags:
     - always
 
-- stat:
+- name: "Cheking if certificate already generated"
+  stat:
     path: "{{ brew_install_path }}/etc/openssl/localCA/cacert.pem"
   register: state
   tags:
@@ -126,10 +127,10 @@
   tags:
     - always
 
-- name: Ensure symlink for /usr/lib/ssl/certs
+- name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/openssl.cnf"
   file:
-    src: "{{ brew_install_path }}/etc/openssl/certs"
-    dest: "/usr/lib/ssl/certs"
+    src: "/usr/lib/ssl/openssl.cnf"
+    dest: "{{ brew_install_path }}/etc/openssl/openssl.cnf"
     state: link
     force: yes
   when: ansible_system == "Linux"
@@ -139,19 +140,8 @@
 
 - name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/certs"
   file:
-    src: "{{ brew_install_path }}/etc/openssl/certs"
-    dest: "/usr/lib/ssl/certs"
-    state: link
-    force: yes
-  when: ansible_system == "Linux"
-  become: true
-  tags:
-  - always
-
-- name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/openssl.cnf"
-  file:
-    src: "{{ brew_install_path }}/etc/openssl/openssl.cnf"
-    dest: "/usr/lib/ssl/openssl.cnf"
+    src: "/usr/lib/ssl/certs"
+    dest: "{{ brew_install_path }}/etc/openssl/certs"
     state: link
     force: yes
   when: ansible_system == "Linux"
@@ -161,8 +151,8 @@
 
 - name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/private"
   file:
-    src: "{{ brew_install_path }}/etc/openssl/private"
-    dest: "/usr/lib/ssl/private"
+    src: "/usr/lib/ssl/private"
+    dest: "{{ brew_install_path }}/etc/openssl/private"
     state: link
     force: yes
   when: ansible_system == "Linux"

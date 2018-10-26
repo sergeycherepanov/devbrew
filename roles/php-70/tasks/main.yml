@@ -108,7 +108,7 @@
     line: ';\1'
     backrefs: yes
   tags:
-  - zsh
+  - php70
 
 - name: "Create php-fpm-xdebug.conf"
   template:

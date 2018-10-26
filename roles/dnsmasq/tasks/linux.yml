@@ -1,32 +1,94 @@
 ---
+- stat:
+    path: "/etc/NetworkManager/dnsmasq.d"
+  register: state_networkmanager_dnsmaq_dir
+  become: yes
+
+- name: Checking if a dnsmasq already in the system
+  shell: "which dnsmasq"
+  register: which_dnsmasq
+  ignore_errors: yes
+
+- name: "Installing dnsmasq"
+  apt:
+    name: dnsmasq
+    state: present
+  become: yes
+  when: which_dnsmasq.rc > 0
+
+- stat:
+    path: "/etc/dnsmasq.d"
+  register: state_dnsmaq_dir
+  become: yes
+
+- name: Register dnsmasq_conf_dirs fact
+  set_fact:
+    dnsmasq_conf_dirs: "{{ dnsmasq_conf_dirs + [ state_dnsmaq_dir.stat.path ] }}"
+  when: state_dnsmaq_dir.stat.exists and which_dnsmasq.rc > 0
+
+- name: Register dnsmasq_conf_dirs fact
+  set_fact:
+    dnsmasq_conf_dirs: "{{ dnsmasq_conf_dirs + [ state_networkmanager_dnsmaq_dir.stat.path ] }}"
+  when: state_networkmanager_dnsmaq_dir.stat.exists
+
+- name: "Bind dnsmasq to 127.0.0.1"
+  lineinfile:
+    path: '/etc/dnsmasq.conf'
+    line: 'listen-address=127.0.0.1'
+  when: state_dnsmaq_dir.stat.exists
+  become: yes
+
 - name: "Configure *.dev.com zone resolver"
   copy:
     content: "address=/.dev.com/127.0.0.1"
-    dest: "/etc/NetworkManager/dnsmasq.d/dev.com.conf"
+    dest: "{{ item }}/dev.com.conf"
+  with_items: "{{ dnsmasq_conf_dirs }}"
   become: yes
-  tags:
-  - always
 
 - name: "Configure *.loc.com zone resolver"
   copy:
     content: "address=/.dev.loc/127.0.0.1"
-    dest: "/etc/NetworkManager/dnsmasq.d/dev.loc.conf"
+    dest: "{{ item }}/dev.loc.conf"
+  with_items: "{{ dnsmasq_conf_dirs }}"
   become: yes
-  tags:
-  - always
 
-- file:
+- name: "Removing {{ brew_install_path }}/etc/supervisor.d/dnsmasq.ini if exists"
+  file:
     state: absent
     path: "{{ brew_install_path }}/etc/supervisor.d/dnsmasq.ini"
-  tags:
-  - always
 
-- ini_file:
+- name: "Updating /etc/NetworkManager/NetworkManager.conf"
+  ini_file:
     path: "/etc/NetworkManager/NetworkManager.conf"
     section: "main"
     option: "dns"
     value: "dnsmasq"
   become: yes
-  tags:
-  - always
+  when: state_networkmanager_dnsmaq_dir.stat.exists
 
+- name: "Updating /etc/systemd/resolved.conf"
+  ini_file:
+    path: "/etc/systemd/resolved.conf"
+    section: "Resolve"
+    option: "DNSStubListener"
+    value: "no"
+  when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
+  become: yes
+
+- name: Populate service_facts
+  service_facts:
+
+- name: Postpone disabling of systemd-resolved
+  set_fact:
+    systemd_service_disabled: "{{ systemd_service_disabled + [ 'systemd-resolved' ] }}"
+  when: "'systemd-resolved.service' in ansible_facts.services and state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists"
+
+- name: Postpone restart for network-manager
+  set_fact:
+    systemd_service_restarted: "{{ systemd_service_restarted + [ 'network-manager' ] }}"
+  when: state_networkmanager_dnsmaq_dir is defined and state_networkmanager_dnsmaq_dir.stat.exists
+
+- name: Postpone restart for dnsmasq
+  set_fact:
+    systemd_service_restarted: "{{ systemd_service_restarted + [ 'dnsmasq' ] }}"
+  when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
