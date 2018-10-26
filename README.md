@@ -1,5 +1,5 @@
 # DevBrew
-macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment Based on Homebrew(Linuxbrew)
+macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Homebrew(Linuxbrew)
 
 [![Build Status](https://travis-ci.org/SergeyCherepanov/devbrew.svg?branch=master)](https://travis-ci.org/SergeyCherepanov/devbrew)
 
@@ -23,7 +23,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment Based o
 (Wait for finish. Should be without "Fatal" messages)
 6. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
 
-## Installation on Linux (Ubuntu/Debian)
+## Installation on Linux (ElementaryOS/Ubuntu/Debian)
 1. Open the terminal
 2. Install dependencies: `sudo apt update && sudo apt install -yq curl git`
 3. Execute: `cd /tmp`
