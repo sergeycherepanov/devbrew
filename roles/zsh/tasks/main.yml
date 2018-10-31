@@ -68,7 +68,7 @@
 
 - name: "Rebuild font cache"
   shell: "fc-cache -f -v"
-  when: ansible_system == "Linux" and which_fc_cache.rc = 0
+  when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   become: yes
   tags:
   - zsh
