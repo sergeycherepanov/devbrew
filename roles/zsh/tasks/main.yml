@@ -59,9 +59,16 @@
   tags:
   - zsh
 
+- name: Checking if fc-cache installed in the system
+  shell: which fc-cache
+  register: which_fc_cache
+  ignore_errors: yes
+  tags:
+  - zsh
+
 - name: "Rebuild font cache"
   shell: "fc-cache -f -v"
-  when: ansible_system == "Linux"
+  when: ansible_system == "Linux" and which_fc_cache.rc > 0
   become: yes
   tags:
   - zsh
