@@ -16,6 +16,28 @@
   tags:
   - always
 
+- name: "Resolving supervisord path"
+  shell: "which supervisord"
+  register: supervisord_path_output
+  tags:
+  - always
+
+- name: "Resolving supervisorctl path"
+  shell: "which supervisorctl"
+  register: supervisorctl_path_output
+  tags:
+  - always
+
+- name: "Register supervisord_path fact"
+  set_fact: supervisord_path="{{ supervisord_path_output.stdout }}"
+  tags:
+  - always
+
+- name: "Register supervisorctl_path fact"
+  set_fact: supervisorctl_path="{{ supervisorctl_path_output.stdout }}"
+  tags:
+  - always
+
 - name: "Ensure supctl wrapper"
   copy:
     mode: 0755
@@ -28,16 +50,6 @@
   tags:
   - always
 
-- name: "Resolving supervisord path"
-  shell: "which supervisord"
-  register: supervisord_path_output
-  tags:
-  - always
-
-- name: "Register supervisord_path fact"
-  set_fact: supervisord_path="{{ supervisord_path_output.stdout }}"
-  tags:
-  - always
 
 - name: "Resolving pidproxy path"
   shell: "which pidproxy"
@@ -118,6 +130,18 @@
   tags:
   - always
 
+- name: "Ensure /etc/init.d/sickbeard/supervisord-devbrew"
+  template:
+    src: init-script.j2
+    dest: /etc/init.d/sickbeard/supervisord-devbrew
+    owner: root
+    group: root
+    mode: 0755
+  when: ansible_system == "Linux"
+  become: yes
+  tags:
+  - always
+
 - name: "Ensure supervisor-listener"
   template:
     src: supervisor-listener
@@ -127,3 +151,7 @@
     mode: 0755
   tags:
   - always
+
+- name: Postpone restart for network-manager
+  set_fact:
+    service_started: "{{ service_started + [ 'supervisord-devbrew' ] }}"

@@ -8,6 +8,9 @@
   - systemd_service_disabled: []
   - systemd_service_restarted: []
   - systemd_service_started: []
+  - service_disabled: []
+  - service_restarted: []
+  - service_started: []
   pre_tasks:
   - name: "Register brew_user fact"
     set_fact:
