@@ -130,10 +130,10 @@
   tags:
   - always
 
-- name: "Ensure /etc/init.d/sickbeard/supervisord-devbrew"
+- name: "Ensure /etc/init.d/supervisord-devbrew"
   template:
     src: init-script.j2
-    dest: /etc/init.d/sickbeard/supervisord-devbrew
+    dest: /etc/init.d/supervisord-devbrew
     owner: root
     group: root
     mode: 0755
