@@ -106,11 +106,15 @@
   - coreutils
   - role: flock
     when: "ansible_system == 'Darwin'"
+    tags:
+    - always
   - git
   - curl
   - jenv
   - golang
   - supervisord
+    tags:
+    - always
   - logrotate
   - nginx
   - efk
