@@ -1,9 +1,4 @@
 ---
-- stat:
-    path: "/etc/NetworkManager/dnsmasq.d"
-  register: state_networkmanager_dnsmaq_dir
-  become: yes
-
 - name: Checking if a dnsmasq already in the system
   shell: "which dnsmasq"
   register: which_dnsmasq
@@ -21,10 +16,15 @@
   register: state_dnsmaq_dir
   become: yes
 
+- stat:
+    path: "/etc/NetworkManager/dnsmasq.d"
+  register: state_networkmanager_dnsmaq_dir
+  become: yes
+
 - name: Register dnsmasq_conf_dirs fact
   set_fact:
     dnsmasq_conf_dirs: "{{ dnsmasq_conf_dirs + [ state_dnsmaq_dir.stat.path ] }}"
-  when: state_dnsmaq_dir.stat.exists and which_dnsmasq.rc > 0
+  when: state_dnsmaq_dir.stat.exists
 
 - name: Register dnsmasq_conf_dirs fact
   set_fact:
