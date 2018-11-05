@@ -4,28 +4,28 @@
     name: supervisor
     state: absent
   become: yes
-  
+
 - name: "Installing supervisor globally"
   pip:
     name: supervisor
     state: present
     extra_args: --force-reinstall
   become: yes
-  
+
 - name: "Resolving supervisord path"
   shell: "which supervisord"
   register: supervisord_path_output
-  
+
 - name: "Resolving supervisorctl path"
   shell: "which supervisorctl"
   register: supervisorctl_path_output
-  
+
 - name: "Register supervisord_path fact"
   set_fact: supervisord_path="{{ supervisord_path_output.stdout }}"
-  
+
 - name: "Register supervisorctl_path fact"
   set_fact: supervisorctl_path="{{ supervisorctl_path_output.stdout }}"
-  
+
 - name: "Ensure supctl wrapper"
   copy:
     mode: 0755
@@ -35,55 +35,55 @@
     content: |
       #!/bin/sh
       exec supervisorctl -c {{ brew_install_path }}/etc/supervisord.ini $@
-  
+
 - name: "Resolving pidproxy path"
   shell: "which pidproxy"
   register: pidproxy_output
-  
+
 - name: "Register supervisor_pidproxy_path fact"
   set_fact: supervisor_pidproxy_path="{{ pidproxy_output.stdout }}"
-  
+
 - name: "Creates {{ brew_install_path }}/etc/supervisor.d"
   file:
     path: "{{ brew_install_path }}/etc/supervisor.d"
     state: directory
-  
+
 - name: "Creates {{ brew_install_path }}/var/log/supervisor"
   file:
     path: "{{ brew_install_path }}/var/log/supervisor"
     state: directory
-  
+
 - name: Ensure supervisord.ini
   template:
     src: supervisord.ini.j2
     dest: '{{ brew_install_path }}/etc/supervisord.ini'
-  
+
 - name: Ensure symlink for supervisord.ini
   file:
     src: "{{ brew_install_path }}/etc/supervisord.ini"
     dest: "{{ brew_install_path }}/etc/supervisord.conf"
     state: link
-  
+
 - name: Ensure permissions for supervisord socket
   ini_file:
     path: "{{ brew_install_path }}/etc/supervisord.ini"
     section: "unix_http_server"
     option: "chmod"
     value: "0770"
-  
+
 - name: Ensure ownership for supervisord socket
   ini_file:
     path: "{{ brew_install_path }}/etc/supervisord.ini"
     section: "unix_http_server"
     option: "chown"
     value: "root:{{ brew_group }}"
-  
+
 - name: "Ensure /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
   template:
     src: homebrew.mxcl.supervisor.plist.j2
     dest: '/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist'
   become: true
-  
+
   when: ansible_system == "Darwin"
 - name: "Ensure /lib/systemd/system/supervisord-devbrew.service"
   template:
@@ -93,7 +93,7 @@
     group: root
   when: ansible_system == "Linux"
   become: yes
-  
+
 - name: "Ensure /etc/init.d/supervisord-devbrew"
   template:
     src: init-script.j2
@@ -103,7 +103,7 @@
     mode: 0755
   when: ansible_system == "Linux"
   become: yes
-  
+
 - name: "Ensure supervisor-listener"
   template:
     src: supervisor-listener
@@ -111,7 +111,7 @@
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
     mode: 0755
-  
+
 - name: Postpone restart for network-manager
   set_fact:
     service_started: "{{ service_started + [ 'supervisord-devbrew' ] }}"
