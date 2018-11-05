@@ -1,46 +1,29 @@
 ---
-- name: "Disabling systemd services"
-  systemd:
+- name: "Disabling services"
+  service:
     name: "{{ item }}"
     state: stopped
     enabled: no
   become: yes
-  with_items: "{{ systemd_service_disabled }}"
+  with_items: "{{ service_disabled }}"
   tags:
   - always
 
-- name: "Restarting systemd services"
-  systemd:
+- name: "Restarting services"
+  service:
     name: "{{ item }}"
     state: restarted
   become: yes
-  with_items: "{{ systemd_service_restarted }}"
+  with_items: "{{ service_restarted }}"
   tags:
   - always
 
-- name: "Starting systemd services"
-  systemd:
+- name: "Starting services"
+  service:
     name: "{{ item }}"
     state: started
     enabled: yes
   become: yes
-  with_items: "{{ systemd_service_started }}"
-  tags:
-  - always
-
-- name: "Enabling/Starting supervisord-devbrew"
-  systemd:
-    name: supervisord-devbrew
-    state: started
-    enabled: yes
-  become: yes
-  tags:
-  - always
-
-- name: "Restarting network-manager"
-  systemd:
-    name: network-manager
-    state: restarted
-  become: yes
+  with_items: "{{ service_started }}"
   tags:
   - always
