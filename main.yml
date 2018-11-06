@@ -112,7 +112,7 @@
   - curl
   - jenv
   - golang
-  - supervisord
+  - role: supervisord
     tags:
     - always
   - logrotate
