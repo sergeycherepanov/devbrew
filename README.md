@@ -33,7 +33,11 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 7. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
 
 ## Installation on Windows Subsystem for Linux
-Coming soon...
+1. Enable WSL
+2. Install Ubuntu 18.04 from app store
+3. Follow steps from  Linux section above
+4. Run super supervisord by following command: `service supervisord-devbrew start`
+5. Update your network settings to use 127.0.0.1 as dns server
 
 ## Tags
 > You can choose one or all of them, tags don't have conflict
@@ -89,8 +93,8 @@ Too choose a version of php you need define it via empty flag file in the projec
 
 ## Mysql
 
-* Mysql (Percona) Server 5.6 binds to 3306 port (user: `root`, password: `root`)  
-* Mysql (Percona) Server 5.7 binds to 3307 port (user: `root`, password: `root`)  
+* Mysql (Percona) Server 5.6 binds to 3356 port (user: `root`, password: `root`)  
+* Mysql (Percona) Server 5.7 binds to 3306 port (user: `root`, password: `root`)  
 
 ## PHP Mail
 
