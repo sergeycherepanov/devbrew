@@ -7,6 +7,7 @@ MIN_PYTHON_VERSION_MACOS="2.7.15"
 MIN_PYTHON_VERSION_LINUX="2.7.15"
 PYTHON_PKG_LINUX="Python-${MIN_PYTHON_VERSION_LINUX}.tgz"
 PYTHON_PKG_MACOS="python-${MIN_PYTHON_VERSION_MACOS}-macosx10.9.pkg"
+expot ANSIBLE_NOCOWS=1
 
 if [[ $(id -u ${MAC_USER}) -eq 0 ]]; then
   echo "Please don't run under the root user!"
