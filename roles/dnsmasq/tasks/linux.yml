@@ -72,7 +72,7 @@
     section: "Resolve"
     option: "DNSStubListener"
     value: "no"
-  when: state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists
+  when: "'systemd-resolved.service' in ansible_facts.services and state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists"
   become: yes
 
 - name: "Updating /etc/systemd/resolved.conf"
@@ -81,15 +81,15 @@
     section: "Resolve"
     option: "DNS"
     value: "127.0.1.1"
-  when: state_networkmanager_dnsmaq_dir.stat.exists
+  when: "'systemd-resolved.service' in ansible_facts.services and state_networkmanager_dnsmaq_dir.stat.exists"
   become: yes
 
 - name: Populate service_facts
   service_facts:
 
-- name: Postpone disabling of systemd-resolved
+- name: Postpone restart for systemd-resolved
   set_fact:
-    systemd_service_disabled: "{{ systemd_service_disabled + [ 'systemd-resolved' ] }}"
+    service_restarted: "{{ systemd_service_restarted + [ 'systemd-resolved' ] }}"
   when: "'systemd-resolved.service' in ansible_facts.services and state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists"
 
 - name: Postpone restart for network-manager
