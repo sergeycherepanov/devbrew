@@ -3,10 +3,6 @@
   template: 
     src: .gitignore.j2
     dest: "{{ brew_user_home_dir }}/.gitignore"
-  tags:
-    - always
 
 - name: git config
   shell: "git config --global core.excludesfile {{ brew_user_home_dir }}/.gitignore"
-  tags:
-    - always

@@ -3,5 +3,3 @@
   shell: "gem install -n {{ brew_install_path }}/bin compass"
   become: yes
   become_method: sudo
-  tags:
-    - always

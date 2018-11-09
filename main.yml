@@ -108,7 +108,9 @@
     when: "ansible_system == 'Darwin'"
     tags:
     - always
-  - git
+  - role: git
+    tags:
+    - always
   - curl
   - jenv
   - golang
@@ -132,13 +134,21 @@
   - php-71
   - php-72
   - nginx-php-fpm
-  - nodejs
-  - php-tools
-  - xhgui
-  - compass
-  - less
+  - role: nodejs
+    - always
+  - role: php-tools
+    - always
+  - role: xhgui
+    tags:
+    - always
+  - role: compass
+    tags:
+    - always
+  - role: less
+    tags:
+    - always
   post_tasks:
-  - name: "Adding brew bin to PATH"
+  - name: "Adding brew bin to PATH for root user (Linux)"
     blockinfile:
       dest: '{{ item }}'
       marker: "# {mark} brew PATH"
@@ -155,7 +165,7 @@
     tags:
       - always
 
-  - name: "Adding brew bin to PATH"
+  - name: "Adding brew bin to PATH for root user (Darwin)"
     blockinfile:
       dest: '{{ item }}'
       marker: "# {mark} brew PATH"
