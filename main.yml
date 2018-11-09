@@ -124,15 +124,21 @@
     - always
   - logrotate
   - nginx
-  - efk
-  - efk+nginx
+  - role: efk
+    tags:
+    - efk
+  - role: efk+nginx
+    tags:
+    - efk
   - fakesendmail
   - role: dnsmasq
     tags:
     - dnsmasq
   - percona-server-56
   - percona-server-57
-  - mongodb
+  - role: mongodb
+    tags:
+    - xhgui
   - redis
   - php-56
   - php-70
@@ -145,7 +151,7 @@
     - always
   - role: xhgui
     tags:
-    - always
+    - xhgui
   - role: compass
     tags:
     - always
