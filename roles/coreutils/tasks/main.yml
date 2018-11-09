@@ -3,8 +3,6 @@
   homebrew: 
     name: coreutils
     state: present
-  tags:
-    - always
 
 - name: "Adding coreutils to PATH in {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
@@ -13,8 +11,6 @@
     create: yes
     block: |
       export PATH="$({{ brew_brew_bin_path }}/brew --prefix coreutils)/libexec/gnubin:$PATH"
-  tags:
-    - always
 
 - name: "Adding coreutils to PATH in {{ brew_user_home_dir }}/.bashrc"
   blockinfile:
@@ -23,5 +19,3 @@
     create: yes
     block: |
       export PATH="$({{ brew_brew_bin_path }}/brew --prefix coreutils)/libexec/gnubin:$PATH"
-  tags:
-    - always

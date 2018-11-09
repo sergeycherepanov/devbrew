@@ -103,7 +103,12 @@
       name: linuxbrew
     when: "ansible_system == 'Linux'"
   - zsh
-  - coreutils
+  - role: vim
+    tags:
+    - always
+  - role: coreutils
+    tags:
+    - always
   - role: flock
     when: "ansible_system == 'Darwin'"
     tags:

@@ -1,0 +1,56 @@
+---
+- name: "ln -s /usr/include/locale.h /usr/include/xlocale.h"
+  file:
+    dest: "/usr/include/xlocale.h"
+    src: "/usr/include/locale.h"
+    state: link
+    force: yes
+  when: "ansible_system == 'Linux'"
+
+- name: "Ensure vim"
+  homebrew: 
+    name: node 
+    state: present
+    install_options: "with-python@2"
+
+- name: "Installing powerline-status via pip"
+  pip:
+    name: powerline-status
+    state: present
+    extra_args: --user
+  tags:
+  - zsh
+
+- name: "Creating .vim/autoload folder"
+  file:
+    path: "{{item}}"
+    state: directory
+    mode: 0755
+  with_items:
+  - "{{ brew_user_home_dir }}/.vim/autoload"
+  - "{{ brew_user_home_dir }}/.vim/bundle"
+
+- name: "Install pathogen.vim"
+  get_url:
+    url: "https://tpo.pe/pathogen.vim"
+    dest: "{{ brew_user_home_dir }}/.vim/autoload/pathogen.vim"
+
+- name: "Adding pathogen.vim to .vimrc"
+  blockinfile:
+    create: yes
+    dest: '{{ brew_user_home_dir }}/.vimrc'
+    marker: '" {mark} pathogen.vim'
+    block: |
+      execute pathogen#infect()
+      syntax on
+      filetype plugin indent on
+
+- name: "Adding powerline config {{ brew_user_home_dir }}/.vimrc"
+  blockinfile:
+    dest: '{{ brew_user_home_dir }}/.vimrc'
+    marker: '" {mark} powerline'
+    block: |
+      python from powerline.vim import setup as powerline_setup
+      python powerline_setup()
+      python del powerline_setup
+      set laststatus=2
