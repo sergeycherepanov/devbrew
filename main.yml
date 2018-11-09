@@ -59,7 +59,7 @@
       - /root/.zshrc
     when: "ansible_system == 'Linux'"
     tags:
-      - always
+    - always
 
   - name: "Adding brew bin to PATH"
     blockinfile:
@@ -76,7 +76,7 @@
       - /var/root/.zshrc
     when: "ansible_system == 'Darwin'"
     tags:
-      - always
+    - always
 
   - name: "Adding brew bin to PATH"
     blockinfile:
@@ -146,6 +146,7 @@
   - php-72
   - nginx-php-fpm
   - role: nodejs
+    tags:
     - always
   - role: php-tools
     - always
@@ -191,7 +192,7 @@
       - /var/root/.zshrc
     when: "ansible_system == 'Darwin'"
     tags:
-      - always
+    - always
 
   - name: "Adding brew bin to PATH"
     blockinfile:
