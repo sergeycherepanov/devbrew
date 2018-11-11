@@ -5,6 +5,7 @@
     src: "/usr/include/locale.h"
     state: link
     force: yes
+  become: yes
   when: "ansible_system == 'Linux'"
 
 - name: "Ensure vim"
