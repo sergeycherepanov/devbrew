@@ -149,6 +149,7 @@
     tags:
     - always
   - role: php-tools
+    tags:
     - always
   - role: xhgui
     tags:
