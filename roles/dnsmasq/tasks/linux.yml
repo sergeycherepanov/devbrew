@@ -69,14 +69,14 @@
   become: yes
   when: state_networkmanager_dnsmaq_dir.stat.exists
 
-- name: "Updating /etc/systemd/resolved.conf"
-  ini_file:
-    path: "/etc/systemd/resolved.conf"
-    section: "Resolve"
-    option: "DNSStubListener"
-    value: "no"
-  when: "'systemd-resolved.service' in ansible_facts.services and state_dnsmaq_dir.stat.exists"
-  become: yes
+#- name: "Updating /etc/systemd/resolved.conf"
+#  ini_file:
+#    path: "/etc/systemd/resolved.conf"
+#    section: "Resolve"
+#    option: "DNSStubListener"
+#    value: "no"
+#  when: "'systemd-resolved.service' in ansible_facts.services and state_dnsmaq_dir.stat.exists"
+#  become: yes
 
 - name: "Updating /etc/systemd/resolved.conf"
   ini_file:
