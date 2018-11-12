@@ -3,13 +3,16 @@
   pip:
     name: typing
     state: present
-  become: yes
 
 - name: "Ensure Cheetah via pip"
   pip:
     name: Cheetah
     state: present
-  become: yes
+
+- name: "Ensure PyYAML via pip"
+  pip:
+    name: PyYAML
+    state: present
 
 - name: "Ensure mongodb"
   homebrew:
