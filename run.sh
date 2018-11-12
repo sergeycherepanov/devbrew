@@ -68,6 +68,8 @@ else
       fi
       if ! which ansible > /dev/null || [[ ! -f $(which ansible) ]]  || ! $(which ansible) --version > /dev/null || dpkg --compare-versions "$($(which ansible) --version 2>&1 | head -n1 | awk '{print $2}')" lt "${MIN_ANSIBLE_VERSION}"; then
         sudo pip install --force-reinstall --upgrade ansible || exit 1
+        sudo pip install --upgrade requests[security]
+        sudo pip install --upgrade httpie
       fi
       ANSIBLE_PLAYBOOK_BIN="$(which ansible-playbook)"
       BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/home/linuxbrew/.linuxbrew}"
