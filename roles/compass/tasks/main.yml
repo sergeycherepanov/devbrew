@@ -1,4 +1,9 @@
 ---
+- name: "Ensure ruby"
+  homebrew:
+    name: ruby
+    state: present
+
 - name: "Installing Compass"
   shell: "gem install -n {{ brew_install_path }}/bin compass"
   become: yes
