@@ -7,7 +7,7 @@ MIN_PYTHON_VERSION_MACOS="2.7.15"
 MIN_PYTHON_VERSION_LINUX="2.7.15"
 PYTHON_PKG_LINUX="Python-${MIN_PYTHON_VERSION_LINUX}.tgz"
 PYTHON_PKG_MACOS="python-${MIN_PYTHON_VERSION_MACOS}-macosx10.9.pkg"
-expot ANSIBLE_NOCOWS=1
+export ANSIBLE_NOCOWS=1
 
 if [[ $(id -u ${MAC_USER}) -eq 0 ]]; then
   echo "Please don't run under the root user!"
@@ -80,4 +80,5 @@ else
     exit 1
   fi
 fi
+sudo ${ANSIBLE_PLAYBOOK_BIN} --version
 sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} -i "localhost," -c local "${DIR}/main.yml" -e "mac_user=${MAC_USER}" -e "brew_install_path=${BREW_INSTALL_PATH}" "$@"

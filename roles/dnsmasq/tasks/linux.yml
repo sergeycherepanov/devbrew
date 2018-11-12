@@ -1,4 +1,7 @@
 ---
+- name: Populate service_facts
+  service_facts:
+
 - name: Checking if a dnsmasq already in the system
   shell: "which dnsmasq"
   register: which_dnsmasq
@@ -72,7 +75,7 @@
     section: "Resolve"
     option: "DNSStubListener"
     value: "no"
-  when: "'systemd-resolved.service' in ansible_facts.services and state_dnsmaq_dir is defined and state_dnsmaq_dir.stat.exists"
+  when: "'systemd-resolved.service' in ansible_facts.services and state_dnsmaq_dir.stat.exists"
   become: yes
 
 - name: "Updating /etc/systemd/resolved.conf"
@@ -83,9 +86,6 @@
     value: "127.0.1.1"
   when: "'systemd-resolved.service' in ansible_facts.services and state_networkmanager_dnsmaq_dir.stat.exists"
   become: yes
-
-- name: Populate service_facts
-  service_facts:
 
 - name: Postpone restart for systemd-resolved
   set_fact:

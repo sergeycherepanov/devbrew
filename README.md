@@ -1,7 +1,7 @@
 # DevBrew
 macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Homebrew(Linuxbrew) using Ansible
 
-[![Build Status](https://travis-ci.org/SergeyCherepanov/devbrew.svg?branch=master)](https://travis-ci.org/SergeyCherepanov/devbrew)
+[![Build Status](https://travis-ci.org/sergeycherepanov/devbrew.svg?branch=master)](https://travis-ci.org/SergeyCherepanov/devbrew)
 
 ## Supported applications and frameworks
 * Magento Commerce, Magento Commerce 2
