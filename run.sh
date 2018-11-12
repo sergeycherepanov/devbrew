@@ -67,7 +67,7 @@ else
 #        sudo $(which python2.7) get-pip.py || exit 1
       fi
       if ! which ansible > /dev/null || [[ ! -f $(which ansible) ]]  || ! $(which ansible) --version > /dev/null || dpkg --compare-versions "$($(which ansible) --version 2>&1 | head -n1 | awk '{print $2}')" lt "${MIN_ANSIBLE_VERSION}"; then
-        sudo pip install --force-reinstall --upgrade ansible requests[security] httpie --ignore-installed PyYAML || exit 1
+        sudo pip install --force-reinstall --upgrade ansible requests[security] httpie PyYAML || exit 1
       fi
       ANSIBLE_PLAYBOOK_BIN="$(which ansible-playbook)"
       BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/home/linuxbrew/.linuxbrew}"
