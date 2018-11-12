@@ -247,6 +247,13 @@
   tags:
   - php72
 
+- name: "Ensure EFK config directory"
+  file:
+    path: "{{ brew_install_path }}/etc/efk/td-agent/conf.d"
+    state: directory
+  tags:
+  - php72
+
 - name: "Creates {{ brew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
   template:
     src: td-agent.php.conf.j2
