@@ -36,7 +36,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 1. Enable WSL
 2. Install Ubuntu 18.04 from app store
 3. Follow steps from  Linux section above
-4. Run super supervisord by following command: `service supervisord-devbrew start`
+4. Run supervisord by following command: `service supervisord-devbrew start`
 5. Update your network settings to use 127.0.0.1 as dns server
 
 ## Tags
@@ -54,14 +54,14 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 
 ## Manage Services
 
-To start/stop/restart service use `supctl` (it's supervisorctl wrapper)
+To start/stop/restart services you can use `supctl` (it's supervisorctl wrapper)
 
 
 ## Usage
-Add folders with you source code into **www** folder in your home dir: **~/www/{pool}/{project_name}/**
+Put your source code into **www** folder in your home dir in following structure: **~/www/{pool}/{project_name}/**
 
 #### Where:  
-{pool} - second level domain name (resolver configured for `dev.com` and `loc.com`, but you can add more hosts directly to `/etc/hosts` file)
+{pool} - second level domain name (resolver configured for `dev.com` and `loc.com`, but you can add more hosts directly to `/etc/hosts` file)  
 {project} - project name  
 
 If **fqdn** of project should be **wordpress.dev.com**, directory structure must be:
@@ -86,7 +86,7 @@ Where BREW_INSTALL_PATH by default is /usr/local for macOS and /home/linuxbrew/.
 
 ## PHP Multi-Version Support
 
-Too choose a version of php you need define it via empty flag file in the project root directory, for example:  
+Too force specific version of php just create a flag file in the project root directory, for example:  
 `~/www/dev/wordpress/.php56` (php 5.6)  
 `~/www/dev/wordpress/.php70` (php 7.0)  
 `~/www/dev/wordpress/.php71` (php 7.1)  
@@ -101,7 +101,7 @@ Too choose a version of php you need define it via empty flag file in the projec
 
 In ~/mail directory will be drops letter what be sent via php **mail** function
 
-## Know Issues
+## Know Issues (macOS)
 
 ### Error: /usr/local is not writable.
 
