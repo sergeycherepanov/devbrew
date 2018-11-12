@@ -80,5 +80,5 @@ else
     exit 1
   fi
 fi
-sudo ${ANSIBLE_PLAYBOOK_BIN} --version
+sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} --version
 sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} -i "localhost," -c local "${DIR}/main.yml" -e "mac_user=${MAC_USER}" -e "brew_install_path=${BREW_INSTALL_PATH}" "$@"
