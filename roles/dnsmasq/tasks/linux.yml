@@ -34,10 +34,10 @@
     dnsmasq_conf_dirs: "{{ dnsmasq_conf_dirs + [ state_networkmanager_dnsmaq_dir.stat.path ] }}"
   when: state_networkmanager_dnsmaq_dir.stat.exists
 
-- name: "Bind dnsmasq to 127.0.0.1"
+- name: "Bind dnsmasq to 127.0.1.1"
   lineinfile:
     path: '/etc/dnsmasq.conf'
-    line: 'listen-address=127.0.0.1'
+    line: 'listen-address=127.0.1.1'
   when: state_dnsmaq_dir.stat.exists
   become: yes
 
