@@ -63,6 +63,7 @@
   shell: which fc-cache
   register: which_fc_cache
   ignore_errors: yes
+  when: 'ansible_system == "Linux"'
   tags:
   - zsh
 
