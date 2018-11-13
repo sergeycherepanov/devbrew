@@ -136,10 +136,10 @@
     - dnsmasq
   - role: percona-server-56
     tags:
-    - always
+    - percona56
   - role: percona-server-57
     tags:
-    - always
+    - percona57
   - role: ruby
     tags:
     - always
