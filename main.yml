@@ -118,7 +118,7 @@
     - always
   - curl
   - jenv
-  - golang
+  - role: golang
   - role: supervisord
     tags:
     - always
@@ -134,8 +134,15 @@
   - role: dnsmasq
     tags:
     - dnsmasq
-  - percona-server-56
-  - percona-server-57
+  - role: percona-server-56
+    tags:
+    - always
+  - role: percona-server-57
+    tags:
+    - always
+  - role: ruby
+    tags:
+    - always
   - role: mongodb
     tags:
     - xhgui
