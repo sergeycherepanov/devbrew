@@ -7,25 +7,28 @@ matrix:
   include:
     - os: osx
       osx_image: xcode9.3
-      env: TAGS=php56,php70,php71,php72
-    - os: osx
-      osx_image: xcode9.3
       env: TAGS=php56,percona56
     - os: osx
       osx_image: xcode9.3
-      env: TAGS=php56,percona57
+      env: TAGS=php70,percona57
+    - os: osx
+      osx_image: xcode9.3
+      env: TAGS=php71,percona57
+    - os: osx
+      osx_image: xcode9.3
+      env: TAGS=php72,percona57
     - os: osx
       osx_image: xcode9.3
       env: TAGS=php56,xhgui,dnsmasq
     - os: linux
       dist: xenial
-      env: TAGS=php56,php70,php71,php72
-    - os: linux
-      dist: xenial
       env: TAGS=php56,percona56
     - os: linux
       dist: xenial
-      env: TAGS=php56,percona57
+      env: TAGS=php70,percona57
+    - os: linux
+      dist: xenial
+      env: TAGS=php71,percona57
     - os: linux
       dist: xenial
       env: TAGS=php56,xhgui,dnsmasq
