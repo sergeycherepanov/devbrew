@@ -10,7 +10,7 @@
 
 - name: "Ensure vim"
   homebrew: 
-    name: node 
+    name: vim
     state: present
     install_options: "with-python@2"
 
