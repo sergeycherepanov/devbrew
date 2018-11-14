@@ -1,8 +1,20 @@
 ---
+- name: "Ensure zlib"
+  homebrew:
+    name: zlib
+    state: present
+
+- name: "Resolve zlib path"
+  shell: "brew --prefix zlib"
+  register: result
+
+- name: "Register zlib_path fact"
+  set_fact: zlib_path="{{ result.stdout }}"
+
 - name: "Installing Curl with openssl"
   homebrew: 
     name: curl
     state: present
     install_options: with-openssl,with-libssh2
-  tags:
-    - always
+  environment:
+    ZLIB_PATH: "{{ zlib_path }}"

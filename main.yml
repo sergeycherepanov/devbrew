@@ -116,7 +116,9 @@
   - role: git
     tags:
     - always
-  - curl
+  - role: curl
+    tags:
+    - always
   - jenv
   - role: golang
   - role: supervisord
