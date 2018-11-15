@@ -37,7 +37,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 2. Install Ubuntu 18.04 from app store
 3. Follow steps from  Linux section above
 4. Run supervisord by following command: `service supervisord-devbrew start`
-5. Update your network settings to use 127.0.0.1 as dns server
+5. Update your network settings to use 127.0.1.1 as dns server
 
 ## Tags
 > You can choose one or all of them, tags don't have conflict
