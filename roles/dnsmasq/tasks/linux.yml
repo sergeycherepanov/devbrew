@@ -38,6 +38,7 @@
   lineinfile:
     path: '/etc/dnsmasq.conf'
     line: 'listen-address=127.0.1.1'
+    create: yes
   when: state_dnsmaq_dir.stat.exists
   become: yes
 
