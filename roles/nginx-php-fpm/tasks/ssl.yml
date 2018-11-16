@@ -113,13 +113,6 @@
   when: ansible_system == "Linux"
   tags:
   - always
-
-- name: "update-ca-certificates"
-  shell: 'update-ca-certificates'
-  become: yes
-  when: ansible_system == "Linux"
-  tags:
-  - always
     
 - name: "Generate keys and signing for domains"
   shell: '{{ brew_install_path }}/bin/crtgen {{item}}.{{root_domain}}'
@@ -159,6 +152,14 @@
   become: true
   tags:
   - always
+
+- name: "update-ca-certificates"
+  shell: 'update-ca-certificates'
+  become: yes
+  when: ansible_system == "Linux"
+  tags:
+  - always
+
 #
 #- name: "Generate keys and signing for domains with php versions"
 #  shell: 'OPENSSL_CONF="{{ brew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}.cnf" openssl req -newkey rsa:2048 -keyout {{ brew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key.pem -keyform PEM -out {{ brew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}_req.pem -outform PEM -nodes && openssl rsa < {{ brew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key.pem > {{ brew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key_encrypted.pem && OPENSSL_CONF="{{ brew_install_path }}/etc/openssl/localCA/caconfig.cnf" openssl ca -batch -in {{ brew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}_req.pem -out {{ brew_install_path }}/etc/openssl/localCA/certs/{{item.1}}_{{item.0}}_{{root_domain}}_crt.pem'
