@@ -129,7 +129,7 @@
 
 - name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/openssl.cnf"
   file:
-    src: "/usr/lib/ssl/openssl.cnf"
+    src: "/etc/ssl/openssl.cnf"
     dest: "{{ brew_install_path }}/etc/openssl/openssl.cnf"
     state: link
     force: yes
@@ -140,7 +140,7 @@
 
 - name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/certs"
   file:
-    src: "/usr/lib/ssl/certs"
+    src: "/etc/ssl/certs"
     dest: "{{ brew_install_path }}/etc/openssl/certs"
     state: link
     force: yes
@@ -151,7 +151,7 @@
 
 - name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/private"
   file:
-    src: "/usr/lib/ssl/private"
+    src: "/etc/ssl/private"
     dest: "{{ brew_install_path }}/etc/openssl/private"
     state: link
     force: yes
