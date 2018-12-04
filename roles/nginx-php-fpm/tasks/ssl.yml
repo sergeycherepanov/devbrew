@@ -142,6 +142,17 @@
   tags:
   - always
 
+- name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/certs/ca-certificates.crt"
+  file:
+    src: "/etc/ssl/certs/ca-certificates.crt"
+    dest: "{{ brew_install_path }}/etc/openssl/cert.pem"
+    state: link
+    force: yes
+  when: ansible_system == "Linux"
+  become: true
+  tags:
+  - always
+
 - name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/private"
   file:
     src: "/etc/ssl/private"
