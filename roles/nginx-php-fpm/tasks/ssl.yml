@@ -147,9 +147,9 @@
     src: "/etc/ssl/certs/ca-certificates.crt"
     dest: "{{ brew_install_path }}/etc/openssl/cert.pem"
     state: link
-    force: yes
   when: ansible_system == "Linux"
   become: true
+  ignore_errors: yes
   tags:
   - always
 
