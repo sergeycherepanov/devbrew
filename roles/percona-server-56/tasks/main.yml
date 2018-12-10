@@ -4,19 +4,19 @@
     name: "{{ mysql_formula }}"
     state: present
   tags:
-    - percona56
+  - percona56
 
 - name: "Resolve mysql base dir"
   shell: "ls {{ brew_install_path }}/opt/percona-server*/bin/mysqld | xargs -I{} bash -c '{} --version' | grep -i 'ver {{ mysql_version }}' | head -1 | awk '{print $1}' | xargs dirname | xargs dirname"
   register: mysql_base_dir_output
   tags:
-    - percona56
+  - percona56
 
 - name: Register mysql_base_dir fact
   set_fact: 
     mysql_base_dir: "{{ mysql_base_dir_output.stdout | trim }}"
   tags:
-    - percona56
+  - percona56
 
 - name: "Create directories"
   file: 
@@ -28,7 +28,7 @@
     - "{{ mysql_log_dir }}"
     - "{{ mysql_run_dir }}"
   tags:
-    - percona56
+  - percona56
 
 - name: "Ensure proper ownership on"
   file:
@@ -44,13 +44,13 @@
     - "{{ mysql_log_dir }}"
     - "{{ mysql_run_dir }}"
   tags:
-    - percona56
+  - percona56
 
 - stat:
     path: "{{ mysql_etc_dir }}/my.cnf"
   register: state
   tags:
-    - percona56
+  - percona56
 
 - name: "Create my.cnf"
   template: 
@@ -61,13 +61,13 @@
     mode: 0744
   when: not state.stat.exists
   tags:
-    - percona56
+  - percona56
 
 - find: 
     paths: "{{ mysql_data_dir }}"
   register: mysql_data_dir_files
   tags:
-    - percona56
+  - percona56
 
 - name: Touch error.log file
   file: 
@@ -76,19 +76,19 @@
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
   tags:
-    - percona56
+  - percona56
 
 - name: "Install db (mysqld --initialize-insecure)"
   shell: "{{ mysql_base_dir }}/bin/mysql_install_db --defaults-file={{ mysql_etc_dir }}/my.cnf --basedir={{ mysql_base_dir }} --datadir={{ mysql_data_dir }} --lc-messages-dir={{ mysql_base_dir }}/share/mysql"
   when: mysql_data_dir_files.matched|int == 0
   tags:
-    - percona56
+  - percona56
 
 - stat: 
     path: "{{ brew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
   register: state
   tags:
-    - percona56
+  - percona56
 
 - name: "Create {{ brew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
   template:
@@ -96,7 +96,7 @@
     dest: "{{ brew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
   when: not state.stat.exists
   tags:
-    - percona56
+  - percona56
 
 - ini_file:
     path: "{{ brew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
@@ -104,27 +104,27 @@
     option: "command" 
     value: "{{ brew_install_path }}/bin/pidproxy {{ brew_install_path }}/var/run/mysql/{{ mysql_version_num }}/mysqld.proxy.pid {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf"
   tags:
-    - percona56
+  - percona56
 
 - homebrew: 
     name: "{{ mysql_formula }}"
     state: unlinked
   tags:
-    - percona56
+  - percona56
 
 - name: "Absent {{ brew_install_path }}/var/mysql"
   file:
     state: absent
     path: "{{ brew_install_path }}/var/mysql/"
   tags:
-    - percona56
+  - percona56
 
 - name: "Absent /tmp/mysql.err"
   file:
     state: absent
     path: "/tmp/mysql.err"
   tags:
-    - percona56
+  - percona56
 
 - name: Starting mysql
   shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables --log-error=/tmp/mysql.err > /dev/null &"
@@ -132,7 +132,7 @@
   args:
     chdir: /tmp
   tags:
-    - percona56
+  - percona56
 
 - name: Waiting mysql
   shell: "until grep 'ready for connections' /tmp/mysql.err; do sleep 1; done"
@@ -140,7 +140,7 @@
   args:
     chdir: /tmp
   tags:
-    - percona56
+  - percona56
 
 - name: Setting plugin=mysql_native_password and update root password
   shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -e 'update user set plugin=\"mysql_native_password\"; update user set Password=password(\"{{ mysql_root_password }}\"), password_expired=\"N\" where user=\"root\";' mysql && pgrep mysql | xargs kill -15 && sleep 5"
@@ -148,13 +148,22 @@
   args:
     chdir: /tmp
   tags:
-    - percona56
+  - percona56
 
-- name: "Add wrapper"
+- name: "Add mysql{{ mysql_version_num }} wrapper"
   template:
     src: "mysql.j2"
     dest: "{{ brew_install_path }}/bin/mysql{{ mysql_version_num }}"
     owner: "{{ mysql_user }}"
     mode: 0755
   tags:
-    - percona56
+  - percona56
+
+- name: "Add mysqldump{{ mysql_version_num }} wrapper"
+  template:
+    src: "mysqldump.j2"
+    dest: "{{ brew_install_path }}/bin/mysqldump{{ mysql_version_num }}"
+    owner: "{{ mysql_user }}"
+    mode: 0755
+  tags:
+  - percona56
