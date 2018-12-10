@@ -83,6 +83,15 @@
   tags:
   - always
 
+- name: "Absent { brew_install_path }}/etc/openssl/cert.pem"
+  file:
+    path: "{ brew_install_path }}/etc/openssl/cert.pem"
+    state: absent
+  when: ansible_system == "Linux"
+  become: true
+  tags:
+  - always
+
 - name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/certs/ca-certificates.crt"
   file:
     src: "/etc/ssl/certs/ca-certificates.crt"
@@ -90,7 +99,6 @@
     state: link
   when: ansible_system == "Linux"
   become: true
-  ignore_errors: yes
   tags:
   - always
 
