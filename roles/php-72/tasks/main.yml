@@ -71,6 +71,33 @@
   tags:
   - php72
 
+- name: "Ensure xphp wrapper directory"
+  file:
+    path: "{{ brew_install_path }}/opt/xphp/{{ php_version_num }}/bin"
+    state: directory
+  tags:
+  - php72
+
+- name: "Ensure xphp bin"
+  template:
+    src: "xphp-bin.j2"
+    dest: "{{ brew_install_path }}/opt/xphp/{{ php_version_num }}/bin/php"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
+  tags:
+  - php72
+
+- name: "Add xphp wrapper"
+  template:
+    src: "xphp.j2"
+    dest: "{{ brew_install_path }}/bin/x{{ php_version_legacy }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
+  tags:
+  - php72
+
 - name: "Create php-fpm.conf"
   template:
     src: php-fpm.conf.j2
