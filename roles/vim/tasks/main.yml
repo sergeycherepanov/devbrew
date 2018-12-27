@@ -10,7 +10,7 @@
 
 - name: "Ensure vim"
   homebrew: 
-    name: vim
+    name: sergeycherepanov/vim/vim
     state: present
     install_options: "with-python@2"
 
@@ -35,6 +35,14 @@
   get_url:
     url: "https://tpo.pe/pathogen.vim"
     dest: "{{ brew_user_home_dir }}/.vim/autoload/pathogen.vim"
+
+- name: "Fix backspace key in vim"
+  blockinfile:
+    create: yes
+    dest: '{{ brew_user_home_dir }}/.vimrc'
+    marker: '" {mark} backspace fix'
+    block: |
+      set backspace=indent,eol,start
 
 - name: "Adding pathogen.vim to .vimrc"
   blockinfile:
