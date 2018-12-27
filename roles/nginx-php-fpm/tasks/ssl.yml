@@ -83,9 +83,9 @@
   tags:
   - always
 
-- name: "Absent { brew_install_path }}/etc/openssl/cert.pem"
+- name: "Absent {{ brew_install_path }}/etc/openssl/cert.pem"
   file:
-    path: "{ brew_install_path }}/etc/openssl/cert.pem"
+    path: "{{ brew_install_path }}/etc/openssl/cert.pem"
     state: absent
   when: ansible_system == "Linux"
   become: true
