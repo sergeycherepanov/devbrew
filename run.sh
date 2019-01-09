@@ -7,6 +7,7 @@ MIN_PYTHON_VERSION_MACOS="2.7.15"
 MIN_PYTHON_VERSION_LINUX="2.7.15"
 PYTHON_PKG_LINUX="Python-${MIN_PYTHON_VERSION_LINUX}.tgz"
 PYTHON_PKG_MACOS="python-${MIN_PYTHON_VERSION_MACOS}-macosx10.9.pkg"
+export ANSIBLE_NOCOWS=1
 
 if [[ $(id -u ${MAC_USER}) -eq 0 ]]; then
   echo "Please don't run under the root user!"
@@ -66,7 +67,7 @@ else
 #        sudo $(which python2.7) get-pip.py || exit 1
       fi
       if ! which ansible > /dev/null || [[ ! -f $(which ansible) ]]  || ! $(which ansible) --version > /dev/null || dpkg --compare-versions "$($(which ansible) --version 2>&1 | head -n1 | awk '{print $2}')" lt "${MIN_ANSIBLE_VERSION}"; then
-        sudo pip install --force-reinstall --upgrade ansible || exit 1
+        sudo pip install --ignore-installed --force-reinstall --upgrade ansible requests[security] httpie PyYAML || exit 1
       fi
       ANSIBLE_PLAYBOOK_BIN="$(which ansible-playbook)"
       BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/home/linuxbrew/.linuxbrew}"
@@ -79,4 +80,5 @@ else
     exit 1
   fi
 fi
+sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} --version
 sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} -i "localhost," -c local "${DIR}/main.yml" -e "mac_user=${MAC_USER}" -e "brew_install_path=${BREW_INSTALL_PATH}" "$@"

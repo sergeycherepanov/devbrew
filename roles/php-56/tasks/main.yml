@@ -45,6 +45,7 @@
   homebrew:
     name: "{{php_version}}-{{ item }}"
     state: present
+    install_options: "build-from-source"
   with_items: "{{ php_modules }}"
   tags:
   - php56
@@ -216,6 +217,13 @@
     src: supervisord.ini.j2
     dest: "{{ brew_install_path }}/etc/supervisor.d/{{ php_version }}.ini"
   #  when: not state.stat.exists
+  tags:
+  - php56
+
+- name: "Ensure EFK config directory"
+  file:
+    path: "{{ brew_install_path }}/etc/efk/td-agent/conf.d"
+    state: directory
   tags:
   - php56
 

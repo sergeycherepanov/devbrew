@@ -4,8 +4,6 @@
   file:
     path: "{{ brew_install_path }}/etc/efk/td-agent/conf.d"
     state: directory
-  tags:
-    - always
 
 - name: "Creates {{ brew_install_path }}/etc/efk/td-agent/conf.d/nginx.conf"
   template:
@@ -13,5 +11,3 @@
     dest: "{{ brew_install_path }}/etc/efk/td-agent/conf.d/nginx.conf"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
-  tags:
-    - always

@@ -5,7 +5,7 @@
     dest: "{{ brew_install_path }}/bin/crtgen"
     mode: u+rx
   tags:
-    - always  
+  - always
 
 - name: "Install hostnames tool"
   template: 
@@ -14,7 +14,7 @@
     mode: u+rx
     trim_blocks: false
   tags:
-    - always  
+  - always
 
 - name: "Creates localCA directories"
   file:
@@ -27,73 +27,29 @@
     - "{{ brew_install_path }}/etc/openssl/localCA/crl"
     - "{{ brew_install_path }}/etc/openssl/localCA/private"
   tags:
-    - always
+  - always
 
 - stat:
     path: "{{ brew_install_path }}/etc/openssl/localCA/caconfig.cnf"
   register: state
   tags:
-    - always  
+  - always
 
 - name: "Creates ca config"
-  template: 
+  template:
     src: ssl/caconfig.cnf.j2
     dest: "{{ brew_install_path }}/etc/openssl/localCA/caconfig.cnf"
   when: not state.stat.exists
   tags:
-    - always  
+  - always
 
 - name: "Creates config for domains"
-  template: 
+  template:
     src: ssl/domain.cnf.j2
     dest: "{{ brew_install_path }}/etc/openssl/localCA/{{item}}_{{root_domain}}.cnf"
   with_items: "{{subdomains}}"
   tags:
-    - always  
-#
-#- name: "Creates config for domains with versions"
-#  template: 
-#    src: ssl/domain_version.cnf.j2
-#    dest: "{{ brew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}.cnf"
-#  with_nested:
-#    - "{{subdomains}}"
-#    - "{{php_versions}}"
-#  tags:
-#    - always
-
-- stat:
-    path: "{{ brew_install_path }}/etc/openssl/localCA/index.txt"
-  register: state
-  tags:
-    - always  
-
-- name: "Create the Certificate Database"
-  shell: "echo '01' > {{ brew_install_path }}/etc/openssl/localCA/serial && touch {{ brew_install_path }}/etc/openssl/localCA/index.txt"
-  when: not state.stat.exists
-  tags:
-    - always
-
-- name: "Cheking if certificate already generated"
-  stat:
-    path: "{{ brew_install_path }}/etc/openssl/localCA/cacert.pem"
-  register: state
-  tags:
-    - always  
-
-- name: "Generate the Certificate Authority (CA) certificate"
-  shell: 'openssl req -x509 -newkey rsa:2048 -out {{ brew_install_path }}/etc/openssl/localCA/cacert.pem -outform PEM -days 1825 -nodes'
-  when: not state.stat.exists
-  environment:
-    OPENSSL_CONF: "{{ brew_install_path }}/etc/openssl/localCA/caconfig.cnf"
-  tags:
-    - always
-
-- name: "Adding CA certificate to keychain"
-  shell: 'security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
-  become: true
-  when: ansible_system == "Darwin"
-  tags:
-    - always
+  - always
 
 - name: "Ensure /usr/share/ca-certificates/extra"
   file:
@@ -105,31 +61,9 @@
   tags:
   - always
 
-- name: "Copy root certificate /usr/share/ca-certificates/extra"
-  copy:
-    src: '{{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
-    dest: '/usr/local/share/ca-certificates/cacert.crt'
-  become: yes
-  when: ansible_system == "Linux"
-  tags:
-  - always
-
-- name: "update-ca-certificates"
-  shell: 'update-ca-certificates'
-  become: yes
-  when: ansible_system == "Linux"
-  tags:
-  - always
-    
-- name: "Generate keys and signing for domains"
-  shell: '{{ brew_install_path }}/bin/crtgen {{item}}.{{root_domain}}'
-  with_items: "{{subdomains}}"
-  tags:
-    - always
-
 - name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/openssl.cnf"
   file:
-    src: "/usr/lib/ssl/openssl.cnf"
+    src: "/etc/ssl/openssl.cnf"
     dest: "{{ brew_install_path }}/etc/openssl/openssl.cnf"
     state: link
     force: yes
@@ -140,7 +74,7 @@
 
 - name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/certs"
   file:
-    src: "/usr/lib/ssl/certs"
+    src: "/etc/ssl/certs"
     dest: "{{ brew_install_path }}/etc/openssl/certs"
     state: link
     force: yes
@@ -149,9 +83,28 @@
   tags:
   - always
 
+- name: "Absent {{ brew_install_path }}/etc/openssl/cert.pem"
+  file:
+    path: "{{ brew_install_path }}/etc/openssl/cert.pem"
+    state: absent
+  when: ansible_system == "Linux"
+  become: true
+  tags:
+  - always
+
+- name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/certs/ca-certificates.crt"
+  file:
+    src: "/etc/ssl/certs/ca-certificates.crt"
+    dest: "{{ brew_install_path }}/etc/openssl/cert.pem"
+    state: link
+  when: ansible_system == "Linux"
+  become: true
+  tags:
+  - always
+
 - name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/private"
   file:
-    src: "/usr/lib/ssl/private"
+    src: "/etc/ssl/private"
     dest: "{{ brew_install_path }}/etc/openssl/private"
     state: link
     force: yes
@@ -159,11 +112,59 @@
   become: true
   tags:
   - always
-#
-#- name: "Generate keys and signing for domains with php versions"
-#  shell: 'OPENSSL_CONF="{{ brew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}.cnf" openssl req -newkey rsa:2048 -keyout {{ brew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key.pem -keyform PEM -out {{ brew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}_req.pem -outform PEM -nodes && openssl rsa < {{ brew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key.pem > {{ brew_install_path }}/etc/openssl/localCA/private/{{item.1}}_{{item.0}}_{{root_domain}}_key_encrypted.pem && OPENSSL_CONF="{{ brew_install_path }}/etc/openssl/localCA/caconfig.cnf" openssl ca -batch -in {{ brew_install_path }}/etc/openssl/localCA/{{item.1}}_{{item.0}}_{{root_domain}}_req.pem -out {{ brew_install_path }}/etc/openssl/localCA/certs/{{item.1}}_{{item.0}}_{{root_domain}}_crt.pem'
-#  with_nested:
-#    - "{{subdomains}}"
-#    - "{{php_versions}}"
-#  tags:
-#    - always
+
+- name: "Cheking if certificate already generated"
+  stat:
+    path: "{{ brew_install_path }}/etc/openssl/localCA/cacert.pem"
+  register: state
+  tags:
+  - always
+
+- name: "Generate the Certificate Authority (CA) certificate"
+  shell: 'openssl req -x509 -newkey rsa:2048 -out {{ brew_install_path }}/etc/openssl/localCA/cacert.pem -outform PEM -days 1825 -nodes'
+  when: not state.stat.exists
+  environment:
+    OPENSSL_CONF: "{{ brew_install_path }}/etc/openssl/localCA/caconfig.cnf"
+  tags:
+  - always
+
+- name: "Adding CA certificate to keychain"
+  shell: 'security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
+  become: true
+  when: ansible_system == "Darwin"
+  tags:
+  - always
+
+- stat:
+    path: "{{ brew_install_path }}/etc/openssl/localCA/index.txt"
+  register: state
+  tags:
+  - always
+
+- name: "Create the Certificate Database"
+  shell: "echo '01' > {{ brew_install_path }}/etc/openssl/localCA/serial && touch {{ brew_install_path }}/etc/openssl/localCA/index.txt"
+  when: not state.stat.exists
+  tags:
+  - always
+
+- name: "Copy root certificate /usr/share/ca-certificates/extra"
+  copy:
+    src: '{{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
+    dest: '/usr/local/share/ca-certificates/cacert.crt'
+  become: yes
+  when: ansible_system == "Linux"
+  tags:
+  - always
+    
+- name: "Generate keys and signing for domains"
+  shell: '{{ brew_install_path }}/bin/crtgen {{item}}.{{root_domain}}'
+  with_items: "{{subdomains}}"
+  tags:
+  - always
+
+- name: "update-ca-certificates"
+  shell: 'update-ca-certificates'
+  become: yes
+  when: ansible_system == "Linux"
+  tags:
+  - always

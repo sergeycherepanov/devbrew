@@ -59,7 +59,7 @@
       - /root/.zshrc
     when: "ansible_system == 'Linux'"
     tags:
-      - always
+    - always
 
   - name: "Adding brew bin to PATH"
     blockinfile:
@@ -76,7 +76,7 @@
       - /var/root/.zshrc
     when: "ansible_system == 'Darwin'"
     tags:
-      - always
+    - always
 
   - name: "Adding brew bin to PATH"
     blockinfile:
@@ -103,42 +103,74 @@
       name: linuxbrew
     when: "ansible_system == 'Linux'"
   - zsh
-  - coreutils
+  - role: vim
+    tags:
+    - always
+  - role: coreutils
+    tags:
+    - always
   - role: flock
     when: "ansible_system == 'Darwin'"
     tags:
     - always
-  - git
-  - curl
+  - role: git
+    tags:
+    - always
+  - role: curl
+    tags:
+    - always
   - jenv
-  - golang
-  - supervisord
+  - role: golang
+  - role: supervisord
     tags:
     - always
   - logrotate
   - nginx
-  - efk
-  - efk+nginx
+  - role: efk
+    tags:
+    - efk
+  - role: efk+nginx
+    tags:
+    - efk
   - fakesendmail
   - role: dnsmasq
     tags:
     - dnsmasq
-  - percona-server-56
-  - percona-server-57
-  - mongodb
+  - role: percona-server-56
+    tags:
+    - percona56
+  - role: percona-server-57
+    tags:
+    - percona57
+  - role: ruby
+    tags:
+    - always
+  - role: mongodb
+    tags:
+    - xhgui
   - redis
   - php-56
   - php-70
   - php-71
   - php-72
   - nginx-php-fpm
-  - nodejs
-  - php-tools
-  - xhgui
-  - compass
-  - less
+  - role: nodejs
+    tags:
+    - always
+  - role: php-tools
+    tags:
+    - always
+  - role: xhgui
+    tags:
+    - xhgui
+  - role: compass
+    tags:
+    - always
+  - role: less
+    tags:
+    - always
   post_tasks:
-  - name: "Adding brew bin to PATH"
+  - name: "Adding brew bin to PATH for root user (Linux)"
     blockinfile:
       dest: '{{ item }}'
       marker: "# {mark} brew PATH"
@@ -155,7 +187,7 @@
     tags:
       - always
 
-  - name: "Adding brew bin to PATH"
+  - name: "Adding brew bin to PATH for root user (Darwin)"
     blockinfile:
       dest: '{{ item }}'
       marker: "# {mark} brew PATH"
@@ -170,7 +202,7 @@
       - /var/root/.zshrc
     when: "ansible_system == 'Darwin'"
     tags:
-      - always
+    - always
 
   - name: "Adding brew bin to PATH"
     blockinfile:

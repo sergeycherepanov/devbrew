@@ -45,6 +45,7 @@
   homebrew:
     name: "{{ item }}"
     state: present
+    install_options: "build-from-source"
   with_items: "{{ php70_modules }}"
   tags:
   - php70
@@ -243,6 +244,13 @@
     src: supervisord.ini.j2
     dest: "{{ brew_install_path }}/etc/supervisor.d/php70.ini"
   #  when: not state.stat.exists
+  tags:
+  - php70
+
+- name: "Ensure EFK config directory"
+  file:
+    path: "{{ brew_install_path }}/etc/efk/td-agent/conf.d"
+    state: directory
   tags:
   - php70
 

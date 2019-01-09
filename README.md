@@ -1,7 +1,7 @@
 # DevBrew
 macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Homebrew(Linuxbrew) using Ansible
 
-[![Build Status](https://travis-ci.org/SergeyCherepanov/devbrew.svg?branch=master)](https://travis-ci.org/SergeyCherepanov/devbrew)
+[![Build Status](https://travis-ci.org/sergeycherepanov/devbrew.svg?branch=master)](https://travis-ci.org/sergeycherepanov/devbrew)
 
 ## Supported applications and frameworks
 * Magento Commerce, Magento Commerce 2
@@ -19,7 +19,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 2. Install cli tools: `xcode-select --install` (it's starts XCODE installation process)
 3. Execute: `cd /tmp`
 4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
-5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh,dnsmasq"` to make full install  
+5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,xhgui,percona57,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
 6. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
 
@@ -28,12 +28,16 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 2. Install dependencies: `sudo apt update && sudo apt install -yq curl git`
 3. Execute: `cd /tmp`
 4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
-5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,percona56,percona57,nodejs,zsh,dnsmasq"` to make full install  
+5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,xhgui,percona57,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
 7. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
 
 ## Installation on Windows Subsystem for Linux
-Coming soon...
+1. Enable WSL
+2. Install Ubuntu 18.04 from app store
+3. Follow steps from  Linux section above
+4. Run supervisord by following command: `service supervisord-devbrew start`
+5. Update your network settings to use 127.0.1.1 as dns server
 
 ## Tags
 > You can choose one or all of them, tags don't have conflict
@@ -42,6 +46,7 @@ Coming soon...
 *  `php70` - will install PHP version 7.0  
 *  `php71` - will install PHP version 7.1  
 *  `php72` - will install PHP version 7.2  
+*  `xhgui` - will install xhgui for xhprof  
 *  `percona56` - will install Percona Server (mysql) version 5.6
 *  `percona57` - will install Percona Server (mysql) version 5.7  
 *  `nodejs` - will install NodeJS and NPM  
@@ -49,14 +54,14 @@ Coming soon...
 
 ## Manage Services
 
-To start/stop/restart service use `supctl` (it's supervisorctl wrapper)
+To start/stop/restart services you can use `supctl` (it's supervisorctl wrapper)
 
 
 ## Usage
-Add folders with you source code into **www** folder in your home dir: **~/www/{pool}/{project_name}/**
+Put your source code into **www** folder in your home dir in following structure: **~/www/{pool}/{project_name}/**
 
 #### Where:  
-{pool} - second level domain name (resolver configured for `dev.com` and `loc.com`, but you can add more hosts directly to `/etc/hosts` file)
+{pool} - second level domain name (resolver configured for `dev.com` and `loc.com`, but you can add more hosts directly to `/etc/hosts` file)  
 {project} - project name  
 
 If **fqdn** of project should be **wordpress.dev.com**, directory structure must be:
@@ -81,7 +86,7 @@ Where BREW_INSTALL_PATH by default is /usr/local for macOS and /home/linuxbrew/.
 
 ## PHP Multi-Version Support
 
-Too choose a version of php you need define it via empty flag file in the project root directory, for example:  
+Too force specific version of php just create a flag file in the project root directory, for example:  
 `~/www/dev/wordpress/.php56` (php 5.6)  
 `~/www/dev/wordpress/.php70` (php 7.0)  
 `~/www/dev/wordpress/.php71` (php 7.1)  
@@ -89,14 +94,14 @@ Too choose a version of php you need define it via empty flag file in the projec
 
 ## Mysql
 
-* Mysql (Percona) Server 5.6 binds to 3306 port (user: `root`, password: `root`)  
-* Mysql (Percona) Server 5.7 binds to 3307 port (user: `root`, password: `root`)  
+* Mysql (Percona) Server 5.6 binds to 3356 port (user: `root`, password: `root`)  
+* Mysql (Percona) Server 5.7 binds to 3306 port (user: `root`, password: `root`)  
 
 ## PHP Mail
 
 In ~/mail directory will be drops letter what be sent via php **mail** function
 
-## Know Issues
+## Know Issues (macOS)
 
 ### Error: /usr/local is not writable.
 

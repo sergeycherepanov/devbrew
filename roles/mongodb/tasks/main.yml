@@ -3,41 +3,31 @@
   pip:
     name: typing
     state: present
-  become: yes
-  tags:
-  - always
 
 - name: "Ensure Cheetah via pip"
   pip:
     name: Cheetah
     state: present
-  become: yes
-  tags:
-  - always
+
+- name: "Ensure PyYAML via pip"
+  pip:
+    name: PyYAML
+    state: present
 
 - name: "Ensure mongodb"
   homebrew:
     name: mongodb@3.6
     state: present
-  tags:
-  - always
-
 
 - name: Resolve mongodb_path
   shell: "{{ brew_brew_bin_path }}/brew --prefix mongodb@3.6"
   register: output
-  tags:
-  - always
 
 - name: Register mongodb_path
   set_fact:
     mongodb_path: "{{ output.stdout | trim }}"
-  tags:
-  - always
 
 - name: "Create {{ brew_install_path }}/etc/supervisor.d/mongodb.ini"
   template:
     src: supervisord.ini.j2
     dest: "{{ brew_install_path }}/etc/supervisor.d/mongodb.ini"
-  tags:
-  - always

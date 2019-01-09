@@ -1,0 +1,16 @@
+---
+- name: "Ensure ruby"
+  homebrew: 
+    name: ruby
+    state: present
+
+- name: "Updating rc"
+  blockinfile:
+    dest: '{{ brew_user_home_dir }}/{{item}}'
+    marker: "# {mark} jenv"
+    block: |
+      export PATH="{{ brew_install_path }}/opt/ruby/bin:$PATH"
+      export LDFLAGS="-L{{ brew_install_path }}/opt/ruby/lib"
+      export CPPFLAGS="-I{{ brew_install_path }}/opt/ruby/include"
+      export PKG_CONFIG_PATH="{{ brew_install_path }}/opt/ruby/lib/pkgconfig"
+  with_items: ['.zshrc', '.bashrc']
