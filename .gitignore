@@ -1,4 +1,6 @@
 .idea
+.vagrant
+*.log
 *.retry
 test.yml
 run.test.sh
