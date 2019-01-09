@@ -72,6 +72,32 @@
   tags:
   - php56
 
+- name: "Ensure xphp wrapper directory"
+  file:
+    path: "{{ brew_install_path }}/opt/xphp/{{ php_version_num }}/bin"
+    state: directory
+  tags:
+    - php56
+
+- name: "Ensure xphp bin"
+  template:
+    src: "xphp-bin.j2"
+    dest: "{{ brew_install_path }}/opt/xphp/{{ php_version_num }}/bin/php"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
+  tags:
+    - php56
+
+- name: "Add xphp wrapper"
+  template:
+    src: "xphp.j2"
+    dest: "{{ brew_install_path }}/bin/x{{ php_version_legacy }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
+  tags:
+    - php56
 #- stat:
 #    path: "{{ brew_install_path }}/etc/php/5.6/php-fpm.conf"
 #  register: state
@@ -167,13 +193,13 @@
   shell: "{{ brew_install_path }}/bin/php{{ php_version_num_int }} -i | grep -e '^extension_dir' | awk -F'=>' '{print $2}'"
   register: output
   tags:
-  - php70
+  - php56
 
 - name: Register php_extension_dir
   set_fact:
     php_extension_dir: "{{ output.stdout | trim }}"
   tags:
-  - php70
+  - php56
 
 - name: "Create ext-opcache.ini"
   template: src=ext-opcache.ini.j2 dest={{ brew_install_path }}/etc/php/5.6/conf.d/ext-opcache.ini owner={{ www_user }} group={{ www_group }}
