@@ -92,7 +92,7 @@
 - name: "Add xphp wrapper"
   template:
     src: "xphp.j2"
-    dest: "{{ brew_install_path }}/bin/x{{ php_version_legacy }}"
+    dest: "{{ brew_install_path }}/bin/x{{ php_version }}"
     owner: "{{ www_user }}"
     group: "{{ www_group }}"
     mode: 0755
