@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+export PATH="{{ brew_install_path }}/opt/{{ php_version }}/bin:$PATH"
+
+exec php -c {{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini -d xdebug.remote_autostart=1 -d xdebug.remote_connect_back=0 "$@"
