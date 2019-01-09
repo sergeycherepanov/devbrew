@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+export PATH="{{ mysql_base_dir }}/bin:$PATH"
+
+exec mysqldump --defaults-file={{ mysql_etc_dir }}/my.cnf "$@"

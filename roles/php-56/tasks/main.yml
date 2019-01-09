@@ -45,6 +45,7 @@
   homebrew:
     name: "{{php_version}}-{{ item }}"
     state: present
+    install_options: "build-from-source"
   with_items: "{{ php_modules }}"
   tags:
   - php56

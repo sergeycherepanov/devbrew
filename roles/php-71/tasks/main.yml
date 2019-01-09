@@ -45,6 +45,7 @@
   homebrew:
     name: "{{ item }}"
     state: present
+    install_options: "build-from-source"
   with_items: "{{ php71_modules }}"
   tags:
   - php71

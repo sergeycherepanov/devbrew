@@ -163,11 +163,20 @@
   tags:
     - percona57
 
-- name: "Add wrapper"
+- name: "Add mysql{{ mysql_version_num }} wrapper"
   template:
     src: "mysql.j2"
     dest: "{{ brew_install_path }}/bin/mysql{{ mysql_version_num }}"
     owner: "{{ mysql_user }}"
     mode: 0755
   tags:
-    - percona57
+  - percona57
+
+- name: "Add mysqldump{{ mysql_version_num }} wrapper"
+  template:
+    src: "mysqldump.j2"
+    dest: "{{ brew_install_path }}/bin/mysqldump{{ mysql_version_num }}"
+    owner: "{{ mysql_user }}"
+    mode: 0755
+  tags:
+  - percona57

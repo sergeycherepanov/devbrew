@@ -22,7 +22,7 @@ brew_installed_packages:
   - json-table
   - pup
   - fswatch
-  - shellcheck
+#  - shellcheck
   - libmcrypt
   - yarn
   - python@2
