@@ -50,13 +50,15 @@ Vagrant.configure(2) do |config|
     v.memory = 2048
     v.cpus = 2
 
+    override.vm.synced_folder "mail", "/home/vagrant/mail", :create => true
+
     # Shared folders configuration
     if Vagrant::Util::Platform.windows?
-      override.vm.synced_folder "www", "/www"
+      override.vm.synced_folder "www", "/home/vagrant/www", :create => true
     else
       override.nfs.map_uid = Process.uid
       override.nfs.map_gid = Process.gid
-      override.vm.synced_folder "www", "/www", type: "nfs", mount_options: ['rw', 'vers=3', 'tcp', 'fsc', 'async', 'nolock', 'noacl', 'nosuid']
+      override.vm.synced_folder "www", "/home/vagrant/www", type: "nfs", mount_options: ['rw', 'vers=3', 'tcp', 'fsc', 'async', 'nolock', 'noacl', 'nosuid'], :create => true
     end
 
     # Setup vagrant base system
