@@ -34,7 +34,6 @@ brew_taps:
 
 brew_cask_apps:
   - font-hack-nerd-font
-  - java8
 
 brew_cask_appdir: /Applications
 

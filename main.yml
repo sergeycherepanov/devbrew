@@ -4,223 +4,228 @@
   environment:
     PATH: "{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:{{ ansible_env.PATH}}"
   vars:
-  - php_versions: []
-  - systemd_service_disabled: []
-  - systemd_service_restarted: []
-  - systemd_service_started: []
-  - service_disabled: []
-  - service_restarted: []
-  - service_started: []
+    - php_versions: []
+    - systemd_service_disabled: []
+    - systemd_service_restarted: []
+    - systemd_service_started: []
+    - service_disabled: []
+    - service_restarted: []
+    - service_started: []
   pre_tasks:
-  - name: "Register brew_user fact"
-    set_fact:
-      brew_user: "{{ mac_user|default(ansible_env.USER) }}"
-    tags:
-    - always
+    - name: "Register brew_user fact"
+      set_fact:
+        brew_user: "{{ mac_user|default(ansible_env.USER) }}"
+      tags:
+        - always
 
-  - name: "Resolve user group"
-    shell: "id -gn"
-    register: result
-    tags:
-    - always
+    - name: "Resolve user group"
+      shell: "id -gn"
+      register: result
+      tags:
+        - always
 
-  - name: "Register brew_group fact"
-    set_fact: brew_group="{{ result.stdout }}"
-    tags:
-    - always
+    - name: "Register brew_group fact"
+      set_fact: brew_group="{{ result.stdout }}"
+      tags:
+        - always
 
-  - name: "Resolve home dir"
-    shell: "eval echo ~$USER"
-    register: result
-    tags:
-    - always
+    - name: "Resolve home dir"
+      shell: "eval echo ~$USER"
+      register: result
+      tags:
+        - always
 
-  - name: "Register brew_user_home_dir fact"
-    set_fact: brew_user_home_dir="{{ result.stdout }}"
-    tags:
-    - always
+    - name: "Register brew_user_home_dir fact"
+      set_fact: brew_user_home_dir="{{ result.stdout }}"
+      tags:
+        - always
 
-  - include_tasks: "{{ ansible_system | lower }}_pre.yml"
-    tags:
-    - always
+    - include_tasks: "{{ ansible_system | lower }}_pre.yml"
+      tags:
+        - always
 
-  - name: "Adding brew bin to PATH"
-    blockinfile:
-      dest: '{{ item }}'
-      marker: "# {mark} brew PATH"
-      block: |
-        export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
-      create: yes
-      mode: 0644
-      insertbefore: BOF
-    become: yes
-    with_items:
-      - /root/.bashrc
-      - /root/.zshrc
-    when: "ansible_system == 'Linux'"
-    tags:
-    - always
+    - name: "Adding brew bin to PATH"
+      blockinfile:
+        dest: '{{ item }}'
+        marker: "# {mark} brew PATH"
+        block: |
+          export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
+        create: yes
+        mode: 0644
+        insertbefore: BOF
+      become: yes
+      with_items:
+        - /root/.bashrc
+        - /root/.zshrc
+      when: "ansible_system == 'Linux'"
+      tags:
+        - always
 
-  - name: "Adding brew bin to PATH"
-    blockinfile:
-      dest: '{{ item }}'
-      marker: "# {mark} brew PATH"
-      block: |
-        export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
-      create: yes
-      mode: 0644
-      insertbefore: BOF
-    become: yes
-    with_items:
-      - /var/root/.bashrc
-      - /var/root/.zshrc
-    when: "ansible_system == 'Darwin'"
-    tags:
-    - always
+    - name: "Adding brew bin to PATH"
+      blockinfile:
+        dest: '{{ item }}'
+        marker: "# {mark} brew PATH"
+        block: |
+          export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
+        create: yes
+        mode: 0644
+        insertbefore: BOF
+      become: yes
+      with_items:
+        - /var/root/.bashrc
+        - /var/root/.zshrc
+      when: "ansible_system == 'Darwin'"
+      tags:
+        - always
 
-  - name: "Adding brew bin to PATH"
-    blockinfile:
-      dest: '{{ item }}'
-      marker: "# {mark} brew PATH"
-      block: |
-        export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
-      create: yes
-      mode: 0644
-      insertbefore: BOF
-    with_items:
-    - "{{ brew_user_home_dir }}/.bashrc"
-    - "{{ brew_user_home_dir }}/.zshrc"
-    tags:
-    - always
+    - name: "Adding brew bin to PATH"
+      blockinfile:
+        dest: '{{ item }}'
+        marker: "# {mark} brew PATH"
+        block: |
+          export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
+        create: yes
+        mode: 0644
+        insertbefore: BOF
+      with_items:
+        - "{{ brew_user_home_dir }}/.bashrc"
+        - "{{ brew_user_home_dir }}/.zshrc"
+      tags:
+        - always
 
   roles:
-  - name: homebrew
-    include_role:
-      name: homebrew
-    when: "ansible_system == 'Darwin'"
-  - name: linuxbrew
-    include_role:
-      name: linuxbrew
-    when: "ansible_system == 'Linux'"
-  - zsh
-  - role: vim
-    tags:
-    - always
-  - role: coreutils
-    tags:
-    - always
-  - role: flock
-    when: "ansible_system == 'Darwin'"
-    tags:
-    - always
-  - role: git
-    tags:
-    - always
-  - role: curl
-    tags:
-    - always
-  - jenv
-  - role: golang
-  - role: supervisord
-    tags:
-    - always
-  - logrotate
-  - nginx
-  - role: efk
-    tags:
-    - efk
-  - role: efk+nginx
-    tags:
-    - efk
-  - fakesendmail
-  - role: dnsmasq
-    tags:
-    - dnsmasq
-  - role: percona-server-56
-    tags:
-    - percona56
-  - role: percona-server-57
-    tags:
-    - percona57
-  - role: ruby
-    tags:
-    - always
-  - role: mongodb
-    tags:
-    - xhgui
-  - redis
-  - php-56
-  - php-70
-  - php-71
-  - php-72
-  - nginx-php-fpm
-  - role: nodejs
-    tags:
-    - always
-  - role: php-tools
-    tags:
-    - always
-  - role: xhgui
-    tags:
-    - xhgui
-  - role: compass
-    tags:
-    - always
-  - role: less
-    tags:
-    - always
+    - name: homebrew
+      include_role:
+        name: homebrew
+      when: "ansible_system == 'Darwin'"
+    - name: linuxbrew
+      include_role:
+        name: linuxbrew
+      when: "ansible_system == 'Linux'"
+    - zsh
+    - role: vim
+      tags:
+        - always
+    - role: coreutils
+      tags:
+        - always
+    - role: flock
+      when: "ansible_system == 'Darwin'"
+      tags:
+        - always
+    - role: git
+      tags:
+        - always
+    - role: curl
+      tags:
+        - always
+    - jenv
+    - role: golang
+      tags:
+        - always
+    - role: torrent-cli
+      tags:
+        - always
+    - role: supervisord
+      tags:
+        - always
+    - logrotate
+    - nginx
+    - role: efk
+      tags:
+        - efk
+    - role: efk+nginx
+      tags:
+        - efk
+    - fakesendmail
+    - role: dnsmasq
+      tags:
+        - dnsmasq
+    - role: percona-server-56
+      tags:
+        - percona56
+    - role: percona-server-57
+      tags:
+        - percona57
+    - role: ruby
+      tags:
+        - always
+    - role: mongodb
+      tags:
+        - xhgui
+    - redis
+    - php-56
+    - php-70
+    - php-71
+    - php-72
+    - nginx-php-fpm
+    - role: nodejs
+      tags:
+        - always
+    - role: php-tools
+      tags:
+        - always
+    - role: xhgui
+      tags:
+        - xhgui
+    - role: compass
+      tags:
+        - always
+    - role: less
+      tags:
+        - always
   post_tasks:
-  - name: "Adding brew bin to PATH for root user (Linux)"
-    blockinfile:
-      dest: '{{ item }}'
-      marker: "# {mark} brew PATH"
-      block: |
-        export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
-      create: yes
-      mode: 0644
-      insertbefore: BOF
-    become: yes
-    with_items:
-      - /root/.bashrc
-      - /root/.zshrc
-    when: "ansible_system == 'Linux'"
-    tags:
-      - always
+    - name: "Adding brew bin to PATH for root user (Linux)"
+      blockinfile:
+        dest: '{{ item }}'
+        marker: "# {mark} brew PATH"
+        block: |
+          export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
+        create: yes
+        mode: 0644
+        insertbefore: BOF
+      become: yes
+      with_items:
+        - /root/.bashrc
+        - /root/.zshrc
+      when: "ansible_system == 'Linux'"
+      tags:
+        - always
 
-  - name: "Adding brew bin to PATH for root user (Darwin)"
-    blockinfile:
-      dest: '{{ item }}'
-      marker: "# {mark} brew PATH"
-      block: |
-        export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
-      create: yes
-      mode: 0644
-      insertbefore: BOF
-    become: yes
-    with_items:
-      - /var/root/.bashrc
-      - /var/root/.zshrc
-    when: "ansible_system == 'Darwin'"
-    tags:
-    - always
+    - name: "Adding brew bin to PATH for root user (Darwin)"
+      blockinfile:
+        dest: '{{ item }}'
+        marker: "# {mark} brew PATH"
+        block: |
+          export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
+        create: yes
+        mode: 0644
+        insertbefore: BOF
+      become: yes
+      with_items:
+        - /var/root/.bashrc
+        - /var/root/.zshrc
+      when: "ansible_system == 'Darwin'"
+      tags:
+        - always
 
-  - name: "Adding brew bin to PATH"
-    blockinfile:
-      dest: '{{ item }}'
-      marker: "# {mark} brew PATH"
-      block: |
-        export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
-      create: yes
-      mode: 0644
-      insertbefore: BOF
-    with_items:
-    - "{{ brew_user_home_dir }}/.bashrc"
-    - "{{ brew_user_home_dir }}/.zshrc"
-    tags:
-    - always
-  - include_tasks: "{{ ansible_system | lower }}_post.yml"
-    tags:
-    - always
+    - name: "Adding brew bin to PATH"
+      blockinfile:
+        dest: '{{ item }}'
+        marker: "# {mark} brew PATH"
+        block: |
+          export PATH="{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:$PATH"
+        create: yes
+        mode: 0644
+        insertbefore: BOF
+      with_items:
+        - "{{ brew_user_home_dir }}/.bashrc"
+        - "{{ brew_user_home_dir }}/.zshrc"
+      tags:
+        - always
+    - include_tasks: "{{ ansible_system | lower }}_post.yml"
+      tags:
+        - always
 #  - name: "Unlinking python@2"
 #    homebrew:
 #      name: "python@2"
