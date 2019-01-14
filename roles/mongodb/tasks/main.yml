@@ -31,3 +31,15 @@
   template:
     src: supervisord.ini.j2
     dest: "{{ brew_install_path }}/etc/supervisor.d/mongodb.ini"
+
+- name: "Adding mongodb to PATH in {{ brew_user_home_dir }}/{{item}}"
+- name: "Updating rc"
+  blockinfile:
+    dest: '{{ brew_user_home_dir }}/{{item}}'
+    marker: "# {mark} mongodb"
+    block: |
+      echo 'export PATH="{{ mongodb_path }}/bin:$PATH"' >> ~/.zshrc
+  with_items: ['.zshrc', '.bashrc']
+
+- name: Ensure internalQueryExecMaxBlockingSortBytes with 100302864
+  shell: "echo 'db.adminCommand({setParameter: 1, internalQueryExecMaxBlockingSortBytes:100302864})' | mongo admin"
