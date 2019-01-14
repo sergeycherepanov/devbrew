@@ -6,9 +6,9 @@
 
 - name: Ensure xhgui
   git:
-    repo: "https://github.com/SergeyCherepanov/xhgui.git"
+    repo: "https://github.com/perftools/xhgui.git"
     dest: "{{ brew_install_path }}/opt/xhgui"
-    version: "master_20180417"
+    version: "master"
 
 - name: "Install xhgui"
   shell: >
@@ -20,6 +20,11 @@
   template:
     src: nginx.xhgui.conf.j2
     dest: "{{ brew_install_path }}/etc/nginx/servers/xhgui.conf"
+
+- name: "Ensure {{ brew_install_path }}/opt/xhgui/config/config.php"
+  template:
+    src: config.php.j2
+    dest: "{{ brew_install_path }}/opt/xhgui/config/config.php"
 
 - name: "Ensure xhgui.local in /etc/hosts"
   lineinfile:
