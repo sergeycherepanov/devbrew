@@ -203,30 +203,30 @@
   tags:
   - php70
 
-- git:
-    repo: 'https://github.com/tideways/php-profiler-extension.git'
-    dest: "/tmp/xhprof{{php_version}}"
-    version: 'master'
-  tags:
-  - php70
-
-- name: "Install xhprof extension"
-  shell: >
-    {{ brew_install_path }}/opt/{{php_version}}/bin/phpize &&
-    ./configure --with-php-config={{ brew_install_path }}/opt/{{php_version}}/bin/php-config &&
-    make &&
-    make install
-  args:
-    chdir: "/tmp/xhprof{{php_version}}"
-  tags:
-  - php70
-
-- name: "Ensure ext-xhprof.ini"
-  copy:
-    content: "extension=tideways_xhprof.so"
-    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xhprof.ini"
-  tags:
-  - php70
+#- git:
+#    repo: 'https://github.com/tideways/php-profiler-extension.git'
+#    dest: "/tmp/xhprof{{php_version}}"
+#    version: 'master'
+#  tags:
+#  - php70
+#
+#- name: "Install xhprof extension"
+#  shell: >
+#    {{ brew_install_path }}/opt/{{php_version}}/bin/phpize &&
+#    ./configure --with-php-config={{ brew_install_path }}/opt/{{php_version}}/bin/php-config &&
+#    make &&
+#    make install
+#  args:
+#    chdir: "/tmp/xhprof{{php_version}}"
+#  tags:
+#  - php70
+#
+#- name: "Ensure ext-xhprof.ini"
+#  copy:
+#    content: "extension=tideways_xhprof.so"
+#    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xhprof.ini"
+#  tags:
+#  - php70
 
 - name: "Create ext-opcache.ini"
   template:

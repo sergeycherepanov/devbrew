@@ -15,4 +15,6 @@ php70_modules:
 - php70-pdo-pgsql
 - php70-mongodb
 - php70-apcu
+- php70-xhprof
+- php70-memprof
 php70_pear_packages: []

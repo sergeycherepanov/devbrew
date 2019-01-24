@@ -13,7 +13,7 @@
 
 - name: "Installing Curl with openssl"
   homebrew: 
-    name: curl
+    name: sergeycherepanov/php/curl
     state: present
     install_options: with-openssl,with-libssh2
   environment:

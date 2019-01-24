@@ -15,4 +15,6 @@ php71_modules:
 - php71-pdo-pgsql
 - php71-mongodb
 - php71-apcu
+- php71-xhprof
+- php71-memprof
 php71_pear_packages: []

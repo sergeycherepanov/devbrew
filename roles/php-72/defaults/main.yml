@@ -16,4 +16,6 @@ php72_modules:
 - php72-pdo-pgsql
 - php72-mongodb
 - php72-apcu
+- php72-xhprof
+- php72-memprof
 php72_pear_packages: []

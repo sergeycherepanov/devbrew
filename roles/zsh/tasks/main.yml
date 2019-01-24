@@ -4,12 +4,12 @@
     state: absent
     path: "{{ item }}"
   with_items:
-  - "/tmp/awesome-terminal-fonts"
-  - "/tmp/powerline_fonts"
-  - "/tmp/oh-my-zsh"
+    - "/tmp/awesome-terminal-fonts"
+    - "/tmp/powerline_fonts"
+    - "/tmp/oh-my-zsh"
   ignore_errors: yes
   tags:
-  - zsh
+    - zsh
 
 - name: "Downloading 'hack' font"
   git:
@@ -18,7 +18,7 @@
     version: 'master'
   when: ansible_system == "Linux"
   tags:
-  - zsh
+    - zsh
 
 - copy:
     src: '/tmp/powerline_fonts/Hack/'
@@ -26,14 +26,14 @@
   when: ansible_system == "Linux"
   become: yes
   tags:
-  - zsh
+    - zsh
 
 - copy:
     src: '/tmp/powerline_fonts/Hack/'
     dest: '{{ brew_user_home_dir }}/.fonts/'
   when: ansible_system == "Linux"
   tags:
-  - zsh
+    - zsh
 
 - name: "Downloading 'awesome-terminal-fonts'"
   git:
@@ -41,14 +41,14 @@
     dest: '/tmp/awesome-terminal-fonts'
     version: 'master'
   tags:
-  - zsh
+    - zsh
 
 - name: "Installing 'awesome-terminal-fonts' to {{ brew_user_home_dir }}/.fonts/"
   copy:
     src: '/tmp/awesome-terminal-fonts/build/'
     dest: '{{ brew_user_home_dir }}/.fonts/'
   tags:
-  - zsh
+    - zsh
 
 - name: "Installing 'awesome-terminal-fonts' /usr/share/fonts/"
   copy:
@@ -57,7 +57,7 @@
   when: ansible_system == "Linux"
   become: yes
   tags:
-  - zsh
+    - zsh
 
 - name: Checking if fc-cache installed in the system
   shell: which fc-cache
@@ -65,14 +65,14 @@
   ignore_errors: yes
   when: 'ansible_system == "Linux"'
   tags:
-  - zsh
+    - zsh
 
 - name: "Rebuild font cache"
   shell: "fc-cache -f -v"
   when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   become: yes
   tags:
-  - zsh
+    - zsh
 
 - name: "Installing powerline-status via pip"
   pip:
@@ -80,14 +80,14 @@
     state: present
     extra_args: --user
   tags:
-  - zsh
+    - zsh
 
 - name: "Installing zsh via homebrew"
   homebrew:
     name: zsh
     state: present
   tags:
-  - zsh
+    - zsh
 
 - name: "Adding zsh to /etc/shells"
   lineinfile:
@@ -95,14 +95,14 @@
     line: '{{ brew_brew_bin_path }}/zsh'
   become: yes
   tags:
-  - zsh
+    - zsh
 
 - name: "Installing zsh-completions via homebrew"
   homebrew:
     name: zsh-completions
     state: present
   tags:
-  - zsh
+    - zsh
 
 - name: "Installing prezto"
   git:
@@ -110,7 +110,7 @@
     dest: '{{ brew_user_home_dir }}/.zprezto'
     version: 'master'
   tags:
-  - zsh
+    - zsh
 
 #- name: "Configure zshrc: {{ brew_user_home_dir }}/.zshrc"
 #  shell: |
@@ -128,7 +128,7 @@
     path: "{{ brew_user_home_dir }}/.oh-my-zsh"
   register: state
   tags:
-  - zsh
+    - zsh
 
 - name: "Clean {{ brew_user_home_dir }}/.oh-my-zsh"
   file:
@@ -136,7 +136,7 @@
     path: "{{ brew_user_home_dir }}/.oh-my-zsh"
   when: state.stat.exists
   tags:
-  - zsh
+    - zsh
 
 - name: "Downloading oh-my-zsh"
   git:
@@ -144,14 +144,14 @@
     dest: '/tmp/oh-my-zsh'
     version: 'master'
   tags:
-  - zsh
+    - zsh
 
 - name: "Changing default shell to zsh "
   shell: 'chsh -s {{ brew_brew_bin_path }}/zsh {{ brew_user }}'
   become: true
   become_user: root
   tags:
-  - zsh
+    - zsh
 
 - name: "Installing Oh My Zsh"
   shell: '/tmp/oh-my-zsh/tools/install.sh'
@@ -161,7 +161,7 @@
   args:
     executable: "{{ brew_brew_bin_path }}/zsh"
   tags:
-  - zsh
+    - zsh
 
 #- name: "Adding homebrew to PATH in {{ brew_user_home_dir }}/.zshrc"
 #  blockinfile:
@@ -183,7 +183,7 @@
         source ~/.aliases
       fi
   tags:
-  - zsh
+    - zsh
 
 - name: "Setting EDITOR to vim"
   lineinfile:
@@ -191,7 +191,7 @@
     regexp: '^export EDITOR=.*'
     line: 'export EDITOR=vim'
   tags:
-  - zsh
+    - zsh
 
 - name: "Setting VISUAL to vim"
   lineinfile:
@@ -199,14 +199,14 @@
     regexp: '^export VISUAL=.*'
     line: 'export VISUAL=vim'
   tags:
-  - zsh
+    - zsh
 
 - lineinfile:
     path: '{{ brew_user_home_dir }}/.zshrc'
     regexp: '^DEFAULT_USER=.*'
     line: 'DEFAULT_USER="$USER"'
   tags:
-  - zsh
+    - zsh
 
 - name: "Adding Prezto modules to {{ brew_user_home_dir }}/.zpreztorc"
   blockinfile:
@@ -229,7 +229,7 @@
 
       zstyle ':prezto:module:prompt' theme 'paradox'
   tags:
-  - zsh
+    - zsh
 
 - name: "Adding locales to PATH in {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
@@ -241,7 +241,7 @@
       export LANG=en_US.UTF-8
       source $HOME/.fonts/*.sh
   tags:
-  - zsh
+    - zsh
 
 - name: "Adding Prezto to {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
@@ -256,41 +256,41 @@
 
       # Customize to your needs...
   tags:
-  - zsh
+    - zsh
 
 - name: "Resolve local python path"
-#  shell: "cd $(dirname {{ brew_brew_bin_path }}/python); cd $(dirname $(readlink {{ brew_brew_bin_path }}/python)); pwd"
+  #  shell: "cd $(dirname {{ brew_brew_bin_path }}/python); cd $(dirname $(readlink {{ brew_brew_bin_path }}/python)); pwd"
   shell: "cd $(dirname $(which python2)); cd $(dirname $(readlink $(which python2))); pwd"
   register: result
   tags:
-  - always
+    - always
 
 - name: "Register local_python_path fact"
   set_fact: local_python_path="{{ result.stdout }}"
   tags:
-  - always
+    - always
 
 - name: "Resolve site-packages location"
   shell: "{{ local_python_path }}/python -m site --user-site"
   register: result
   tags:
-  - always
+    - always
 
 - name: "Register site_packages_dir fact"
   set_fact: site_packages_dir="{{ result.stdout }}"
   tags:
-  - always
+    - always
 
 - name: "Resolve python user base dir"
   shell: "{{ local_python_path }}/python -m site --user-base"
   register: result
   tags:
-  - always
+    - always
 
 - name: "Register python_user_base_dir fact"
   set_fact: python_user_base_dir="{{ result.stdout }}"
   tags:
-  - always
+    - always
 
 - name: "Adding python_user_base_dir to PATH in {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
@@ -299,7 +299,7 @@
     block: |
       export PATH="{{ python_user_base_dir }}/bin:$PATH"
   tags:
-  - zsh
+    - zsh
 
 - name: "Adding powerline to config {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
@@ -308,5 +308,13 @@
     block: |
       source {{ site_packages_dir }}/powerline/bindings/zsh/powerline.zsh
   tags:
-  - zsh
+    - zsh
+
+- name: "Ensure permissions"
+  shell: "{{ brew_brew_bin_path }}/zsh -c '. ~/.zshrc && compaudit | xargs chmod g-w,o-w'"
+  register: result
+  tags:
+    - zsh
+
+
 

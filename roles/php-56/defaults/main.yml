@@ -16,4 +16,5 @@ php_modules:
 - xhprof
 - mongodb
 - apcu
+- memprof
 php_pear_packages: []
