@@ -1,4 +1,9 @@
 ---
+- name: Ensure vim taps are tapped.
+  homebrew_tap: "tap={{ item }} state=present"
+  with_items:
+    - "sergeycherepanov/php"
+
 - name: "Ensure zlib"
   homebrew:
     name: zlib
