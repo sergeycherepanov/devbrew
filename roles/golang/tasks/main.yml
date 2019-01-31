@@ -3,7 +3,6 @@
   homebrew: 
     name: go
     state: present
-    install_options: "cross-compile-common"
   tags:
     - always
     
