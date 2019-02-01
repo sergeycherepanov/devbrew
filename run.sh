@@ -25,6 +25,7 @@ if [[ "Darwin" == "$(uname)" ]]; then
 
   if which brew; then
     brew unlink python@2
+    hash svnsync
   fi
 
   # Install Ansible if not found or upgrade if outdated
@@ -85,6 +86,6 @@ else
     exit 1
   fi
 fi
-exec $SHELL
+hash svnsync
 sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} --version
 sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} -i "localhost," -c local "${DIR}/main.yml" --extra-vars="ansible_python_interpreter=$(which python)" -e "mac_user=${MAC_USER}" -e "brew_install_path=${BREW_INSTALL_PATH}" "$@"
