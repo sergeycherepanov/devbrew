@@ -30,7 +30,7 @@ if [[ "Darwin" == "$(uname)" ]]; then
   # Install Ansible if not found or upgrade if outdated
  ./ansible --version >/dev/null 2>&1 \
   && php -r "version_compare('"$(./ansible --version  | head -1 | awk '{print $2}')"', '${MIN_ANSIBLE_VERSION}', '>=') ? exit(0) : exit(1);" || {
-    sudo -H ./pip install --force-reinstall --upgrade ansible
+    sudo -H ./pip install --force-reinstall --upgrade ansible PyYAML
   }
   ANSIBLE_PLAYBOOK_BIN="./ansible-playbook"
   ANSIBLE_GALAXY_BIN="./ansible-galaxy"
