@@ -227,7 +227,7 @@
     - include_tasks: "{{ ansible_system | lower }}_post.yml"
       tags:
         - always
-    - name: "Linking python@2"
-      shell: "brew link --overwrite python@2"
-      tags:
-      - always
+#    - name: "Linking python@2"
+#      shell: "brew link --overwrite python@2"
+#      tags:
+#      - always
