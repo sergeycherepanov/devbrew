@@ -33,7 +33,6 @@ if [[ "Darwin" == "$(uname)" ]]; then
     sudo -H ./pip install --force-reinstall --upgrade ansible PyYAML
   }
   ANSIBLE_PLAYBOOK_BIN="./ansible-playbook"
-  ANSIBLE_GALAXY_BIN="./ansible-galaxy"
   BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/usr/local}"
 else
   if [[ "Linux" == "$(uname)" ]]; then
@@ -76,7 +75,6 @@ else
         sudo pip install --ignore-installed --force-reinstall --upgrade ansible requests[security] httpie PyYAML || exit 1
       fi
       ANSIBLE_PLAYBOOK_BIN="$(which ansible-playbook)"
-      ANSIBLE_GALAXY_BIN="$(which ansible-galaxy)"
       BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/home/linuxbrew/.linuxbrew}"
     else
       echo "Unsupported system: '$(uname):${ID_LIKE}'"
@@ -88,4 +86,4 @@ else
   fi
 fi
 sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} --version
-sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} -i "localhost," -c local "${DIR}/main.yml" -e "mac_user=${MAC_USER}" -e "brew_install_path=${BREW_INSTALL_PATH}" "$@"
+sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} -i "localhost," -c local "${DIR}/main.yml" --extra-vars="ansible_python_interpreter=$(which python)" -e "mac_user=${MAC_USER}" -e "brew_install_path=${BREW_INSTALL_PATH}" "$@"
