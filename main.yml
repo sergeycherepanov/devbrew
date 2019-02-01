@@ -228,8 +228,6 @@
       tags:
         - always
     - name: "Linking python@2"
-      homebrew:
-        name: "python@2"
-        state: linked
+      shell: "brew link --overwrite python@2"
       tags:
       - always
