@@ -227,9 +227,9 @@
     - include_tasks: "{{ ansible_system | lower }}_post.yml"
       tags:
         - always
-  - name: "Linking python@2"
-    homebrew:
-      name: "python@2"
-      state: linked
-    tags:
-    - always
+    - name: "Linking python@2"
+      homebrew:
+        name: "python@2"
+        state: linked
+      tags:
+      - always
