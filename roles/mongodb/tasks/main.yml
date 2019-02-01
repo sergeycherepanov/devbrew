@@ -56,7 +56,7 @@
 - name: "Ensure internalQueryExecMaxBlockingSortBytes with 100302864"
   yedit:
     src: "{{ brew_install_path }}/etc/mongod.conf"
-    key: "setParameter#internalQueryExecMaxBlockingSortBytes"
+    key: setParameter#internalQueryExecMaxBlockingSortBytes
     value: "100302864"
 
 - name: "Stopping mongod"
