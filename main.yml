@@ -94,7 +94,7 @@
         - always
 
   roles:
-    - name: roles/lib_yaml_editor
+    - name: yedit
     - name: homebrew
       include_role:
         name: homebrew

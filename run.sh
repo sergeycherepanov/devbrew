@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 pushd `dirname $0` > /dev/null;DIR=`pwd -P`;popd > /dev/null
 
 MAC_USER=${SUDO_USER-${USER}}
@@ -87,5 +88,4 @@ else
   fi
 fi
 sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} --version
-sudo -H -u "${MAC_USER}" ${ANSIBLE_GALAXY_BIN} install kwoodson.yedit
 sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} -i "localhost," -c local "${DIR}/main.yml" -e "mac_user=${MAC_USER}" -e "brew_install_path=${BREW_INSTALL_PATH}" "$@"
