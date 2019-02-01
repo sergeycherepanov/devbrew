@@ -2,7 +2,7 @@
 - name: Ensure vim taps are tapped.
   homebrew_tap: "tap={{ item }} state=present"
   with_items:
-    - "sergeycherepanov/vim"
+    - "djocker/common"
 
 - name: "ln -s /usr/include/locale.h /usr/include/xlocale.h"
   file:
@@ -15,7 +15,7 @@
 
 - name: "Ensure vim"
   homebrew: 
-    name: sergeycherepanov/vim/vim
+    name: djocker/common/vim
     state: present
     install_options: "with-python@2"
 

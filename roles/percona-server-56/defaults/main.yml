@@ -1,9 +1,10 @@
 ---
+mysql_tap: "djocker/common"
 mysql_user: "{{ brew_user }}"
 mysql_group: "{{ brew_group }}"
 mysql_version: "5.6"
 mysql_version_num: "56"
-mysql_formula: "percona-server@5.6"
+mysql_formula: "djocker/common/percona-server@5.6"
 #mysql_base_dir: "{{ brew_install_path }}/opt/percona-server@5.6"
 mysql_etc_dir: "{{ brew_install_path }}/etc/mysql/56"
 mysql_run_dir: "{{ brew_install_path }}/var/run/mysql/56"

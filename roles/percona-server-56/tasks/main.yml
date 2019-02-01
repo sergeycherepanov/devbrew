@@ -1,4 +1,9 @@
 ---
+- name: Ensure required taps are tapped.
+  homebrew_tap: "tap={{ item }} state=present"
+  with_items:
+    - "{{ mysql_tap }}"
+
 - name: "Ensure Percona(Mysql) Server {{ mysql_formula }}"
   homebrew: 
     name: "{{ mysql_formula }}"
