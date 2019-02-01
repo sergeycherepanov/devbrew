@@ -22,12 +22,17 @@ if [[ "Darwin" == "$(uname)" ]]; then
   fi
   cd $(dirname $(which python)); cd $(dirname $(readlink $(which python)))
 
+  if which brew; then
+    brew unlink python@2
+  fi
+
   # Install Ansible if not found or upgrade if outdated
  ./ansible --version >/dev/null 2>&1 \
   && php -r "version_compare('"$(./ansible --version  | head -1 | awk '{print $2}')"', '${MIN_ANSIBLE_VERSION}', '>=') ? exit(0) : exit(1);" || {
     sudo -H ./pip install --force-reinstall --upgrade ansible
   }
   ANSIBLE_PLAYBOOK_BIN="./ansible-playbook"
+  ANSIBLE_GALAXY_BIN="./ansible-galaxy"
   BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/usr/local}"
 else
   if [[ "Linux" == "$(uname)" ]]; then
@@ -70,6 +75,7 @@ else
         sudo pip install --ignore-installed --force-reinstall --upgrade ansible requests[security] httpie PyYAML || exit 1
       fi
       ANSIBLE_PLAYBOOK_BIN="$(which ansible-playbook)"
+      ANSIBLE_GALAXY_BIN="$(which ansible-galaxy)"
       BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/home/linuxbrew/.linuxbrew}"
     else
       echo "Unsupported system: '$(uname):${ID_LIKE}'"
@@ -81,4 +87,5 @@ else
   fi
 fi
 sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} --version
+sudo -H -u "${MAC_USER}" ${ANSIBLE_GALAXY_BIN} install kwoodson.yedit
 sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_BIN} -i "localhost," -c local "${DIR}/main.yml" -e "mac_user=${MAC_USER}" -e "brew_install_path=${BREW_INSTALL_PATH}" "$@"
