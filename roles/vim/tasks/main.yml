@@ -1,4 +1,9 @@
 ---
+- name: Ensure php taps are untapped.
+  homebrew_tap: "tap={{ item }} state=absent"
+  with_items:
+    - "sergeycherepanov/vim"
+
 - name: Ensure vim taps are tapped.
   homebrew_tap: "tap={{ item }} state=present"
   with_items:

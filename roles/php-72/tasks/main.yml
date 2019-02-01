@@ -3,6 +3,7 @@
   homebrew_tap: "tap={{ item }} state=absent"
   with_items:
   - "kyslik/homebrew-php"
+  - "sergeycherepanov/php"
   tags:
   - php72
 
