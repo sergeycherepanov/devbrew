@@ -20,6 +20,7 @@ if [[ "Darwin" == "$(uname)" ]]; then
   if ! php -r "version_compare('"$(python --version 2>&1 | awk '{print $2}')"', '${MIN_PYTHON_VERSION_MACOS}', '>=') ? exit(0) : exit(1);" || ! which pip > /dev/null; then
     curl -o "/tmp/${PYTHON_PKG_MACOS}" "https://www.python.org/ftp/python/${MIN_PYTHON_VERSION_MACOS}/${PYTHON_PKG_MACOS}"
     sudo installer -pkg "/tmp/${PYTHON_PKG_MACOS}" -target /
+    /Applications/Python\ 2.7/Install\ Certificates.command
   fi
   cd $(dirname $(which python)); cd $(dirname $(readlink $(which python)))
 
