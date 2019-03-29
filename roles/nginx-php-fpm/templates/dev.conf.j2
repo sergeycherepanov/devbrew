@@ -119,8 +119,12 @@ if ($cookie_xdebug_profile != "") {
 
 set $forwarded_proto http;
 
+if ($http_x_forwarded_proto = 'https') {
+   set $https on;
+}
+
 if ($https = "on") {
-    set $forwarded_proto https;
+    set $http_x_forwarded_proto https;
 }
 
 ## Process .php files
@@ -147,8 +151,8 @@ location ~ ^.+\.php {
     fastcgi_temp_file_write_size    256k;
     fastcgi_param                   MAGE_IS_DEVELOPER_MODE  true;
     fastcgi_param                   SERVER_NAME $host;
-    fastcgi_param                   PHP_PATH $php_version_path;
+#    fastcgi_param                   PHP_PATH $php_version_path;
     fastcgi_param                   HTTPS $https;
-    fastcgi_param                   HTTP_X_FORWARDED_PROTO $forwarded_proto;
+#    fastcgi_param                   HTTP_X_FORWARDED_PROTO $forwarded_proto;
     fastcgi_param                   PHP_VALUE "auto_prepend_file=$auto_prepend_file";
 }
