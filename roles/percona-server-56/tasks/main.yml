@@ -140,7 +140,7 @@
   - percona56
 
 - name: Waiting mysql
-  shell: "until grep 'ready for connections\|Server socket created on' /tmp/mysql.err; do sleep 1; done"
+  shell: "until grep 'ready for connections\\|Server socket created on' /tmp/mysql.err; do sleep 1; done"
   when: mysql_data_dir_files.matched|int == 0
   args:
     chdir: /tmp
