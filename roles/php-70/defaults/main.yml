@@ -2,7 +2,7 @@
 php_version: php70
 php_version_num: 7.0
 php_version_num_int: 70
-php70_flags: "with-homebrew-curl,with-pear,,with-homebrew-libxslt,with-homebrew-libxml"
+php70_flags: ""
 php_dependencies:
 - libxslt
 php70_modules:
