@@ -119,12 +119,8 @@ if ($cookie_xdebug_profile != "") {
 
 set $forwarded_proto http;
 
-if ($http_x_forwarded_proto = 'https') {
-   set $https on;
-}
-
 if ($https = "on") {
-    set $http_x_forwarded_proto https;
+    set $forwarded_proto https;
 }
 
 ## Process .php files
