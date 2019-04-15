@@ -117,10 +117,10 @@ if ($cookie_xdebug_profile != "") {
     set $auto_prepend_file {{ brew_install_path }}/opt/xhgui/external/header.php;
 }
 
-set $forwarded_proto http;
+set $fcgi_https $https;
 
-if ($https = "on") {
-    set $forwarded_proto https;
+if ($http_x_forwarded_proto = "https") {
+    set $fcgi_https on;
 }
 
 ## Process .php files
@@ -147,8 +147,7 @@ location ~ ^.+\.php {
     fastcgi_temp_file_write_size    256k;
     fastcgi_param                   MAGE_IS_DEVELOPER_MODE  true;
     fastcgi_param                   SERVER_NAME $host;
-#    fastcgi_param                   PHP_PATH $php_version_path;
-    fastcgi_param                   HTTPS $https;
-#    fastcgi_param                   HTTP_X_FORWARDED_PROTO $forwarded_proto;
+    fastcgi_param                   HTTPS $fcgi_https;
+    fastcgi_param                   PHP_PATH $php_version_path;
     fastcgi_param                   PHP_VALUE "auto_prepend_file=$auto_prepend_file";
 }
