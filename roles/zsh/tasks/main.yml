@@ -312,7 +312,7 @@
 
 - name: "Ensure permissions"
   shell: "{{ brew_brew_bin_path }}/zsh -c '. ~/.zshrc && compaudit | xargs chmod g-w,o-w'"
-  register: result
+  ignore_errors: yes
   tags:
     - zsh
 
