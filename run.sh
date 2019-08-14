@@ -60,12 +60,15 @@ else
 #        #sudo apt-mark hold python || exit 1
 #      fi
 
-      sudo apt update
-      sudo apt install -y software-properties-common
-      printf '\n' | sudo apt-add-repository ppa:git-core/ppa
-      sudo apt update && sudo apt install -yq python-apt python-pip curl git \
-        make build-essential autoconf libssl-dev zlib1g-dev libbz2-dev \
+#      sudo apt update
+#      sudo apt install -y software-properties-common
+#      printf '\n' | sudo apt-add-repository ppa:git-core/ppa
+#      sudo apt update && sudo apt install -yq python-apt python-pip curl git \
+#        make build-essential autoconf libssl-dev zlib1g-dev libbz2-dev \
 #       libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev
+
+      apt-get update \
+      && apt-get install -y --no-install-recommends ca-certificates git curl file systemtap-sdt-dev g++ make uuid-runtime python-pip
 
       if ! which pip > /dev/null || [[ ! -f $(which pip) ]] || ! $(which pip) --version > /dev/null; then
         sudo apt update && sudo apt install -yq python-apt python-pip
