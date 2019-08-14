@@ -21,7 +21,7 @@
 
 - name: Downloading Linuxbrew.
   get_url:
-    url: "https://github.com/Linuxbrew/brew/tarball/master"
+    url: "https://github.com/Homebrew/brew/tarball/master"
     dest: "/tmp/brew-master.tgz"
   tags:
   - always
