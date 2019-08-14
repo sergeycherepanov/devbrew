@@ -2,11 +2,9 @@ set $wwwRoot {{ www_dir }};
 autoindex off;
 client_max_body_size 256m;
 
+# set default php version to {{ default_php }}
+set $php_version {{ default_php }};
 
-if ($php_version !~* '^({{ php_versions | join("|") }})$') {
-    # set default php version to {{ default_php }}
-    set $php_version {{ default_php }};
-}
 set $php_version_path "{{ brew_install_path }}/bin/php${php_version}";
 
 if ($project_name ~ ^www\.(.+)$) {
@@ -112,6 +110,8 @@ set $port_prefix 90;
 if ($cookie_xdebug_session != "") {
     set $port_prefix 91;
 }
+
+set $auto_prepend_file '';
 
 if ($cookie_xdebug_profile != "") {
     set $auto_prepend_file {{ brew_install_path }}/opt/xhgui/external/header.php;
