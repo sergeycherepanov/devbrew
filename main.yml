@@ -103,9 +103,9 @@
       include_role:
         name: linuxbrew
       when: "ansible_system == 'Linux'"
-    - role: curl
-      tags:
-      - always
+#    - role: curl
+#      tags:
+#      - always
     - zsh
     - role: vim
       tags:

@@ -39,7 +39,7 @@ if [[ "Darwin" == "$(uname)" ]]; then
 else
   if [[ "Linux" == "$(uname)" ]]; then
     source /etc/os-release
-    if [[ "debian" == "${ID_LIKE}" ]] || [[ "ubuntu" == "${ID_LIKE}" ]]; then
+    if [[ "debian" == "${ID}" ]] || [[ "debian" == "${ID_LIKE}" ]] || [[ "ubuntu" == "${ID_LIKE}" ]]; then
 #      if ! which python2.7 > /dev/null || dpkg --compare-versions "$(python2.7 --version 2>&1 | awk '{print $2}')" lt "${MIN_PYTHON_VERSION_LINUX}"; then
 #        cd /tmp && \
 #        sudo apt update && \
