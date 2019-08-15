@@ -1,4 +1,10 @@
 ---
+
+- name: Ensure php taps are tapped.
+  homebrew_tap: "tap={{ item }} state=present"
+  with_items:
+    - "djocker/common"
+
 - name: "Ensure typing via pip"
   pip:
     name: typing
@@ -16,11 +22,11 @@
 
 - name: "Ensure mongodb"
   homebrew:
-    name: mongodb@3.6
+    name: mongodb36
     state: present
 
 - name: Resolve mongodb_path
-  shell: "{{ brew_brew_bin_path }}/brew --prefix mongodb@3.6"
+  shell: "{{ brew_brew_bin_path }}/brew --prefix mongodb36"
   register: output
 
 - name: Register mongodb_path
