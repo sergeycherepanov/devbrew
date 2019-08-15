@@ -143,6 +143,14 @@
   tags:
   - always
 
+- name: Stash brew changes
+  shell: 'cd $(brew --prefix)/Library && git stash && git clean -d -f'
+  ignore_errors: yes
+  retries: 2
+  delay: 1
+  tags:
+    - always
+
 - name: Updating brew repo
   shell: 'brew update'
   ignore_errors: yes
