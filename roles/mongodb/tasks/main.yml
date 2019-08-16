@@ -5,20 +5,20 @@
   with_items:
     - "djocker/common"
 
-- name: "Ensure typing via pip"
-  pip:
-    name: typing
-    state: present
-
-- name: "Ensure Cheetah via pip"
-  pip:
-    name: Cheetah
-    state: present
-
-- name: "Ensure PyYAML via pip"
-  pip:
-    name: PyYAML
-    state: present
+#- name: "Ensure typing via pip"
+#  pip:
+#    name: typing
+#    state: present
+#
+#- name: "Ensure Cheetah via pip"
+#  pip:
+#    name: Cheetah
+#    state: present
+#
+#- name: "Ensure PyYAML via pip"
+#  pip:
+#    name: PyYAML
+#    state: present
 
 - name: "Ensure mongodb"
   homebrew:
