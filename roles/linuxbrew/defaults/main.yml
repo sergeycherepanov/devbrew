@@ -11,6 +11,7 @@ brew_installed_packages:
   - mc
   - wget
   - mtr
+  - libpcap # required for nmap
   - nmap
   - watch
   - hg
