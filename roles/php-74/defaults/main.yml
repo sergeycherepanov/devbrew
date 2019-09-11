@@ -1,7 +1,7 @@
 ---
-php_version: php71
-php_version_num: 7.1
-php_version_num_int: 71
+php_version: php74
+php_version_num: 7.4
+php_version_num_int: 74
 php_flags: ""
 php_dependencies:
 php_modules:

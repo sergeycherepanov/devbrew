@@ -4,18 +4,18 @@ php_version_num: 5.6
 php_version_num_int: 56
 php_flags: ""
 php_dependencies:
-- libxslt
 php_modules:
-- intl
-- mcrypt
-- xdebug
-- redis
-- tidy
-- opcache
-- pdo-pgsql
-- xhprof
-- mongo
-- mongodb
-- apcu
-- memprof
+    - intl
+    - mcrypt
+    - xdebug
+    - redis
+    - tidy
+    - opcache
+    - pdo-pgsql
+    - xhprof
+    - mongo
+    - mongodb
+    - apcu
+    - memprof
+    - imagick
 php_pear_packages: []
