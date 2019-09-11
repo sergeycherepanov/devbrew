@@ -124,9 +124,9 @@
     - role: golang
       tags:
         - always
-    - role: torrent-cli
-      tags:
-        - always
+#    - role: torrent-cli
+#      tags:
+#        - always
     - role: supervisord
       tags:
         - always
@@ -159,6 +159,8 @@
     - php-70
     - php-71
     - php-72
+    - php-73
+    - php-74
     - nginx-php-fpm
     - role: nodejs
       tags:

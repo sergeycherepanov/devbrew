@@ -11,30 +11,14 @@
 - name: "Ensure linux requirements via apt"
   apt:
     name:
-    - libcurl3-dev
-    - libpcap-dev
+    - ca-certificates
+    - git
+    - curl
+    - file
     - systemtap-sdt-dev
-    - libpng-dev
-    - zlib1g-dev
-    - libldap2-dev
-    - libldap-2.4-2
-    - libzip-dev
-    - lbzip2
-    - libxml2-dev
-    - bzip2
-    - re2c
-    - libbz2-dev
-    - apache2-dev
-    - libjpeg-dev
-    - libxpm-dev
-    - libxpm-dev
-    - libgmp-dev
-    - libgmp3-dev
-    - libmcrypt-dev
-    - libmysqlclient-dev
-    - libpspell-dev
-    - librecode-dev
-    - libsasl2-dev
+    - g++
+    - make
+    - uuid-runtime
     state: present
   become: yes
   tags:

@@ -1,0 +1,170 @@
+---
+- name: Ensure php taps are untapped.
+  homebrew_tap: "tap={{ item }} state=absent"
+  with_items:
+  - "kyslik/homebrew-php"
+  - "sergeycherepanov/php"
+
+- name: Ensure php taps are tapped.
+  homebrew_tap: "tap={{ item }} state=present"
+  with_items:
+  - "djocker/common"
+  - "djocker/php"
+
+- name: "Unlinking all already installed php packages"
+  shell: "brew list | grep php | xargs brew unlink"
+  when: ansible_system == "Darwin"
+
+- name: "Unlinking all already installed php packages"
+  shell: "brew list | grep php | xargs --no-run-if-empty brew unlink"
+  when: ansible_system == "Linux"
+
+- name: "Installing {{ php_version }} dependencies"
+  homebrew:
+    name: "{{ php_dependencies }}"
+    state: present
+
+- name: "Installing {{ php_version }} with flags: {{ php_flags }}"
+  homebrew:
+    name: "{{ php_version }}"
+    state: present
+    install_options: "{{ php_flags }}"
+
+- name: "Installing {{ php_version }} modules"
+  homebrew:
+    name: "{{php_version}}-{{ item }}"
+    state: present
+    install_options: "build-from-source"
+  with_items: "{{ php_modules }}"
+
+- name: "Remove outdated {{ php_version }}"
+  shell: "brew upgrade --cleanup {{ php_version }} > /dev/null 2>&1"
+  ignore_errors: yes
+
+- name: "Installing {{ php_version }} pear packages"
+  shell: "pear install {{ item }}"
+  with_items: "{{ php_pear_packages }}"
+
+- name: "Add {{ php_version }} wrapper"
+  template:
+    src: "php.j2"
+    dest: "{{ brew_install_path }}/bin/{{ php_version }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
+
+- name: "Ensure x{{ php_version }} wrapper directory"
+  file:
+    path: "{{ brew_install_path }}/opt/xphp/{{ php_version_num }}/bin"
+    state: directory
+
+- name: "Ensure x{{ php_version }} bin"
+  template:
+    src: "xphp-bin.j2"
+    dest: "{{ brew_install_path }}/opt/xphp/{{ php_version_num }}/bin/php"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
+
+- name: "Add x{{ php_version }} wrapper"
+  template:
+    src: "xphp.j2"
+    dest: "{{ brew_install_path }}/bin/x{{ php_version }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    mode: 0755
+
+- name: "Create php-fpm.conf for {{ php_version }}"
+  template:
+    src: php-fpm.conf.j2
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm.conf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+
+- name: "Create php.ini for {{ php_version }}"
+  template:
+    src: php.ini.j2
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php.ini"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+
+- name: "Create php-fpm-xdebug.conf for {{ php_version }}"
+  template:
+    src: php-fpm-xdebug.conf.j2
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm-xdebug.conf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+
+- name: "Disabling xdebug by default for {{ php_version }}"
+  lineinfile:
+    path: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xdebug.ini'
+    regexp: '^(zend_extension=.*)'
+    line: ';\1'
+    backrefs: yes
+
+- name: "Create php-xdebug.ini for {{ php_version }}"
+  template:
+    src: php.ini.j2
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+
+- name: "Enabling xdebug in php-xdebug.ini for {{ php_version }}"
+  blockinfile:
+    dest: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini'
+    marker: "; {mark} ansible xdebug"
+    block: |
+      [xdebug]
+      zend_extension="{{ brew_install_path }}/opt/{{ php_version }}-xdebug/xdebug.so"
+      xdebug.remote_enable=1
+      xdebug.remote_autostart = 0
+      xdebug.remote_connect_back = 0
+      xdebug.remote_host=127.0.0.1
+      xdebug.remote_port=92{{ php_version_num_int }}
+      xdebug.profiler_enable=0
+      xdebug.profiler_output_dir=/tmp/xdebug{{ php_version_num_int }}
+      xdebug.idekey=PHPSTORM
+      xdebug.overload_var_dump=0
+      xdebug.max_nesting_level=500
+
+- name: "Create ext-opcache.ini for {{ php_version }}"
+  template:
+    src: "ext-opcache.ini.j2"
+    dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-opcache.ini"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+
+- name: "Unlink {{ php_version }}"
+  homebrew: "name={{ php_version }} state=unlinked"
+  ignore_errors: yes
+
+- name: Adding '{{ php_version_num_int }}' to "php_versions" array
+  set_fact:
+    php_versions: "{{ php_versions + [ php_version_num_int ] }}"
+
+- name: Setting default php to {{ php_version_num_int }}
+  set_fact:
+    default_php: "{{ php_version_num_int }}"
+
+- debug:
+    var: php_versions
+
+- name: "Create etc/supervisor.d/{{ php_version }}.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: "{{ brew_install_path }}/etc/supervisor.d/{{ php_version }}.ini"
+
+- name: "Ensure EFK config directory"
+  file:
+    path: "{{ brew_install_path }}/etc/efk/td-agent/conf.d"
+    state: directory
+
+- name: "Creates {{ brew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
+  template:
+    src: td-agent.php.conf.j2
+    dest: "{{ brew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+
+- name: "Linking php"
+  shell: "brew link {{ php_version }}"

@@ -1,21 +1,20 @@
 ---
 php_version: php72
-php_version_legacy: php72
 php_version_num: 7.2
 php_version_num_int: 72
-php72_flags: ""
+php_flags: ""
 php_dependencies:
-- libxslt
-php72_modules:
-- php72-intl
-- php72-mcrypt
-- php72-xdebug
-- php72-redis
-- php72-tidy
-- php72-opcache
-- php72-pdo-pgsql
-- php72-mongodb
-- php72-apcu
-- php72-xhprof
-- php72-memprof
-php72_pear_packages: []
+php_modules:
+    - intl
+    - mcrypt
+    - xdebug
+    - redis
+    - tidy
+    - opcache
+    - pdo-pgsql
+    - xhprof
+    - mongodb
+    - apcu
+    - memprof
+    - imagick
+php_pear_packages: []

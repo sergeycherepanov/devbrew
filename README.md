@@ -46,6 +46,8 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 *  `php70` - will install PHP version 7.0  
 *  `php71` - will install PHP version 7.1  
 *  `php72` - will install PHP version 7.2  
+*  `php73` - will install PHP version 7.3 
+*  `php74` - will install PHP version 7.4 
 *  `xhgui` - will install xhgui for xhprof  
 *  `percona56` - will install Percona Server (mysql) version 5.6
 *  `percona57` - will install Percona Server (mysql) version 5.7  

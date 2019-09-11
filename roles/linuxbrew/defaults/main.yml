@@ -1,7 +1,8 @@
 ---
 brew_brew_bin_path: "{{ brew_install_path }}/bin"
 brew_installed_packages:
-  - gcc
+  - openssl
+  - curl
   - git
   - screen
   - ssh-copy-id
@@ -10,6 +11,7 @@ brew_installed_packages:
   - mc
   - wget
   - mtr
+  - libpcap # required for nmap
   - nmap
   - watch
   - hg
@@ -22,9 +24,7 @@ brew_installed_packages:
   - json-table
   - pup
   - fswatch
-#  - shellcheck
   - libmcrypt
-  - yarn
   - python@2
 
 brew_upgrade_all_packages: no
