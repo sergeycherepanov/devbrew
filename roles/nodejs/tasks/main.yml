@@ -18,3 +18,8 @@
 - name: "Setting fact"
   set_fact: 
     nodejs_installed: true
+
+- name: "Installing yarn"
+  homebrew:
+    name: yarn
+    state: present

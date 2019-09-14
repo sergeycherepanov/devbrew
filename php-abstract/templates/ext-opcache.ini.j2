@@ -1,5 +1,5 @@
 [opcache]
-zend_extension="{{ brew_install_path }}/opt/php70-opcache/opcache.so"
+zend_extension={{ brew_install_path }}/opt/{{ php_version }}-opcache/opcache.so
 opcache.enable=1
 opcache.enable_cli=0
 opcache.memory_consumption=256

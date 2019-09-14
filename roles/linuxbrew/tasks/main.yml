@@ -1,78 +1,73 @@
 ---
+- stat:
+    path: "{{ brew_install_path }}/bin/brew"
+  tags:
+    - always
+  register: brew_state
+  tags:
+    - always
+
 - name: Ensure linuxbrew install path.
   file:
     path: "{{ brew_install_path }}"
-    mode: 0775
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
     state: directory
     recurse: true
   become: yes
-  tags:
-  - always
-
-- name: Setup linuxbrew install path.
-  file:
-    path: "{{ brew_install_path }}"
-    owner: "{{ brew_user }}"
   ignore_errors: yes
-  become: yes
-  become_method: sudo
+  when: not brew_state.stat.exists
   tags:
-  - always
+    - always
 
 - name: Downloading Linuxbrew.
   get_url:
-    url: "https://github.com/Homebrew/brew/tarball/master"
-    dest: "/tmp/brew-master.tgz"
+    url: "https://github.com/Homebrew/brew/archive/2.1.10.tar.gz"
+    dest: "/tmp/brew.tgz"
+  when: not brew_state.stat.exists
   tags:
-  - always
+    - always
 
 - name: Extracting linuxbrew.
-  shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
+  shell: "tar xzf /tmp/brew.tgz --strip 1 -C {{ brew_install_path }}"
   become: yes
   args:
     warn: false
+  when: not brew_state.stat.exists
   tags:
-  - always
-
-- name: Ensure proper permissions on brew_brew_bin_path dirs.
-  file:
-    path: "{{ brew_brew_bin_path }}"
-    mode: 0775
-    state: directory
-    recurse: true
-  become: yes
-  tags:
-  - always
+    - always
 
 - name: Ensure linuxbrew directories
   file:
     path: "{{ item }}"
     state: directory
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
   with_items:
-  - "{{ brew_install_path }}/Cellar"
-  - "{{ brew_install_path }}/Caskroom"
-  - "{{ brew_install_path }}/Frameworks"
-  - "{{ brew_install_path }}/bin"
-  - "{{ brew_install_path }}/etc"
-  - "{{ brew_install_path }}/docs"
-  - "{{ brew_install_path }}/manpages"
-  - "{{ brew_install_path }}/include"
-  - "{{ brew_install_path }}/lib"
-  - "{{ brew_install_path }}/opt"
-  - "{{ brew_install_path }}/sbin"
-  - "{{ brew_install_path }}/share"
-  - "{{ brew_install_path }}/var"
-  - "{{ brew_install_path }}/completions"
+    - "{{ brew_install_path }}/Cellar"
+    - "{{ brew_install_path }}/Caskroom"
+    - "{{ brew_install_path }}/Frameworks"
+    - "{{ brew_install_path }}/bin"
+    - "{{ brew_install_path }}/etc"
+    - "{{ brew_install_path }}/docs"
+    - "{{ brew_install_path }}/manpages"
+    - "{{ brew_install_path }}/include"
+    - "{{ brew_install_path }}/lib"
+    - "{{ brew_install_path }}/opt"
+    - "{{ brew_install_path }}/sbin"
+    - "{{ brew_install_path }}/share"
+    - "{{ brew_install_path }}/var"
+    - "{{ brew_install_path }}/completions"
   become: yes
   tags:
-  - always
+    - always
 
 - name: Ensure proper ownership on brew_install_path subdirs
   shell: >
     ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}:{{ brew_group }}" "{{ brew_install_path }}/{}"
   become: yes
   tags:
-  - always
+    - always
 
 #- name: Check if linuxbrew binary is already in place
 #  stat:
@@ -141,13 +136,12 @@
       fi
   become: yes
   tags:
-  - always
+    - always
 
 - name: Stash brew changes
   shell: 'cd $(brew --prefix)/Library && git stash && git clean -d -f'
   ignore_errors: yes
-  retries: 2
-  delay: 1
+  when: brew_state.stat.exists
   tags:
     - always
 
@@ -157,7 +151,7 @@
   retries: 2
   delay: 1
   tags:
-  - always
+    - always
 
 ## Tap.
 #- name: Ensure configured taps are tapped.
@@ -167,12 +161,13 @@
 #    - always
 
 # Brew.
+
 - name: Ensure configured linuxbrew packages are installed
   homebrew:
     name: "{{ brew_installed_packages }}"
     state: present
   tags:
-  - always
+    - always
 
 - name: Upgrade all linuxbrew packages (if configured).
   homebrew:
@@ -180,7 +175,7 @@
     upgrade_all: yes
   when: brew_upgrade_all_packages
   tags:
-  - always
+    - always
 
 # Cask.
 #- name: Get list of apps installed with cask.
@@ -200,16 +195,16 @@
 ##  when: "item not in brew_cask_list.stdout"
 #  tags:
 #    - always
-
-- name: Check for Brewfile.
-  stat:
-    path: "{{ brew_brewfile_dir }}/Brewfile"
-  register: brew_brewfile
-  tags:
-  - always
-
-- name: Install from Brewfile.
-  command: "brew bundle chdir={{ brew_brewfile_dir }}"
-  when: brew_brewfile.stat.exists and brew_use_brewfile
-  tags:
-  - always
+#
+#- name: Check for Brewfile.
+#  stat:
+#    path: "{{ brew_brewfile_dir }}/Brewfile"
+#  register: brew_brewfile
+#  tags:
+#    - always
+#
+#- name: Install from Brewfile.
+#  command: "brew bundle chdir={{ brew_brewfile_dir }}"
+#  when: brew_brewfile.stat.exists and brew_use_brewfile
+#  tags:
+#    - always

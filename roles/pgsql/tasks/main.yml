@@ -1,7 +1,0 @@
----
-- name: "Ensure postgresql"
-  homebrew: 
-    name: pgsql
-    state: present
-  tags:
-    - always
