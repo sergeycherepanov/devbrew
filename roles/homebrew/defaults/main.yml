@@ -28,9 +28,9 @@ brew_installed_packages:
 brew_upgrade_all_packages: no
 
 brew_taps:
-  - caskroom/cask
-  - caskroom/versions
-  - caskroom/fonts
+  - homebrew/cask
+#  - homebrew/versions
+  - homebrew/cask-fonts 
 
 brew_cask_apps:
   - font-hack-nerd-font
