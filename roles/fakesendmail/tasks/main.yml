@@ -9,8 +9,8 @@
   template: 
     src: fake_sendmail.sh.j2
     dest: "{{ brew_brew_bin_path }}/fake_sendmail.sh"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
     mode: 0744
   when: not state.stat.exists
   tags:

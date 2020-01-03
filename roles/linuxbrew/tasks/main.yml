@@ -62,6 +62,14 @@
   tags:
     - always
 
+- name: Ensure proper ownership on brew_install_path
+  shell: >
+    chown "{{ brew_user }}:{{ brew_group }}" "{{ brew_install_path }}"
+  ignore_errors: yes
+  become: yes
+  tags:
+    - always
+
 - name: Ensure proper ownership on brew_install_path subdirs
   shell: >
     ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}:{{ brew_group }}" "{{ brew_install_path }}/{}"

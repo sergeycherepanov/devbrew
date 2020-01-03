@@ -1,7 +1,4 @@
 ---
-- name: Populate service_facts
-  service_facts:
-
 - name: Checking if a dnsmasq already in the system
   shell: "which dnsmasq"
   register: which_dnsmasq

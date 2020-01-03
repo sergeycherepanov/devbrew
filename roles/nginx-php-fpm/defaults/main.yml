@@ -1,6 +1,6 @@
 ---
-www_user: "{{ brew_user }}"
+brew_user: "{{ brew_user }}"
 www_dir: "{{ brew_user_home_dir }}/www"
-www_group: "{{ brew_group }}"
+brew_group: "{{ brew_group }}"
 root_domain: "com"
 subdomains: ["dev", "loc"]

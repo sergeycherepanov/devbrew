@@ -62,7 +62,7 @@
 - name: Checking if fc-cache installed in the system
   shell: which fc-cache
   register: which_fc_cache
-  ignore_errors: yes
+  failed_when: which_fc_cache.rc > 1
   when: 'ansible_system == "Linux"'
   tags:
     - zsh
@@ -310,9 +310,17 @@
   tags:
     - zsh
 
-- name: "Ensure permissions"
+- name: "Ensure permissions (macOS)"
   shell: "{{ brew_brew_bin_path }}/zsh -c '. ~/.zshrc && compaudit | xargs chmod g-w,o-w'"
   ignore_errors: yes
+  when: "ansible_system == 'Darwin'"
+  tags:
+    - zsh
+
+- name: "Ensure permissions (Linux)"
+  shell: "{{ brew_brew_bin_path }}/zsh -c '. ~/.zshrc && compaudit | xargs --no-run-if-empty chmod g-w,o-w'"
+  ignore_errors: yes
+  when: 'ansible_system == "Linux"'
   tags:
     - zsh
 

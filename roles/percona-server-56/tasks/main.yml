@@ -61,8 +61,8 @@
   template: 
     src: my.cnf.j2
     dest: "{{ mysql_etc_dir }}/my.cnf"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
     mode: 0744
   when: not state.stat.exists
   tags:
@@ -78,8 +78,8 @@
   file: 
     path: "{{ mysql_log_dir }}/error.log"
     state: touch
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
   tags:
   - percona56
 

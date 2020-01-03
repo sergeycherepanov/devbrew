@@ -6,7 +6,7 @@ stdout_logfile={{ brew_install_path }}/var/log/efk/elasticsearch.log
 stderr_logfile={{ brew_install_path }}/var/log/efk/elasticsearch.err
 stderr_logfile_maxbytes=5MB
 stdout_logfile_maxbytes=5MB
-user={{ www_user }}
+user={{ brew_user }}
 autostart=false
 autorestart=true
 priority:100
@@ -18,7 +18,7 @@ stdout_logfile={{ brew_install_path }}/var/log/efk/td-agent.log
 stderr_logfile={{ brew_install_path }}/var/log/efk/td-agent.err
 stderr_logfile_maxbytes=5MB
 stdout_logfile_maxbytes=5MB
-user={{ www_user }}
+user={{ brew_user }}
 autostart=false
 autorestart=true
 
@@ -28,7 +28,7 @@ stdout_logfile={{ brew_install_path }}/var/log/efk/kibana.log
 stderr_logfile={{ brew_install_path }}/var/log/efk/kibana.err
 stderr_logfile_maxbytes=5MB
 stdout_logfile_maxbytes=5MB
-user={{ www_user }}
+user={{ brew_user }}
 autostart=false
 autorestart=true
 
@@ -37,7 +37,7 @@ autorestart=true
 #events=TICK_3600
 #stderr_logfile={{ brew_install_path }}/var/log/efk/curator.err
 #stderr_logfile_maxbytes=5MB
-#user={{ www_user }}
+#user={{ brew_user }}
 
 [group:efk]
 programs=efk-elasticsearch,efk-td-agent,efk-kibana

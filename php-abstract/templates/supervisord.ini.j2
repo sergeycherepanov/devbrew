@@ -3,7 +3,7 @@ command={{ brew_install_path }}/opt/{{ php_version }}/sbin/php-fpm --nodaemonize
 directory={{ brew_install_path }}/opt/{{ php_version }}
 stdout_logfile={{ brew_install_path }}/var/log/supervisor/{{ php_version }}.log
 stderr_logfile={{ brew_install_path }}/var/log/supervisor/{{ php_version }}.err
-user={{ www_user }}
+user={{ brew_user }}
 autorestart=true
 stopasgroup=true
 
@@ -12,7 +12,7 @@ command={{ brew_install_path }}/opt/{{ php_version }}/sbin/php-fpm --nodaemonize
 directory={{ brew_install_path }}/opt/{{ php_version }}
 stdout_logfile={{ brew_install_path }}/var/log/supervisor/{{ php_version }}-xdebug.log
 stderr_logfile={{ brew_install_path }}/var/log/supervisor/{{ php_version }}-xdebug.err
-user={{ www_user }}
+user={{ brew_user }}
 autorestart=true
 stopasgroup=true
 

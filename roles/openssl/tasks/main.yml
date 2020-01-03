@@ -61,18 +61,6 @@
   tags:
   - always
 
-
-
-#mkdir -p /home/linuxbrew/.linuxbrew/etc/openssl/localCA/certs
-#mkdir -p /home/linuxbrew/.linuxbrew/etc/openssl/localCA/newcerts
-#mkdir -p /home/linuxbrew/.linuxbrew/etc/openssl/localCA/crl
-#mkdir -p /home/linuxbrew/.linuxbrew/etc/openssl/localCA/private
-#sudo ln -s /etc/ssl/openssl.cnf /home/linuxbrew/.linuxbrew/etc/openssl/openssl.cnf
-#sudo ln -s /etc/ssl/certs /home/linuxbrew/.linuxbrew/etc/openssl/certs
-#sudo ln -s /etc/ssl/certs/ca-certificates.crt /home/linuxbrew/.linuxbrew/etc/openssl/cert.pem
-#sudo ln -s /etc/ssl/private /home/linuxbrew/.linuxbrew/etc/openssl/private
-
-
 - name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/openssl.cnf"
   file:
     src: "/etc/ssl/openssl.cnf"
@@ -147,13 +135,14 @@
   tags:
   - always
 
-- stat:
+- name: "Checking if the Certificate Database already exists"
+  stat:
     path: "{{ brew_install_path }}/etc/openssl/localCA/index.txt"
   register: state
   tags:
   - always
 
-- name: "Create the Certificate Database"
+- name: "Create the Certificate Database if not exists"
   shell: "echo '01' > {{ brew_install_path }}/etc/openssl/localCA/serial && touch {{ brew_install_path }}/etc/openssl/localCA/index.txt"
   when: not state.stat.exists
   tags:
@@ -163,19 +152,6 @@
   copy:
     src: '{{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
     dest: '/usr/local/share/ca-certificates/cacert.crt'
-  become: yes
-  when: ansible_system == "Linux"
-  tags:
-  - always
-    
-- name: "Generate keys and signing for domains"
-  shell: '{{ brew_install_path }}/bin/crtgen {{item}}.{{root_domain}}'
-  with_items: "{{subdomains}}"
-  tags:
-  - always
-
-- name: "update-ca-certificates"
-  shell: 'update-ca-certificates'
   become: yes
   when: ansible_system == "Linux"
   tags:

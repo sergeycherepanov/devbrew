@@ -7,7 +7,7 @@ socket             = {{ mysql_run_dir }}/mysqld.sock
 nice               = 0
 
 [mysqld]
-user               = {{ www_user }}
+user               = {{ brew_user }}
 pid-file           = {{ mysql_run_dir }}/mysqld.pid
 socket             = {{ mysql_run_dir }}/mysqld.sock
 port               = {{ mysql_listen_port }}

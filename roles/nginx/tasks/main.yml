@@ -21,8 +21,8 @@
   template:
     src: nginx.conf.j2
     dest: "{{ brew_install_path }}/etc/nginx/nginx.conf"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
   tags:
     - always
 
@@ -52,8 +52,8 @@
   template:
     src: logrotate.nginx.conf.j2
     dest: "{{ brew_install_path }}/etc/logrotate.d/nginx.conf"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
   tags:
     - always
 

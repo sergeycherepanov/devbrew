@@ -1,10 +1,14 @@
 ---
+- name: "Populate service_facts"
+  service_facts:
+  tags:
+  - always
+
 - name: "Stopping supervisord-devbrew"
   systemd:
     name: supervisord-devbrew
     state: stopped
-  ignore_errors: yes
-  become: yes
+  when: "'supervisord-devbrew.service' in ansible_facts.services"
   tags:
   - always
 

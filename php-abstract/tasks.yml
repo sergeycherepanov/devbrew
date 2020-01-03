@@ -49,8 +49,8 @@
   template:
     src: "php.j2"
     dest: "{{ brew_install_path }}/bin/{{ php_version }}"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
     mode: 0755
 
 - name: "Ensure x{{ php_version }} wrapper directory"
@@ -62,38 +62,38 @@
   template:
     src: "xphp-bin.j2"
     dest: "{{ brew_install_path }}/opt/xphp/{{ php_version_num }}/bin/php"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
     mode: 0755
 
 - name: "Add x{{ php_version }} wrapper"
   template:
     src: "xphp.j2"
     dest: "{{ brew_install_path }}/bin/x{{ php_version }}"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
     mode: 0755
 
 - name: "Create php-fpm.conf for {{ php_version }}"
   template:
     src: php-fpm.conf.j2
     dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm.conf"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
 
 - name: "Create php.ini for {{ php_version }}"
   template:
     src: php.ini.j2
     dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php.ini"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
 
 - name: "Create php-fpm-xdebug.conf for {{ php_version }}"
   template:
     src: php-fpm-xdebug.conf.j2
     dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm-xdebug.conf"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
 
 - name: "Disabling xdebug by default for {{ php_version }}"
   lineinfile:
@@ -106,8 +106,8 @@
   template:
     src: php.ini.j2
     dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
 
 - name: "Enabling xdebug in php-xdebug.ini for {{ php_version }}"
   blockinfile:
@@ -131,8 +131,8 @@
   template:
     src: "ext-opcache.ini.j2"
     dest: "{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-opcache.ini"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
 
 - name: "Unlink {{ php_version }}"
   homebrew: "name={{ php_version }} state=unlinked"
@@ -163,8 +163,8 @@
   template:
     src: td-agent.php.conf.j2
     dest: "{{ brew_install_path }}/etc/efk/td-agent/conf.d/php{{ php_version_num }}.conf"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
 
 - name: "Linking php"
   shell: "brew link {{ php_version }}"

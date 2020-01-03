@@ -9,5 +9,5 @@
   template:
     src: td-agent.nginx.conf.j2
     dest: "{{ brew_install_path }}/etc/efk/td-agent/conf.d/nginx.conf"
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
