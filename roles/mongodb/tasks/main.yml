@@ -1,16 +1,21 @@
 ---
-- name: Ensure php taps are tapped.
-  homebrew_tap: "tap={{ item }} state=present"
-  with_items:
-    - "mongodb/brew"
+#- name: Ensure php taps are tapped.
+#  homebrew_tap: "tap={{ item }} state=present"
+#  with_items:
+#    - "mongodb/brew"
+#
+#- name: "Ensure mongodb"
+#  homebrew:
+#    name: {{ mongodb_formula_name }}
+#    state: present
 
 - name: "Ensure mongodb"
   homebrew:
-    name: mongodb-community@3.6
+    name: "{{ mongodb_formula_name }}"
     state: present
 
 - name: Resolve mongodb_path
-  shell: "{{ brew_brew_bin_path }}/brew --prefix mongodb-community@3.6"
+  shell: "{{ brew_brew_bin_path }}/brew --prefix {{ mongodb_formula_name }}"
   register: output
 
 - name: Register mongodb_path
@@ -36,7 +41,7 @@
     chdir: /tmp
 
 - name: "Waiting mongodb"
-  shell: "until grep 'waiting for connections on port' /tmp/mongo.log; do sleep 1; done"
+  shell: timeout 60s bash -c "until grep 'waiting for connections on port' /tmp/mongo.log; do sleep 1; done"
   args:
     chdir: /tmp
 

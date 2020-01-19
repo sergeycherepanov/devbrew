@@ -16,6 +16,6 @@ php_modules:
     - mongo
     - mongodb
     - apcu
-    - memprof
+    - gmp
     - imagick
 php_pear_packages: []

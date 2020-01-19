@@ -146,6 +146,13 @@
   tags:
     - always
 
+- name: "Updating rc"
+  blockinfile:
+    dest: '{{ brew_user_home_dir }}/{{item}}'
+    marker: "# {mark} homebrew env"
+    block: "eval \$($(brew --prefix)/bin/brew shellenv)"
+  with_items: ['.zshrc', '.bashrc', '.profile']
+
 - name: Stash brew changes
   shell: 'cd $(brew --prefix)/Library && git stash && git clean -d -f'
   ignore_errors: yes
