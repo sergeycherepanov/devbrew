@@ -1,6 +1,4 @@
 ---
-- import_tasks: ssl.yml
-
 - name: Find old configs
   find:
     paths: "{{ brew_install_path }}/etc/nginx/servers"
