@@ -72,6 +72,12 @@
   tags:
     - always
 
+- name: "Generate keys and signing for domains"
+  shell: '{{ brew_install_path }}/bin/crtgen {{item}}.{{root_domain}}'
+  with_items: "{{subdomains}}"
+  tags:
+    - always
+
 #- name: "Creates {{ brew_install_path }}/etc/nginx/servers/{{item.1}}_{{item.0}}_{{root_domain}}.conf"
 #  template: 
 #    src: servers/php_version.conf.j2

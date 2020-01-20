@@ -39,7 +39,7 @@
         dest: "{{ brew_install_path }}/etc/openssl/localCA/{{item}}_{{root_domain}}.cnf"
     with_items: "{{subdomains}}"
 
--   name: "Ensure /usr/share/ca-certificates/extra"
+-   name: "(Linux only) Ensure /usr/share/ca-certificates/extra"
     file:
         path: "/usr/share/ca-certificates/extra"
         state: directory
@@ -47,7 +47,7 @@
     become: yes
     when: ansible_system == "Linux"
 
--   name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/openssl.cnf"
+-   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/openssl.cnf"
     file:
         src: "/etc/ssl/openssl.cnf"
         dest: "{{ brew_install_path }}/etc/openssl/openssl.cnf"
@@ -56,7 +56,7 @@
     when: ansible_system == "Linux"
     become: true
 
--   name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/certs"
+-   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/certs"
     file:
         src: "/etc/ssl/certs"
         dest: "{{ brew_install_path }}/etc/openssl/certs"
@@ -65,14 +65,14 @@
     when: ansible_system == "Linux"
     become: true
 
--   name: "Absent {{ brew_install_path }}/etc/openssl/cert.pem"
+-   name: "(Linux only) Absent {{ brew_install_path }}/etc/openssl/cert.pem"
     file:
         path: "{{ brew_install_path }}/etc/openssl/cert.pem"
         state: absent
     when: ansible_system == "Linux"
     become: true
 
--   name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/certs/ca-certificates.crt"
+-   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/certs/ca-certificates.crt"
     file:
         src: "/etc/ssl/certs/ca-certificates.crt"
         dest: "{{ brew_install_path }}/etc/openssl/cert.pem"
@@ -80,7 +80,7 @@
     when: ansible_system == "Linux"
     become: true
 
--   name: "Ensure symlink: {{ brew_install_path }}/etc/openssl/private"
+-   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/private"
     file:
         src: "/etc/ssl/private"
         dest: "{{ brew_install_path }}/etc/openssl/private"
@@ -100,17 +100,24 @@
     environment:
         OPENSSL_CONF: "{{ brew_install_path }}/etc/openssl/localCA/caconfig.cnf"
 
--   name: "Installing root certificate to keychain"
+-   name: "(macOS only) Installing root certificate to keychain"
     shell: 'security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
     become: true
     when: ansible_system == "Darwin"
 
--   name: "Installing root certificate /usr/share/ca-certificates/extra"
+-   name: "(Linux only) Installing root certificate /usr/share/ca-certificates/extra"
     copy:
         src: '{{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
         dest: '/usr/local/share/ca-certificates/cacert.crt'
     become: yes
     when: ansible_system == "Linux"
+
+-   name: "(Linux only) Running update-ca-certificates"
+    shell: 'update-ca-certificates'
+    become: yes
+    when: ansible_system == "Linux"
+    tags:
+        - always
 
 -   name: "Checking if the Certificate Database already exists"
     stat:
