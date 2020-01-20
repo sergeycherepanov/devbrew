@@ -15,6 +15,6 @@ php_modules:
     - xhprof
     - mongodb
     - apcu
-    - gpm
+    - gmp
     - imagick
 php_pear_packages: []
