@@ -17,4 +17,5 @@ php_modules:
     - apcu
     - gmp
     - imagick
+    - sodium
 php_pear_packages: []
