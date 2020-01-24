@@ -19,7 +19,7 @@ lc-messages-dir    = {{ mysql_base_dir }}/share/mysql
 explicit_defaults_for_timestamp = 1
 bind-address = {{ mysql_listen_address }}
 
-secure_file_priv   = {{ mysql_data_dir }}
+secure_file_priv   = {{ mysql_tmp_dir }}
 general_log_file   = {{ mysql_tmp_dir }}/query.log
 general_log        = 0
 
