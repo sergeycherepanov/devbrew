@@ -4,6 +4,15 @@
     path: "{{ brew_install_path }}/opt/xhgui"
     state: absent
 
+- name: "Configure xhgui db"
+  shell: >
+    mongo --eval "db.results.ensureIndex( { 'meta.SERVER.REQUEST_TIME' : -1 } );" xhgui \
+    && mongo --eval "db.results.ensureIndex( { 'profile.main().wt' : -1 } );" xhgui \
+    && mongo --eval "db.results.ensureIndex( { 'profile.main().mu' : -1 } );" xhgui \
+    && mongo --eval "db.results.ensureIndex( { 'profile.main().cpu' : -1 } );" xhgui \
+    && mongo --eval "db.results.ensureIndex( { 'meta.url' : 1 } );" xhgui \
+    && mongo --eval "db.results.ensureIndex( { 'meta.simple_url' : 1 } );" xhgui
+
 - name: Ensure xhgui
   git:
     repo: "https://github.com/perftools/xhgui.git"
