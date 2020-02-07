@@ -1,8 +1,7 @@
 #!/bin/sh 
 dir="{{ brew_user_home_dir }}/mail"
 [[ -d $dir ]] || mkdir -p $dir
-date=$(date +"%s%N")
-name="$dir/$date.eml"
+name="$dir/$(/bin/date +"%s")_$(/usr/bin/head /dev/urandom | (/sbin/md5 || /usr/bin/md5sum) 2>/dev/null | /usr/bin/cut -c1-8).eml"
 while read line 
 do 
 echo $line >> $name 
