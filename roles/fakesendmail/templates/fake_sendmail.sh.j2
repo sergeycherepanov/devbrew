@@ -1,10 +1,10 @@
 #!/bin/sh 
 dir="{{ brew_user_home_dir }}/mail"
 [[ -d $dir ]] || mkdir -p $dir
-date=`date \+\%Y\%m\%d\%H\%M\%N` 
+date=$(date +"%s%N")
 name="$dir/$date.eml"
 while read line 
 do 
 echo $line >> $name 
 done 
-chmod 666 $name
+chmod 0666 $name
