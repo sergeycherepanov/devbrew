@@ -152,6 +152,8 @@
     marker: "# {mark} homebrew env"
     block: "eval $($(brew --prefix)/bin/brew shellenv)"
   with_items: ['.zshrc', '.bashrc', '.profile']
+  tags:
+    - always
 
 - name: Stash brew changes
   shell: 'cd $(brew --prefix)/Library && git stash && git clean -d -f'
