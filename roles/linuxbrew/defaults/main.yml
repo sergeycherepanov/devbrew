@@ -15,7 +15,6 @@ brew_installed_packages:
   - nmap
   - watch
   - hg
-  - bzr
   - p7zip
   - autoconf
   - gomplate
