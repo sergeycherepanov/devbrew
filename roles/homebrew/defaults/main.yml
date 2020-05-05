@@ -29,7 +29,7 @@ brew_upgrade_all_packages: no
 
 brew_taps:
   - homebrew/cask
-#  - homebrew/versions
+  - djocker/common
   - homebrew/cask-fonts 
 
 brew_cask_apps:
