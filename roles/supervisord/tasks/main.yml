@@ -1,23 +1,16 @@
 ---
-- name: "Removing supervisor in userspace"
-  pip:
-    name: supervisor
-    state: absent
-  become: yes
 
-- name: "Installing supervisor globally"
-  pip:
+- name: "Installing supervisor"
+  homebrew:
     name: supervisor
     state: present
-    extra_args: --force-reinstall
-  become: yes
 
 - name: "Resolving supervisord path"
-  shell: "which supervisord"
+  shell: "echo $(brew --prefix supervisor)/bin/supervisord"
   register: supervisord_path_output
 
 - name: "Resolving supervisorctl path"
-  shell: "which supervisorctl"
+  shell: "echo $(brew --prefix supervisor)/bin/supervisorctl"
   register: supervisorctl_path_output
 
 - name: "Register supervisord_path fact"
