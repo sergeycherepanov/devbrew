@@ -8,7 +8,7 @@ MIN_PYTHON_VERSION_LINUX="2.7.15"
 PYTHON_PKG_LINUX="Python-${MIN_PYTHON_VERSION_LINUX}.tgz"
 PYTHON_PKG_MACOS="python-${MIN_PYTHON_VERSION_MACOS}-macosx10.9.pkg"
 PYTHON_BIN=${PYTHON_BIN-"/usr/bin/python"}
-ANSIBLE_PLAYBOOK_CMD="${PYTHON_BIN} ./ansible-playbook"
+ANSIBLE_PLAYBOOK_CMD="${PYTHON_BIN} ${DIR}/ansible-playbook"
 
 if [[ $(id -u ${MAC_USER}) -eq 0 ]]; then
   echo "Please don't run this script under the root user!"
