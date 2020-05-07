@@ -170,7 +170,7 @@
   tags:
     - always
 
-- name: Updating brew repo
+- name: Brew update
   shell: 'brew update > /dev/null 2>&1'
   ignore_errors: yes
   retries: 2
