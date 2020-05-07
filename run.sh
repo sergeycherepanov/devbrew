@@ -42,7 +42,7 @@ else
   if [[ "Linux" == "$(uname)" ]]; then
     source /etc/os-release
     if [[ "debian" == "${ID}" ]] || [[ "debian" == "${ID_LIKE}" ]] || [[ "ubuntu" == "${ID_LIKE}" ]]; then
-      apt -qq update && apt install -yqq ca-certificates git curl file systemtap-sdt-dev g++ make uuid-runtime python
+      sudo apt -qq update && sudo apt install -yqq ca-certificates git curl file systemtap-sdt-dev g++ make uuid-runtime python
 
 #      if ! which pip > /dev/null || [[ ! -f $(which pip) ]] || ! $(which pip) --version > /dev/null; then
 #        sudo apt update && sudo apt install -yq python-apt python-pip

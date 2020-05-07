@@ -20,13 +20,21 @@
   tags:
     - always
 
-- name: Downloading Linuxbrew.
+- name: Downloading Homebrew.
+  #shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ brew_install_path }}"
   get_url:
-    url: "https://github.com/Homebrew/brew/archive/2.1.10.tar.gz"
-    dest: "/tmp/brew.tgz"
-  when: not brew_state.stat.exists
+    url: "https://github.com/Homebrew/brew/tarball/master"
+    dest: "/tmp/brew-master.tgz"
   tags:
     - always
+
+#- name: Downloading Linuxbrew.
+#  get_url:
+#    url: "https://github.com/Homebrew/brew/archive/2.1.10.tar.gz"
+#    dest: "/tmp/brew.tgz"
+#  when: not brew_state.stat.exists
+#  tags:
+#    - always
 
 - name: Extracting linuxbrew.
   shell: "tar xzf /tmp/brew.tgz --strip 1 -C {{ brew_install_path }}"
@@ -163,7 +171,7 @@
     - always
 
 - name: Updating brew repo
-  shell: 'brew update'
+  shell: 'brew update > /dev/null 2>&1'
   ignore_errors: yes
   retries: 2
   delay: 1
