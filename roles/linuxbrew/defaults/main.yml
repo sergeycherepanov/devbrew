@@ -29,9 +29,7 @@ brew_installed_packages:
 brew_upgrade_all_packages: no
 
 brew_taps:
-- caskroom/cask
-- caskroom/versions
-- caskroom/fonts
+  - djocker/common
 
 brew_use_brewfile: true
 brew_brewfile_dir: '~'
