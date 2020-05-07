@@ -1,15 +1,21 @@
 ---
-- name: "Resolving mongo path"
-  shell: "echo $(brew --prefix mongodb36)"
-  register: mongo_path_output
-
 - name: "Register mongo_bin_path fact"
-  set_fact: mongo_bin_path="{{ mongo_path_output.stdout }}/bin/mongo"
+  set_fact: mongo_bin_path="{{ mongodb_path }}/bin/mongo"
 
 - name: Absent previous installed xhgui
   file:
     path: "{{ brew_install_path }}/opt/xhgui"
     state: absent
+
+- name: "Starting mongodb"
+  shell: "nohup {{ mongodb_path }}/bin/mongod --config {{ brew_install_path }}/etc/mongod.conf --logpath /tmp/mongodb.log > /dev/null &"
+  args:
+    chdir: /tmp
+
+- name: "Waiting mongodb"
+  shell: timeout 60s bash -c "until grep 'waiting for connections on port' /tmp/mongodb.log; do sleep 1; done"
+  args:
+    chdir: /tmp
 
 - name: "Configure xhgui db"
   shell: >
@@ -47,3 +53,6 @@
     path: '/etc/hosts'
     line: '127.0.0.1    xhgui.local'
   become: yes
+
+- name: "Stopping mongodb"
+  shell: "pgrep mongod | xargs kill -15"

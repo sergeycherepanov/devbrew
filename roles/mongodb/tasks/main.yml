@@ -36,12 +36,12 @@
   with_items: ['.zshrc', '.bashrc']
 
 - name: "Starting mongodb"
-  shell: "nohup {{ mongodb_path }}/bin/mongod --config {{ brew_install_path }}/etc/mongod.conf --logpath /tmp/mongo.log > /dev/null &"
+  shell: "nohup {{ mongodb_path }}/bin/mongod --config {{ brew_install_path }}/etc/mongod.conf --logpath /tmp/mongodb.log > /dev/null &"
   args:
     chdir: /tmp
 
 - name: "Waiting mongodb"
-  shell: timeout 60s bash -c "until grep 'waiting for connections on port' /tmp/mongo.log; do sleep 1; done"
+  shell: timeout 60s bash -c "until grep 'waiting for connections on port' /tmp/mongodb.log; do sleep 1; done"
   args:
     chdir: /tmp
 
