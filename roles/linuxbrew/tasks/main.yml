@@ -37,7 +37,7 @@
 #    - always
 
 - name: Extracting linuxbrew.
-  shell: "tar xzf /tmp/brew.tgz --strip 1 -C {{ brew_install_path }}"
+  shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
   become: yes
   args:
     warn: false
