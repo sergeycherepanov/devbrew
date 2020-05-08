@@ -13,66 +13,20 @@
     owner: "{{ brew_user }}"
     group: "{{ brew_group }}"
     state: directory
-    recurse: true
+    mode: 0775
   become: yes
-  ignore_errors: yes
   when: not brew_state.stat.exists
   tags:
     - always
 
-- name: Downloading Homebrew.
-  #shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ brew_install_path }}"
-  get_url:
-    url: "https://github.com/Homebrew/brew/tarball/master"
-    dest: "/tmp/brew-master.tgz"
-  tags:
-    - always
-
-#- name: Downloading Linuxbrew.
-#  get_url:
-#    url: "https://github.com/Homebrew/brew/archive/2.1.10.tar.gz"
-#    dest: "/tmp/brew.tgz"
-#  when: not brew_state.stat.exists
-#  tags:
-#    - always
-
-- name: Extracting linuxbrew.
-  shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
-  become: yes
-  args:
-    warn: false
-  when: not brew_state.stat.exists
-  tags:
-    - always
-
-- name: Ensure linuxbrew directories
+- name: Create a brew directory if it does not exist
   file:
-    path: "{{ item }}"
+    path: {{ brew_install_path }}
     state: directory
-    owner: "{{ brew_user }}"
-    group: "{{ brew_group }}"
-  with_items:
-    - "{{ brew_install_path }}/Cellar"
-    - "{{ brew_install_path }}/Caskroom"
-    - "{{ brew_install_path }}/Frameworks"
-    - "{{ brew_install_path }}/bin"
-    - "{{ brew_install_path }}/etc"
-    - "{{ brew_install_path }}/docs"
-    - "{{ brew_install_path }}/manpages"
-    - "{{ brew_install_path }}/include"
-    - "{{ brew_install_path }}/lib"
-    - "{{ brew_install_path }}/opt"
-    - "{{ brew_install_path }}/sbin"
-    - "{{ brew_install_path }}/share"
-    - "{{ brew_install_path }}/var"
-    - "{{ brew_install_path }}/completions"
-  become: yes
-  tags:
-    - always
-
-- name: Ensure proper ownership on brew_install_path
-  shell: >
-    chown "{{ brew_user }}:{{ brew_group }}" "{{ brew_install_path }}"
+    recurse: yes
+    owner: '{{ brew_user }}'
+    group: '{{ brew_group }}'
+    mode: '0775'
   ignore_errors: yes
   become: yes
   tags:
@@ -82,6 +36,25 @@
   shell: >
     ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}:{{ brew_group }}" "{{ brew_install_path }}/{}"
   become: yes
+  ignore_errors: yes
+  tags:
+    - always
+
+- name: Downloading linuxbrew
+  #shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ brew_install_path }}"
+  get_url:
+    #url: "https://github.com/Homebrew/brew/archive/2.1.10.tar.gz"
+    url: "https://github.com/Homebrew/brew/tarball/master"
+    dest: "/tmp/brew-master.tgz"
+  tags:
+    - always
+
+- name: Extracting linuxbrew.
+  shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
+  become: yes
+  args:
+    warn: false
+  when: not brew_state.stat.exists
   tags:
     - always
 
