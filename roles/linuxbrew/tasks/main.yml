@@ -19,15 +19,13 @@
   tags:
     - always
 
-- name: Create a brew directory if it does not exist
+- name: Create a brew directories
   file:
-    path: '{{ brew_install_path }}'
+    path: '{{ brew_directories }}'
     state: directory
-    recurse: yes
     owner: '{{ brew_user }}'
     group: '{{ brew_group }}'
     mode: '0775'
-  ignore_errors: yes
   become: yes
   tags:
     - always
