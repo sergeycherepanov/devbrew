@@ -15,11 +15,11 @@ if [[ $(id -u ${MAC_USER}) -eq 0 ]]; then
   exit 1
 fi
 
-sudo -H -u "${MAC_USER}" bash -c 'which brew && brew unlink python@2'
 hash svnsync
 
 if [[ "Darwin" == "$(uname)" ]]; then
   BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/usr/local}"
+  sudo -H -u "${MAC_USER}" bash -c 'which brew && brew unlink python@2'
 else
   if [[ "Linux" == "$(uname)" ]]; then
     source /etc/os-release
