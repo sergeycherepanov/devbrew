@@ -21,7 +21,7 @@
 
 - name: Create a brew directory if it does not exist
   file:
-    path: {{ brew_install_path }}
+    path: '{{ brew_install_path }}'
     state: directory
     recurse: yes
     owner: '{{ brew_user }}'
