@@ -11,20 +11,21 @@
     path: "{{ brew_install_path }}"
     mode: 0775
     state: directory
-    recurse: true
   ignore_errors: yes
   become: yes
   tags:
   - always
 
-- name: Setup homebrew install path.
+- name: Create a brew directories
   file:
-    path: "{{ brew_install_path }}"
-    owner: "{{ brew_user }}"
-  ignore_errors: yes
+    path: '{{ brew_directories }}'
+    state: directory
+    owner: '{{ brew_user }}'
+    group: '{{ brew_group }}'
+    mode: '0775'
   become: yes
   tags:
-  - always
+    - always
 
 - name: Downloading Homebrew.
   #shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ brew_install_path }}"
@@ -41,47 +42,39 @@
     warn: false
   tags:
   - always
-
-- name: Ensure proper permissions on brew_brew_bin_path dirs.
-  file:
-    path: "{{ brew_brew_bin_path }}"
-    mode: 0775
-    state: directory
-    recurse: true
-  become: yes
-  tags:
-  - always
-
-- name: Ensure homebrew directories
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-  - "{{ brew_install_path }}/Cellar"
-  - "{{ brew_install_path }}/Caskroom"
-  - "{{ brew_install_path }}/Frameworks"
-  - "{{ brew_install_path }}/bin"
-  - "{{ brew_install_path }}/etc"
-  - "{{ brew_install_path }}/docs"
-  - "{{ brew_install_path }}/manpages"
-  - "{{ brew_install_path }}/include"
-  - "{{ brew_install_path }}/lib"
-  - "{{ brew_install_path }}/opt"
-  - "{{ brew_install_path }}/sbin"
-  - "{{ brew_install_path }}/share"
-  - "{{ brew_install_path }}/var"
-  - "{{ brew_install_path }}/completions"
-  become: yes
-  tags:
-  - always
-
-- name: Ensure proper ownership on brew_install_path
-  shell: >
-    chown "{{ brew_user }}:{{ brew_group }}" "{{ brew_install_path }}"
-  ignore_errors: yes
-  become: yes
-  tags:
-  - always
+#
+#- name: Ensure proper permissions on brew_brew_bin_path dirs.
+#  file:
+#    path: "{{ brew_brew_bin_path }}"
+#    mode: 0775
+#    state: directory
+#    recurse: true
+#  become: yes
+#  tags:
+#  - always
+#
+#- name: Ensure homebrew directories
+#  file:
+#    path: "{{ item }}"
+#    state: directory
+#  with_items:
+#  - "{{ brew_install_path }}/Cellar"
+#  - "{{ brew_install_path }}/Caskroom"
+#  - "{{ brew_install_path }}/Frameworks"
+#  - "{{ brew_install_path }}/bin"
+#  - "{{ brew_install_path }}/etc"
+#  - "{{ brew_install_path }}/docs"
+#  - "{{ brew_install_path }}/manpages"
+#  - "{{ brew_install_path }}/include"
+#  - "{{ brew_install_path }}/lib"
+#  - "{{ brew_install_path }}/opt"
+#  - "{{ brew_install_path }}/sbin"
+#  - "{{ brew_install_path }}/share"
+#  - "{{ brew_install_path }}/var"
+#  - "{{ brew_install_path }}/completions"
+#  become: yes
+#  tags:
+#  - always
 
 - name: Ensure proper ownership on brew_install_path subdirs.
   shell: >
@@ -108,8 +101,8 @@
   tags:
   - always
 
-- name: Updating brew repo
-  shell: 'brew update'
+- name: Brew update
+  shell: 'brew update > /dev/null 2>&1'
   ignore_errors: yes
   retries: 2
   delay: 1
