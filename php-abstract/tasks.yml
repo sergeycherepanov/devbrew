@@ -29,6 +29,23 @@
     name: "{{ php_version }}"
     state: present
     install_options: "{{ php_flags }}"
+#
+#- name: "Creating php{{ php_version_num_int }}_modules fact"
+#  set_fact:
+#    php{{ php_version_num_int }}_modules: "[]"
+#
+#- name: Printing php{{ php_version_num_int }}_modules
+#  debug:
+#    var: "php{{ php_version_num_int }}_modules"
+#
+#- name: "Populating php{{ php_version_num_int }}_modules"
+#  set_fact:
+#    php{{ php_version_num_int }}_modules: "{{ lookup('vars', 'php' + php_version_num_int|string + '_modules') + [ lookup('vars', 'php_version') + '-' + lookup('vars', 'item') ] }}"
+#  with_items: "{{ php_modules }}"
+#
+#- name: Printing php{{ php_version_num_int }}_modules
+#  debug:
+#    var: "php{{ php_version_num_int }}_modules"
 
 - name: "Installing {{ php_version }} modules"
   homebrew:
@@ -57,22 +74,6 @@
   file:
     path: "{{ brew_install_path }}/opt/xphp/{{ php_version_num }}/bin"
     state: directory
-
-- name: "Ensure x{{ php_version }} bin"
-  template:
-    src: "xphp-bin.j2"
-    dest: "{{ brew_install_path }}/opt/xphp/{{ php_version_num }}/bin/php"
-    owner: "{{ brew_user }}"
-    group: "{{ brew_group }}"
-    mode: 0755
-
-- name: "Add x{{ php_version }} wrapper"
-  template:
-    src: "xphp.j2"
-    dest: "{{ brew_install_path }}/bin/x{{ php_version }}"
-    owner: "{{ brew_user }}"
-    group: "{{ brew_group }}"
-    mode: 0755
 
 - name: "Create php-fpm.conf for {{ php_version }}"
   template:

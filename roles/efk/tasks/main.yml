@@ -8,12 +8,14 @@
   pip:
     name: elasticsearch-curator
     state: present
+    executable: "{{ local_pip2_path }}"
   become: yes
   
 - name: "Ensure elastalert via pip"
   pip:
     name: elastalert
     state: present
+    executable: "{{ local_pip2_path }}"
   become: yes
   
 - name: "Ensure Kibana"

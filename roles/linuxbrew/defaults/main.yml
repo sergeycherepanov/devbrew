@@ -24,7 +24,6 @@ brew_installed_packages:
   - pup
   - fswatch
   - libmcrypt
-  - python@2
 
 brew_upgrade_all_packages: no
 

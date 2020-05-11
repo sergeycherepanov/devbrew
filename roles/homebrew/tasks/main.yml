@@ -119,9 +119,8 @@
 # Brew.
 - name: Ensure configured homebrew packages are installed.
   homebrew:
-    name: "{{ item }}"
+    name: "{{ brew_installed_packages }}"
     state: present
-  with_items: "{{ brew_installed_packages }}"
   tags:
   - always
 

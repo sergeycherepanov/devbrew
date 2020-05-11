@@ -29,6 +29,7 @@
     name: powerline-status
     state: present
     extra_args: --user
+    executable: "{{ local_pip2_path }}"
   tags:
   - zsh
 

@@ -44,7 +44,7 @@
       tags:
         - always
 
-    - name: "Adding brew bin to PATH"
+    - name: "Adding brew bin to PATH (root/linux)"
       blockinfile:
         dest: '{{ item }}'
         marker: "# {mark} brew PATH"
@@ -61,7 +61,7 @@
       tags:
         - always
 
-    - name: "Adding brew bin to PATH"
+    - name: "Adding brew bin to PATH (root/macos)"
       blockinfile:
         dest: '{{ item }}'
         marker: "# {mark} brew PATH"
@@ -78,7 +78,7 @@
       tags:
         - always
 
-    - name: "Adding brew bin to PATH"
+    - name: "Adding brew bin to PATH ({{ brew_user }})"
       blockinfile:
         dest: '{{ item }}'
         marker: "# {mark} brew PATH"
@@ -104,6 +104,9 @@
         name: linuxbrew
       when: "ansible_system == 'Linux'"
     - role: openssl
+      tags:
+        - always
+    - role: python2
       tags:
         - always
     - zsh

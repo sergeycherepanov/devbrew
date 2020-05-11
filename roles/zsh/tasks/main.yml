@@ -11,19 +11,27 @@
   tags:
     - zsh
 
+- name: Checking if fc-cache installed in the system
+  shell: which fc-cache
+  register: which_fc_cache
+  failed_when: which_fc_cache.rc > 1
+  when: 'ansible_system == "Linux"'
+  tags:
+    - zsh
+
 - name: "Downloading 'hack' font"
   git:
     repo: 'https://github.com/powerline/fonts.git'
     dest: '/tmp/powerline_fonts'
     version: 'master'
-  when: ansible_system == "Linux"
+  when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   tags:
     - zsh
 
 - copy:
     src: '/tmp/powerline_fonts/Hack/'
     dest: '/usr/share/fonts/'
-  when: ansible_system == "Linux"
+  when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   become: yes
   tags:
     - zsh
@@ -31,7 +39,7 @@
 - copy:
     src: '/tmp/powerline_fonts/Hack/'
     dest: '{{ brew_user_home_dir }}/.fonts/'
-  when: ansible_system == "Linux"
+  when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   tags:
     - zsh
 
@@ -40,6 +48,7 @@
     repo: 'https://github.com/gabrielelana/awesome-terminal-fonts.git'
     dest: '/tmp/awesome-terminal-fonts'
     version: 'master'
+  when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   tags:
     - zsh
 
@@ -47,6 +56,7 @@
   copy:
     src: '/tmp/awesome-terminal-fonts/build/'
     dest: '{{ brew_user_home_dir }}/.fonts/'
+  when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   tags:
     - zsh
 
@@ -54,16 +64,8 @@
   copy:
     src: '/tmp/awesome-terminal-fonts/build/'
     dest: '/usr/share/fonts/'
-  when: ansible_system == "Linux"
+  when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   become: yes
-  tags:
-    - zsh
-
-- name: Checking if fc-cache installed in the system
-  shell: which fc-cache
-  register: which_fc_cache
-  failed_when: which_fc_cache.rc > 1
-  when: 'ansible_system == "Linux"'
   tags:
     - zsh
 
@@ -79,6 +81,7 @@
     name: powerline-status
     state: present
     extra_args: --user
+    executable: "{{ local_pip2_path }}"
   tags:
     - zsh
 
@@ -124,7 +127,8 @@
 #  tags:
 #    - zsh
 
-- stat:
+- name: "Verifying if {{ brew_user_home_dir }}/.oh-my-zsh exists"
+  stat:
     path: "{{ brew_user_home_dir }}/.oh-my-zsh"
   register: state
   tags:
@@ -258,20 +262,8 @@
   tags:
     - zsh
 
-- name: "Resolve local python path"
-  #  shell: "cd $(dirname {{ brew_brew_bin_path }}/python); cd $(dirname $(readlink {{ brew_brew_bin_path }}/python)); pwd"
-  shell: "cd $(dirname $(which python2)); cd $(dirname $(readlink $(which python2))); pwd"
-  register: result
-  tags:
-    - always
-
-- name: "Register local_python_path fact"
-  set_fact: local_python_path="{{ result.stdout }}"
-  tags:
-    - always
-
 - name: "Resolve site-packages location"
-  shell: "{{ local_python_path }}/python -m site --user-site"
+  shell: "{{ local_python2_path }}/python -m site --user-site"
   register: result
   tags:
     - always
@@ -282,7 +274,7 @@
     - always
 
 - name: "Resolve python user base dir"
-  shell: "{{ local_python_path }}/python -m site --user-base"
+  shell: "{{ local_python2_path }}/python -m site --user-base"
   register: result
   tags:
     - always

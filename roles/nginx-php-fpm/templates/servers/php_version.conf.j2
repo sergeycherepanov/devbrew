@@ -1,5 +1,5 @@
 server {
-    listen 127.0.0.1:80;
+    listen 127.0.0.1:1080;
     port_in_redirect off;
 
     server_name ~^(?<project_name>.+?)\.(?<php_version>{{item.1}})\.+(?<pool>{{item.0}}).{{root_domain}}$;
@@ -8,7 +8,7 @@ server {
 }
 
 server {
-    listen 127.0.0.1:443 http2 ssl;
+    listen 127.0.0.1:1443 http2 ssl;
     port_in_redirect off;
 
     server_name ~^(?<project_name>.+?)\.(?<php_version>{{item.1}})\.+(?<pool>{{item.0}}).{{root_domain}}$;

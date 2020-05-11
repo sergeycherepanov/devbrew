@@ -1,14 +1,27 @@
 ---
-- name: "Checking is supervisord already installed"
-  stat:
-    path: "/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-  register: state
-  tags:
-  - always
+-   name: "Stopping firewall"
+    shell: "defaults write /Library/Preferences/com.apple.alf globalstate -int 0"
+    become: yes
+    tags:
+        - always
 
-- name: "Stopping supervisord"
-  shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
-  when: state.stat.exists
-  become: true
-  tags:
-  - always
+-   name: "Enabling port forwarding"
+    shell: "sysctl -w net.inet.ip.forwarding=1"
+    become: yes
+    tags:
+        - always
+
+-   name: "Checking is supervisord already installed"
+    stat:
+        path: "/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+    become: true
+    register: state
+    tags:
+        - always
+
+-   name: "Stopping supervisord"
+    shell: "launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
+    when: state.stat.exists
+    become: true
+    tags:
+        - always

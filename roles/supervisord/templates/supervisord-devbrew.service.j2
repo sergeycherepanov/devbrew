@@ -4,7 +4,7 @@ Description=Supervisord for Devbrew Environment
 [Service]
 User=root
 Group=root
-ExecStart={{ supervisord_path }} -c {{ brew_install_path }}/etc/supervisord.ini --nodaemon
+ExecStart={{ supervisord_path }} -u {{ brew_user }} -c {{ brew_install_path }}/etc/supervisord.ini --nodaemon
 Restart=always
 
 [Install]

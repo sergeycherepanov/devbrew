@@ -1,8 +1,6 @@
 ---
 - stat:
     path: "{{ brew_install_path }}/bin/brew"
-  tags:
-    - always
   register: brew_state
   tags:
     - always

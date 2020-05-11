@@ -64,12 +64,12 @@
     option: "chmod"
     value: "0770"
 
-- name: Ensure ownership for supervisord socket
-  ini_file:
-    path: "{{ brew_install_path }}/etc/supervisord.ini"
-    section: "unix_http_server"
-    option: "chown"
-    value: "root:{{ brew_group }}"
+#- name: Ensure ownership for supervisord socket
+#  ini_file:
+#    path: "{{ brew_install_path }}/etc/supervisord.ini"
+#    section: "unix_http_server"
+#    option: "chown"
+#    value: "root:{{ brew_group }}"
 
 - name: "Ensure /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
   template:

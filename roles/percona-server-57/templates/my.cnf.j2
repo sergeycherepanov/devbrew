@@ -20,7 +20,7 @@ explicit_defaults_for_timestamp = 1
 bind-address = {{ mysql_listen_address }}
 
 secure_file_priv   = {{ mysql_tmp_dir }}
-general_log_file   = {{ mysql_tmp_dir }}/query.log
+general_log_file   = {{ mysql_log_dir }}/query.log
 general_log        = 0
 
 # * Fine Tuning

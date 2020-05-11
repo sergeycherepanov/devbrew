@@ -15,6 +15,13 @@
     state: directory
   become: yes
   become_method: sudo
+
+- name: "Change fnsmasq port to 5353"
+  lineinfile:
+    path: '{{ brew_install_path }}/etc/dnsmasq.conf'
+    regexp: '.*port=.*'
+    line: 'port=5353'
+
 - name: "Adding *.dev.com zone to dnsmasq configuration file"
   lineinfile:
     path: '{{ brew_install_path }}/etc/dnsmasq.conf'

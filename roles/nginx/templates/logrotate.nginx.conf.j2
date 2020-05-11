@@ -1,5 +1,5 @@
 {{ brew_install_path }}/var/log/nginx/*.log {{ brew_install_path }}/var/log/nginx/*.err {
-  size 1m
+  size 1M
   missingok
   rotate 7
   daily
@@ -7,5 +7,7 @@
   delaycompress
   copytruncate
   notifempty
-  postotate {{ brew_install_path }}/bin/nginx -s reload > /dev/null
+  postrotate
+    {{ brew_install_path }}/bin/nginx -s reload > /dev/null
+  endscript
 }

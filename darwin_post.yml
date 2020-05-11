@@ -1,4 +1,10 @@
 ---
+- name: "Starting firewall"
+  shell: "defaults write /Library/Preferences/com.apple.alf globalstate -int 1"
+  become: yes
+  tags:
+    - always
+
 - name: "Starting supervisord"
   shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist"
   become: true

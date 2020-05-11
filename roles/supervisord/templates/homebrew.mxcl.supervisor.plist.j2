@@ -12,6 +12,8 @@
         <key>ProgramArguments</key>
         <array>
             <string>{{ supervisord_path }}</string>
+            <string>-u</string>
+            <string>{{ brew_user }}</string>
             <string>-c</string>
             <string>{{ brew_install_path }}/etc/supervisord.ini</string>
             <string>--nodaemon</string>
