@@ -21,13 +21,13 @@
 - name: "Ensure vim"
   homebrew: 
     name: djocker/common/vim
-    state: present
+    state: latest
     install_options: "with-python@2"
 
 - name: "Installing powerline-status via pip"
   pip:
     name: powerline-status
-    state: present
+    state: latest
     extra_args: --user
     executable: "{{ local_pip2_path }}"
   tags:

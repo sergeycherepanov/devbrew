@@ -3,7 +3,7 @@
 - name: "Installing supervisor"
   homebrew:
     name: supervisor
-    state: present
+    state: latest
 
 - name: "Resolving supervisord path"
   shell: "echo $(brew --prefix supervisor)/bin/supervisord"

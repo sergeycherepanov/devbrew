@@ -21,7 +21,7 @@
 - name: "Ensure Kibana"
   homebrew: 
     name: kibana
-    state: present
+    state: latest
   
 # Cask.
 - name: "Get list of apps installed with cask."

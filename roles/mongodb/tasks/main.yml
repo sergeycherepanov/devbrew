@@ -12,7 +12,7 @@
 - name: "Ensure mongodb"
   homebrew:
     name: "{{ mongodb_formula_name }}"
-    state: present
+    state: latest
 
 - name: Resolve mongodb_path
   shell: "{{ brew_brew_bin_path }}/brew --prefix {{ mongodb_formula_name }}"

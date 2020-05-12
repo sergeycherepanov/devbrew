@@ -2,7 +2,7 @@
 - name: "Installing CoreUtils"
   homebrew: 
     name: coreutils
-    state: present
+    state: latest
 
 - name: "Adding coreutils to PATH in {{ brew_user_home_dir }}/.zshrc"
   blockinfile:

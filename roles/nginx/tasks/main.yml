@@ -13,7 +13,7 @@
 - name: "Installing Nginx"
   homebrew:
     name: nginx
-    state: present
+    state: latest
   tags:
     - always
 

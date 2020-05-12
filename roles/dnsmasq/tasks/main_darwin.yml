@@ -2,7 +2,7 @@
 - name: "Installing DNSMASQ"
   homebrew:
     name: dnsmasq
-    state: present
+    state: latest
 
 #- name: "Truncate configuration file"
 #  shell: "echo '' > {{ brew_install_path }}/etc/dnsmasq.conf"

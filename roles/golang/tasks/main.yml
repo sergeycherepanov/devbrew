@@ -2,7 +2,7 @@
 - name: "Installing golang"
   homebrew: 
     name: go
-    state: present
+    state: latest
   tags:
     - always
     

@@ -22,12 +22,12 @@
 - name: "Installing {{ php_version }} dependencies"
   homebrew:
     name: "{{ php_dependencies }}"
-    state: present
+    state: latest
 
 - name: "Installing {{ php_version }} with flags: {{ php_flags }}"
   homebrew:
     name: "{{ php_version }}"
-    state: present
+    state: latest
     install_options: "{{ php_flags }}"
 #
 #- name: "Creating php{{ php_version_num_int }}_modules fact"
@@ -50,7 +50,7 @@
 - name: "Installing {{ php_version }} modules"
   homebrew:
     name: "{{php_version}}-{{ item }}"
-    state: present
+    state: latest
     install_options: "build-from-source"
   with_items: "{{ php_modules }}"
 

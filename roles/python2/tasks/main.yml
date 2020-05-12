@@ -2,7 +2,7 @@
 - name: "Ensure python@2"
   homebrew: 
     name: python@2
-    state: present
+    state: latest
 
 
 - name: "Resolve local python path"

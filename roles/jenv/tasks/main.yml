@@ -2,7 +2,7 @@
 - name: "Installing jenv"
   homebrew: 
     name: jenv 
-    state: present
+    state: latest
   tags:
     - always
     

@@ -2,7 +2,7 @@
 - name: "Ensure ruby"
   homebrew: 
     name: ruby
-    state: present
+    state: latest
 
 - name: "Updating rc"
   blockinfile:

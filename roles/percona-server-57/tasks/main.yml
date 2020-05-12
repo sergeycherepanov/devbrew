@@ -7,12 +7,12 @@
 - name: "Ensure Percona(Mysql) Server {{ mysql_formula }}"
   homebrew: 
     name: "{{ mysql_formula }}"
-    state: present
+    state: latest
   tags:
     - percona57
 
 - name: "Resolve mysql base dir"
-  shell: "ls {{ brew_install_path }}/opt/percona-server*/bin/mysqld | xargs -I{} bash -c '{} --version' | grep -i 'ver {{ mysql_version }}' | head -1 | awk '{print $1}' | xargs dirname | xargs dirname"
+  shell: "brew --prefix {{ mysql_formula }}"
   register: mysql_base_dir_output
   tags:
     - percona57
@@ -160,14 +160,14 @@
     - percona57
 
 - name: Starting mysql with --skip-grant-tables flag
-  shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables --log-error=/tmp/mysql.err > /dev/null &"
+  shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables --log-error=/tmp/mysql.err > /tmp/mysql.log 2>&1 &"
   args:
     chdir: /tmp
   tags:
     - percona57
 
 - name: Waiting mysql
-  shell: timeout 60s bash -c "until grep 'ready for connections\\|Server socket created on' /tmp/mysql.err; do sleep 1; done"
+  shell: "timeout 60s bash -c \"until grep 'ready for connections\\|Server socket created on' /tmp/mysql.err; do sleep 1; done\""
   args:
     chdir: /tmp
   tags:
@@ -184,6 +184,13 @@
   shell: "kill -15 $(cat {{ mysql_run_dir }}/mysqld.pid) && sleep 5"
   args:
     chdir: /tmp
+  tags:
+    - percona57
+
+- name: "Absent /tmp/mysql.err"
+  file:
+    state: absent
+    path: "/tmp/mysql.err"
   tags:
     - percona57
 
@@ -212,6 +219,13 @@
   shell: "kill -15 $(cat {{ mysql_run_dir }}/mysqld.pid) && sleep 5"
   args:
     chdir: /tmp
+  tags:
+    - percona57
+
+- name: "Absent /tmp/mysql.err"
+  file:
+    state: absent
+    path: "/tmp/mysql.err"
   tags:
     - percona57
 

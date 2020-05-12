@@ -12,7 +12,7 @@
 - name: "Ensure zlib"
   homebrew:
     name: zlib
-    state: present
+    state: latest
 
 - name: "Resolve zlib path"
   shell: "brew --prefix zlib"
@@ -24,7 +24,7 @@
 - name: "Installing Curl with openssl"
   homebrew: 
     name: djocker/common/curl
-    state: present
+    state: latest
     install_options: with-openssl,with-libssh2
   environment:
     ZLIB_PATH: "{{ zlib_path }}"
