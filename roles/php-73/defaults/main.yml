@@ -5,16 +5,16 @@ php_version_num_int: 73
 php_flags: ""
 php_dependencies:
 php_modules:
-    - intl
-    - mcrypt
-    - xdebug
-    - redis
-    - tidy
-    - opcache
-    - pdo-pgsql
-    - xhprof
-    - mongodb
-    - apcu
-    - gmp
-    - imagick
+    - php73-intl
+    - php73-mcrypt
+    - php73-xdebug
+    - php73-redis
+    - php73-tidy
+    - php73-opcache
+    - php73-pdo-pgsql
+    - php73-xhprof
+    - php73-mongodb
+    - php73-apcu
+    - php73-gmp
+    - php73-imagick
 php_pear_packages: []

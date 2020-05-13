@@ -29,6 +29,77 @@
       #!/bin/sh
       exec supervisorctl -c {{ brew_install_path }}/etc/supervisord.ini $@
 
+- name: "Ensure supstart script (Darwin)"
+  copy:
+    mode: 0755
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
+    dest: "{{ brew_brew_bin_path }}/supstart"
+    content: |
+      #!/bin/sh
+      sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist
+  when: ansible_system == "Darwin"
+
+- name: "Ensure supstop script (Darwin)"
+  copy:
+    mode: 0755
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
+    dest: "{{ brew_brew_bin_path }}/supstop"
+    content: |
+      #!/bin/sh
+      sudo launchctl unload -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist
+  when: ansible_system == "Darwin"
+
+- name: "Ensure suprestart script (Darwin)"
+  copy:
+    mode: 0755
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
+    dest: "{{ brew_brew_bin_path }}/suprestart"
+    content: |
+      #!/bin/sh
+      sudo launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist
+      sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist
+  when: ansible_system == "Darwin"
+
+- name: "Ensure supstart script (Linux)"
+  copy:
+    mode: 0755
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
+    dest: "{{ brew_brew_bin_path }}/supstart"
+    content: |
+      #!/bin/sh
+      sudo systemctl enable supervisord-devbrew
+      sudo systemctl start supervisord-devbrew
+  when: ansible_system == "Linux"
+
+- name: "Ensure supstop script (Linux)"
+  copy:
+    mode: 0755
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
+    dest: "{{ brew_brew_bin_path }}/supstop"
+    content: |
+      #!/bin/sh
+      sudo systemctl stop supervisord-devbrew
+      sudo systemctl disable supervisord-devbrew
+  when: ansible_system == "Linux"
+
+- name: "Ensure suprestart script (Linux)"
+  copy:
+    mode: 0755
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
+    dest: "{{ brew_brew_bin_path }}/suprestart"
+    content: |
+      #!/bin/sh
+      sudo systemctl stop supervisord-devbrew
+      sudo systemctl enable supervisord-devbrew
+      sudo systemctl start supervisord-devbrew
+  when: ansible_system == "Linux"
+
 - name: "Resolving pidproxy path"
   shell: "which pidproxy"
   register: pidproxy_output
@@ -76,8 +147,8 @@
     src: homebrew.mxcl.supervisor.plist.j2
     dest: '/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist'
   become: true
-
   when: ansible_system == "Darwin"
+
 - name: "Ensure /lib/systemd/system/supervisord-devbrew.service"
   template:
     src: supervisord-devbrew.service.j2

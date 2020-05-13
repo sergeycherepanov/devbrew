@@ -5,17 +5,17 @@ php_version_num_int: 56
 php_flags: ""
 php_dependencies:
 php_modules:
-    - intl
-    - mcrypt
-    - xdebug
-    - redis
-    - tidy
-    - opcache
-    - pdo-pgsql
-    - xhprof
-    - mongo
-    - mongodb
-    - apcu
-    - gmp
-    - imagick
+    - php56-intl
+    - php56-mcrypt
+    - php56-xdebug
+    - php56-redis
+    - php56-tidy
+    - php56-opcache
+    - php56-pdo-pgsql
+    - php56-xhprof
+    - php56-mongo
+    - php56-mongodb
+    - php56-apcu
+    - php56-gmp
+    - php56-imagick
 php_pear_packages: []

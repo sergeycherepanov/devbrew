@@ -5,16 +5,16 @@ php_version_num_int: 71
 php_flags: ""
 php_dependencies:
 php_modules:
-    - intl
-    - mcrypt
-    - xdebug
-    - redis
-    - tidy
-    - opcache
-    - pdo-pgsql
-    - xhprof
-    - mongodb
-    - apcu
-    - gmp
-    - imagick
+    - php71-intl
+    - php71-mcrypt
+    - php71-xdebug
+    - php71-redis
+    - php71-tidy
+    - php71-opcache
+    - php71-pdo-pgsql
+    - php71-xhprof
+    - php71-mongodb
+    - php71-apcu
+    - php71-gmp
+    - php71-imagick
 php_pear_packages: []

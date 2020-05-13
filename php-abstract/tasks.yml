@@ -29,30 +29,12 @@
     name: "{{ php_version }}"
     state: latest
     install_options: "{{ php_flags }}"
-#
-#- name: "Creating php{{ php_version_num_int }}_modules fact"
-#  set_fact:
-#    php{{ php_version_num_int }}_modules: "[]"
-#
-#- name: Printing php{{ php_version_num_int }}_modules
-#  debug:
-#    var: "php{{ php_version_num_int }}_modules"
-#
-#- name: "Populating php{{ php_version_num_int }}_modules"
-#  set_fact:
-#    php{{ php_version_num_int }}_modules: "{{ lookup('vars', 'php' + php_version_num_int|string + '_modules') + [ lookup('vars', 'php_version') + '-' + lookup('vars', 'item') ] }}"
-#  with_items: "{{ php_modules }}"
-#
-#- name: Printing php{{ php_version_num_int }}_modules
-#  debug:
-#    var: "php{{ php_version_num_int }}_modules"
 
 - name: "Installing {{ php_version }} modules"
   homebrew:
-    name: "{{php_version}}-{{ item }}"
+    name: "{{ php_modules }}"
     state: latest
     install_options: "build-from-source"
-  with_items: "{{ php_modules }}"
 
 - name: "Remove outdated {{ php_version }}"
   shell: "brew upgrade --cleanup {{ php_version }} > /dev/null 2>&1"
