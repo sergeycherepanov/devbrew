@@ -37,6 +37,7 @@
     dest: "{{ brew_brew_bin_path }}/supstart"
     content: |
       #!/bin/sh
+      echo "Starting supervisor..."
       sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist
   when: ansible_system == "Darwin"
 
@@ -48,7 +49,8 @@
     dest: "{{ brew_brew_bin_path }}/supstop"
     content: |
       #!/bin/sh
-      sudo launchctl unload -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist
+      echo "Stopping supervisor..."
+      sudo launchctl unload -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist > /dev/null 2>&1
   when: ansible_system == "Darwin"
 
 - name: "Ensure suprestart script (Darwin)"
@@ -59,7 +61,10 @@
     dest: "{{ brew_brew_bin_path }}/suprestart"
     content: |
       #!/bin/sh
-      sudo launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist
+      echo "Stopping supervisor..."
+      sudo launchctl unload /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist > /dev/null 2>&1
+      sleep 5
+      echo "Starting supervisor..."
       sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.supervisor.plist
   when: ansible_system == "Darwin"
 
