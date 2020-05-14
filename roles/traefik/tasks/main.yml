@@ -1,0 +1,14 @@
+---
+- name: "Ensure redisdb"
+  homebrew:
+    name: traefik
+    state: present
+  tags:
+    - always
+
+- name: "Create {{ brew_install_path }}/etc/traefik/traefik.toml"
+  template:
+    src: traefik.toml.j2
+    dest: "{{ brew_install_path }}/etc/traefik/traefik.toml"
+  tags:
+    - always

@@ -1,0 +1,36 @@
+# Accepted values, in order of severity: "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "PANIC"
+logLevel = "WARN"
+MaxIdleConnsPerHost = 200
+[traefikLog]
+filePath = "{{ brew_install_path }}/var/log/traefik/traefik.log"
+format   = "json"
+
+[accessLog]
+filePath = "{{ brew_install_path }}/var/log/traefik/access.log"
+format = "json"
+
+[acme]
+email = "sergey@cherepanov.org.ua"
+storage = "{{ brew_install_path }}/etc/traefik/acme.json"
+entryPoint = "https"
+[acme.dnsChallenge]
+provider = "digitalocean"
+delayBeforeCheck = 0
+[[acme.domains]]
+main = "*.scherepanov.dev"
+sans = ["scherepanov.dev"]
+
+[entryPoints]
+[entryPoints.http]
+address = ":80"
+[entryPoints.http.redirect]
+entryPoint = "https"
+permanent = true
+[entryPoints.https]
+address = ":443"
+[entryPoints.https.tls]
+InsecureSkipVerify = true
+
+[file]
+directory = "{{ brew_install_path }}/etc/traefik/conf.d/"
+watch = true

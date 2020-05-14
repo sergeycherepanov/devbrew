@@ -1,7 +1,7 @@
 ---
 
-- name: Include firewall_{{ ansible_system | lower }}.yml
-  include: "firewall_{{ ansible_system | lower }}.yml"
+#- name: Include firewall_{{ ansible_system | lower }}.yml
+#  include: "firewall_{{ ansible_system | lower }}.yml"
 
 - name: Include main_{{ ansible_system | lower }}.yml
   include: "main_{{ ansible_system | lower }}.yml"

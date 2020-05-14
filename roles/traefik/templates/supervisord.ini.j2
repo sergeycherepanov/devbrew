@@ -1,0 +1,8 @@
+[program:redisdb]
+command=bash -c "sleep 7; exec {{ brew_install_path }}/bin/pidproxy {{ brew_install_path }}/var/run/traefik.pid {{ brew_install_path }}/opt/traefik/bin/traefik -c {{ brew_install_path }}/etc/traefik/traefik.toml"
+directory={{ brew_install_path }}/var
+stdout_logfile={{ brew_install_path }}/var/log/supervisor/redisdb.log
+stderr_logfile={{ brew_install_path }}/var/log/supervisor/redisdb.err
+autorestart=true
+user={{ brew_user }}
+startsecs=10

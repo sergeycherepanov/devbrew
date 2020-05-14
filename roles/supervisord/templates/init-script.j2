@@ -32,7 +32,6 @@ if [ -f {{ brew_install_path }}/etc/default/supervisor ] ; then
 	. {{ brew_install_path }}/etc/default/supervisor
 fi
 
-DAEMON_OPTS="-u {{ brew_user }} $DAEMON_OPTS"
 DAEMON_OPTS="-c {{ brew_install_path }}/etc/supervisord.conf $DAEMON_OPTS"
 DAEMON_OPTS_SUPERVISORD="-j $PIDFILE $DAEMON_OPTS"
 

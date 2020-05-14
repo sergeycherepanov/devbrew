@@ -14,11 +14,14 @@
   with_items: "{{ old_php_nginx_config.files }}"
   tags:
     - always
-#
-#- debug:
-#    var: php_versions
-#  tags:
-#    - always
+
+- name: "Setting worker_connections to 256"
+  lineinfile:
+    path: '{{ brew_install_path }}/etc/nginx/nginx.conf'
+    regexp: '.*worker_connections.+;'
+    line: '    worker_connections 256;'
+  tags:
+    - always
     
 - name: "Creates {{ brew_install_path }}/etc/nginx/dev.conf"
   template: 

@@ -1,9 +1,9 @@
 ---
--   name: "Stopping firewall"
-    shell: "defaults write /Library/Preferences/com.apple.alf globalstate -int 0"
-    become: yes
-    tags:
-        - always
+#-   name: "Stopping firewall"
+#    shell: "defaults write /Library/Preferences/com.apple.alf globalstate -int 0"
+#    become: yes
+#    tags:
+#        - always
 
 -   name: "Enabling port forwarding"
     shell: "sysctl -w net.inet.ip.forwarding=1"

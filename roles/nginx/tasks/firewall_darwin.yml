@@ -1,7 +1,7 @@
 ---
-- name: "Creates /etc/pf.anchors/com.devbrew.nginx"
+- name: "Creates /etc/pf.anchors/local.devbrew.nginx"
   copy:
-    dest: "/etc/pf.anchors/com.devbrew.nginx"
+    dest: "/etc/pf.anchors/local.devbrew.nginx"
     owner: "root"
     content: |
       # redirect http
@@ -17,19 +17,19 @@
   tags:
     - always
 
-- name: 'Adds rdr-anchor "com.devbrew.nginx" to /etc/pf.conf'
+- name: 'Adds rdr-anchor "local.devbrew.nginx" to /etc/pf.conf'
   lineinfile:
     path: '/etc/pf.conf'
-    line: 'rdr-anchor "com.devbrew.nginx"'
+    line: 'rdr-anchor "local.devbrew.nginx"'
     insertafter: '^rdr-anchor.*'
   become: yes
   tags:
     - always
 
-- name: 'Adds load anchor "com.devbrew.nginx" from "/etc/pf.anchors/com.devbrew.nginx" to /etc/pf.conf'
+- name: 'Adds load anchor "local.devbrew.nginx" from "/etc/pf.anchors/local.devbrew.nginx" to /etc/pf.conf'
   lineinfile:
     path: '/etc/pf.conf'
-    line: 'load anchor "com.devbrew.nginx" from "/etc/pf.anchors/com.devbrew.nginx"'
+    line: 'load anchor "local.devbrew.nginx" from "/etc/pf.anchors/local.devbrew.nginx"'
     insertafter: '^load anchor.*'
   become: yes
   tags:
