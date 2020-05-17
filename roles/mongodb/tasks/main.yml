@@ -32,7 +32,7 @@
     dest: '{{ brew_user_home_dir }}/{{item}}'
     marker: "# {mark} mongodb"
     block: |
-      echo 'export PATH="{{ mongodb_path }}/bin:$PATH"' >> ~/.zshrc
+      export PATH="{{ mongodb_path }}/bin:$PATH"
   with_items: ['.zshrc', '.bashrc']
 
 - name: "Starting mongodb"
