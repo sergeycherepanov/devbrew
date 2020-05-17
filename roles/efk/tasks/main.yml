@@ -8,18 +8,20 @@
   pip:
     name: elasticsearch-curator
     state: present
+    executable: "{{ local_pip2_path }}"
   become: yes
   
 - name: "Ensure elastalert via pip"
   pip:
     name: elastalert
     state: present
+    executable: "{{ local_pip2_path }}"
   become: yes
   
 - name: "Ensure Kibana"
   homebrew: 
     name: kibana
-    state: present
+    state: latest
   
 # Cask.
 - name: "Get list of apps installed with cask."

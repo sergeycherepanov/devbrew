@@ -23,7 +23,6 @@ brew_installed_packages:
   - shellcheck
   - libmcrypt
   - yarn
-  - python@2
 
 brew_upgrade_all_packages: no
 
@@ -70,6 +69,5 @@ brew_directories:
   - '{{ brew_install_path }}/var/log'
   - '{{ brew_install_path }}/var/homebrew'
   - '{{ brew_install_path }}/var/homebrew/linked'
-  - '{{ brew_install_path }}/bin/brew'
   - '{{ brew_install_path }}/share/zsh'
   - '{{ brew_install_path }}/share/zsh/site-functions'

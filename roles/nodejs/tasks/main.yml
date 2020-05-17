@@ -12,7 +12,7 @@
 - name: "Installing nodejs"
   homebrew: 
     name: node 
-    state: present
+    state: latest
 #    install_options: "without-icu4c"
 
 - name: "Setting fact"
@@ -22,4 +22,4 @@
 - name: "Installing yarn"
   homebrew:
     name: yarn
-    state: present
+    state: latest

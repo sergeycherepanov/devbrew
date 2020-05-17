@@ -18,11 +18,12 @@
 
 - name: Create a brew directories
   file:
-    path: '{{ brew_directories }}'
+    path: '{{ item }}'
     state: directory
     owner: '{{ brew_user }}'
     group: '{{ brew_group }}'
     mode: '0775'
+  with_items: "{{ brew_directories }}"
   become: yes
   tags:
     - always
@@ -119,9 +120,8 @@
 # Brew.
 - name: Ensure configured homebrew packages are installed.
   homebrew:
-    name: "{{ item }}"
-    state: present
-  with_items: "{{ brew_installed_packages }}"
+    name: "{{ brew_installed_packages }}"
+    state: latest
   tags:
   - always
 

@@ -1,5 +1,5 @@
 ---
-- name: Find old configs
+- name: Looking for outdated configs
   find:
     paths: "{{ brew_install_path }}/etc/nginx/servers"
     patterns: "ph*.conf"
@@ -7,7 +7,7 @@
   tags:
     - always
 
-- name: Deleting old configs
+- name: Deleting of outdated config
   file:
     path: "{{ item.path }}"
     state: absent
@@ -15,8 +15,11 @@
   tags:
     - always
 
-- debug:
-    var: php_versions
+- name: "Setting worker_connections to 256"
+  lineinfile:
+    path: '{{ brew_install_path }}/etc/nginx/nginx.conf'
+    regexp: '.*worker_connections.+;'
+    line: '    worker_connections 256;'
   tags:
     - always
     
@@ -24,15 +27,6 @@
   template: 
     src: dev.conf.j2
     dest: "{{ brew_install_path }}/etc/nginx/dev.conf"
-    owner: "{{ brew_user }}"
-    group: "{{ brew_group }}"
-  tags:
-    - always
-
-- name: "Creates {{ brew_install_path }}/etc/nginx/conf.d/default_server.conf"
-  template: 
-    src: default_server.conf.j2
-    dest: "{{ brew_install_path }}/etc/nginx/conf.d/default_server.conf"
     owner: "{{ brew_user }}"
     group: "{{ brew_group }}"
   tags:
@@ -64,6 +58,13 @@
   tags:
     - always
 
+- name: Remove outdated files
+  file:
+    path: "{{ brew_install_path }}/etc/nginx/conf.d/default_server.conf"
+    state: absent
+  tags:
+    - always
+
 - name: Ensure nginx-error-pages
   git:
     repo: 'https://github.com/SergeyCherepanov/nginx-error-pages.git'
@@ -77,24 +78,3 @@
   with_items: "{{subdomains}}"
   tags:
     - always
-
-#- name: "Creates {{ brew_install_path }}/etc/nginx/servers/{{item.1}}_{{item.0}}_{{root_domain}}.conf"
-#  template: 
-#    src: servers/php_version.conf.j2
-#    dest: "{{ brew_install_path }}/etc/nginx/servers/{{item.1}}_{{item.0}}_{{root_domain}}.conf"
-#    owner: "{{ brew_user }}"
-#    group: "{{ brew_group }}"
-#  with_nested:
-#    - "{{subdomains}}"
-#    - "{{php_versions}}"
-#  tags:
-#    - always
-  
-# - name: "Copy the daemon configuration file into place."
-#   shell: "cp $(brew list nginx | grep /homebrew.mxcl.nginx.plist$) /Library/LaunchDaemons/"
-#   become: yes
-#   become_method: sudo
-# - name: "Start Nginx automatically."
-#   shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.nginx.plist"
-#   become: yes
-#   become_method: sudo

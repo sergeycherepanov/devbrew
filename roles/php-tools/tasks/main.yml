@@ -2,7 +2,7 @@
 - name: "Installing composer"
   homebrew:
     name: composer
-    state: present
+    state: latest
   
 - name: "Create dir for wrappers"
   file:

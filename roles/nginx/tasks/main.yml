@@ -13,7 +13,7 @@
 - name: "Installing Nginx"
   homebrew:
     name: nginx
-    state: present
+    state: latest
   tags:
     - always
 
@@ -36,15 +36,27 @@
 
 - stat: 
     path: "{{ brew_install_path }}/etc/supervisor.d/nginx.ini"
+  register: state
   tags:
     - always
-  register: state
 
 - name: "Create etc/supervisor.d/nginx.ini"
   template:
     src: supervisord.ini.j2
     dest: "{{ brew_install_path }}/etc/supervisor.d/nginx.ini"
   when: not state.stat.exists
+  tags:
+    - always
+
+- name: Create a log directories
+  file:
+    path: '{{ brew_install_path }}/var/log/nginx'
+    state: directory
+    owner: '{{ brew_user }}'
+    group: '{{ brew_group }}'
+    mode: '0775'
+    recurse: true
+  become: yes
   tags:
     - always
 
@@ -57,11 +69,5 @@
   tags:
     - always
 
-# - name: "Copy the daemon configuration file into place."
-#   shell: "cp $(brew list nginx | grep /homebrew.mxcl.nginx.plist$) /Library/LaunchDaemons/"
-#   become: yes
-#   become_method: sudo
-# - name: "Start Nginx automatically."
-#   shell: "launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.nginx.plist"
-#   become: yes
-#   become_method: sudo
+#- name: Include firewall_{{ ansible_system | lower }}.yml
+#  include: "firewall_{{ ansible_system | lower }}.yml"

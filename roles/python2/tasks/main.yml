@@ -1,0 +1,31 @@
+---
+- name: "Ensure python@2"
+  homebrew: 
+    name: python@2
+    state: latest
+
+
+- name: "Resolve local python path"
+  shell: "cd $(brew --prefix python@2)/bin; cd $(dirname $(readlink python2)); pwd"
+  register: result
+  tags:
+    - always
+
+- name: "Register local_python2_path fact"
+  set_fact: local_python2_path="{{ result.stdout }}"
+  tags:
+    - always
+
+- name: "Resolve local pip path"
+  shell: "echo $(brew --prefix python@2)/bin/pip"
+  register: result
+  tags:
+    - always
+
+- name: "Register local_pip2_path fact"
+  set_fact: local_pip2_path="{{ result.stdout }}"
+  tags:
+    - always
+
+- debug:
+    var: local_pip2_path

@@ -3,7 +3,7 @@
   npm: 
     name: less
     global: yes
-    state: present
+    state: latest
   when: nodejs_installed is defined and nodejs_installed
   tags:
     - always

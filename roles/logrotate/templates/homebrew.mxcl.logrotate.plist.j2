@@ -7,16 +7,12 @@
     <key>ProgramArguments</key>
     <array>
       <string>{{ brew_install_path }}/opt/logrotate/sbin/logrotate</string>
+      <string>-f</string>
       <string>{{ brew_install_path }}/etc/logrotate.conf</string>
     </array>
     <key>RunAtLoad</key>
     <false/>
-    <key>StartCalendarInterval</key>
-    <dict>
-      <key>Hour</key>
-      <integer>12</integer>
-      <key>Minute</key>
-      <integer>30</integer>
-    </dict>
+    <key>StartInterval</key>
+    <integer>60</integer>
   </dict>
 </plist>

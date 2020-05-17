@@ -282,7 +282,7 @@
   ###### test backup ext on filename #####
   - name: test backup ext on file
     yedit:
-      state: present
+      state: latest
       src: "{{ test_file }}"
       key: test
       backup: true
@@ -291,7 +291,7 @@
 
   - name: second call which should be noop
     yedit:
-      state: present
+      state: latest
       src: "{{ test_file }}"
       key: test
       backup: true
@@ -311,7 +311,7 @@
       date_str: "{{ lookup('pipe', 'date +%s') }}"
 
   - yedit:
-      state: present
+      state: latest
       src: "{{ test_file }}"
       key: test
       backup: true

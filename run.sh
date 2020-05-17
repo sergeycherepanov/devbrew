@@ -19,12 +19,11 @@ hash svnsync
 
 if [[ "Darwin" == "$(uname)" ]]; then
   BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/usr/local}"
-  # sudo -H -u "${MAC_USER}" bash -c 'which brew && brew unlink python@2'
 else
   if [[ "Linux" == "$(uname)" ]]; then
     source /etc/os-release
     if [[ "debian" == "${ID}" ]] || [[ "debian" == "${ID_LIKE}" ]] || [[ "ubuntu" == "${ID_LIKE}" ]]; then
-      sudo apt -qq update && sudo apt install -yqq ca-certificates build-essential curl file git python
+      sudo apt -qq update && sudo apt install -yqq iptables ca-certificates build-essential curl file git python
       BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/home/linuxbrew/.linuxbrew}"
     else
       echo "Unsupported system: '$(uname):${ID_LIKE}'"

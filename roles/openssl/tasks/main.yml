@@ -1,4 +1,9 @@
 ---
+-   name: "Installing openssl"
+    homebrew:
+        name: openssl
+        state: latest
+
 -   name: "Install crtgen tool"
     template:
         src: crtgen.j2

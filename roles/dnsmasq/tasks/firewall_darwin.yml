@@ -1,0 +1,24 @@
+---
+- name: "Creates /etc/pf.anchors/local.devbrew.dnsmasq"
+  copy:
+    dest: "/etc/pf.anchors/local.devbrew.dnsmasq"
+    owner: "root"
+    content: |
+      # redirect http
+      rdr pass on lo0 inet proto udp from any to self port 53 -> 127.0.0.1 port 5353
+      # eol
+  become: yes
+
+- name: 'Adds rdr-anchor "local.devbrew.dnsmasq" to /etc/pf.conf'
+  lineinfile:
+    path: '/etc/pf.conf'
+    line: 'rdr-anchor "local.devbrew.dnsmasq"'
+    insertafter: '^rdr-anchor.*'
+  become: yes
+
+- name: 'Adds load anchor "local.devbrew.dnsmasq" from "/etc/pf.anchors/local.devbrew.dnsmasq" to /etc/pf.conf'
+  lineinfile:
+    path: '/etc/pf.conf'
+    line: 'load anchor "local.devbrew.dnsmasq" from "/etc/pf.anchors/local.devbrew.dnsmasq"'
+    insertafter: '^load anchor.*'
+  become: yes

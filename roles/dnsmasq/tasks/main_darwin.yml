@@ -2,7 +2,7 @@
 - name: "Installing DNSMASQ"
   homebrew:
     name: dnsmasq
-    state: present
+    state: latest
 
 #- name: "Truncate configuration file"
 #  shell: "echo '' > {{ brew_install_path }}/etc/dnsmasq.conf"
@@ -15,6 +15,19 @@
     state: directory
   become: yes
   become_method: sudo
+
+- name: "Setting dnsmasq port to 53"
+  lineinfile:
+    path: '{{ brew_install_path }}/etc/dnsmasq.conf'
+    regexp: '.*port=.*'
+    line: 'port=53'
+
+- name: "Setting dnsmasq listen-address to 127.0.0.1"
+  lineinfile:
+    path: '{{ brew_install_path }}/etc/dnsmasq.conf'
+    regexp: '.*listen-address=.*'
+    line: 'listen-address=127.0.0.1'
+
 - name: "Adding *.dev.com zone to dnsmasq configuration file"
   lineinfile:
     path: '{{ brew_install_path }}/etc/dnsmasq.conf'

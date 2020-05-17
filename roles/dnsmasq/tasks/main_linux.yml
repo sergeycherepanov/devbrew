@@ -7,7 +7,7 @@
 - name: "Installing dnsmasq"
   apt:
     name: dnsmasq
-    state: present
+    state: latest
   become: yes
   when: which_dnsmasq.rc > 0
 

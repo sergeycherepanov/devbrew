@@ -7,12 +7,12 @@
 - name: "Ensure Percona(Mysql) Server {{ mysql_formula }}"
   homebrew: 
     name: "{{ mysql_formula }}"
-    state: present
+    state: latest
   tags:
     - percona57
 
 - name: "Resolve mysql base dir"
-  shell: "ls {{ brew_install_path }}/opt/percona-server*/bin/mysqld | xargs -I{} bash -c '{} --version' | grep -i 'ver {{ mysql_version }}' | head -1 | awk '{print $1}' | xargs dirname | xargs dirname"
+  shell: "brew --prefix {{ mysql_formula }}"
   register: mysql_base_dir_output
   tags:
     - percona57
@@ -23,7 +23,8 @@
   tags:
     - percona57
 
-- homebrew: 
+- name: Unlinking formula
+  homebrew:
     name: "{{ mysql_formula }}"
     state: unlinked
   tags:
@@ -144,27 +145,87 @@
   tags:
     - percona57
 
-- name: Starting mysql
-  shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables --log-error=/tmp/mysql.err > /dev/null &"
-  when: mysql_data_dir_files.matched|int == 0
+- stat:
+    path: "{{ mysql_run_dir }}/mysqld.pid"
+  register: state
+  tags:
+    - percona57
+
+- name: Stopping mysql
+  shell: "kill -15 $(cat {{ mysql_run_dir }}/mysqld.pid) && sleep 5"
+  args:
+    chdir: /tmp
+  when: state.stat.exists
+  tags:
+    - percona57
+
+- name: Starting mysql with --skip-grant-tables flag
+  shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables --log-error=/tmp/mysql.err > /tmp/mysql.log 2>&1 &"
   args:
     chdir: /tmp
   tags:
     - percona57
 
 - name: Waiting mysql
-  shell: "until grep 'ready for connections\\|Server socket created on' /tmp/mysql.err; do sleep 1; done"
-  when: mysql_data_dir_files.matched|int == 0
+  shell: "timeout 60s bash -c \"until grep 'ready for connections\\|Server socket created on' /tmp/mysql.err; do sleep 1; done\""
   args:
     chdir: /tmp
   tags:
     - percona57
 
 - name: Setting plugin=mysql_native_password and update root password
-  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -e 'update user set plugin=\"mysql_native_password\"; update user set authentication_string=password(\"{{ mysql_root_password }}\"), password_expired=\"N\", password_lifetime=0 where user=\"root\";' mysql && pgrep mysql | xargs kill -15 && sleep 5"
-  when: mysql_data_dir_files.matched|int == 0
+  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -e 'update user set plugin=\"mysql_native_password\"; update user set authentication_string=password(\"{{ mysql_root_password }}\"), password_expired=\"N\", password_lifetime=0 where user=\"root\";' mysql && pgrep mysql"
   args:
     chdir: /tmp
+  tags:
+    - percona57
+
+- name: Stopping mysql
+  shell: "kill -15 $(cat {{ mysql_run_dir }}/mysqld.pid) && sleep 5"
+  args:
+    chdir: /tmp
+  tags:
+    - percona57
+
+- name: "Absent /tmp/mysql.err"
+  file:
+    state: absent
+    path: "/tmp/mysql.err"
+  tags:
+    - percona57
+
+- name: Starting mysql
+  shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --log-error=/tmp/mysql.err > /dev/null &"
+  args:
+    chdir: /tmp
+  tags:
+    - percona57
+
+- name: Waiting mysql
+  shell: timeout 60s bash -c "until grep 'ready for connections\\|Server socket created on' /tmp/mysql.err; do sleep 1; done"
+  args:
+    chdir: /tmp
+  tags:
+    - percona57
+
+- name: Create logrotate user
+  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -p'{{ mysql_root_password }}' -e 'CREATE USER IF NOT EXISTS \"{{ logrorate_user }}\"@\"localhost\"; update user set plugin=\"mysql_native_password\"; update user set authentication_string=password(\"{{ logrorate_password }}\"), password_expired=\"N\", password_lifetime=0 where user=\"{{ logrorate_user }}\";grant reload on *.* to \"{{ logrorate_user }}\"@\"localhost\"' mysql"
+  args:
+    chdir: /tmp
+  tags:
+    - percona57
+
+- name: Stopping mysql
+  shell: "kill -15 $(cat {{ mysql_run_dir }}/mysqld.pid) && sleep 5"
+  args:
+    chdir: /tmp
+  tags:
+    - percona57
+
+- name: "Absent /tmp/mysql.err"
+  file:
+    state: absent
+    path: "/tmp/mysql.err"
   tags:
     - percona57
 
@@ -185,3 +246,21 @@
     mode: 0755
   tags:
   - percona57
+
+- name: "Add mysqladmin{{ mysql_version_num }} wrapper"
+  template:
+    src: "mysqladmin.j2"
+    dest: "{{ brew_install_path }}/bin/mysqladmin{{ mysql_version_num }}"
+    owner: "{{ mysql_user }}"
+    mode: 0755
+  tags:
+    - percona57
+
+- name: "Creates {{ brew_install_path }}/etc/logrotate.d/mysql{{ mysql_version_num }}.conf"
+  template:
+    src: logrotate.mysql.conf.j2
+    dest: "{{ brew_install_path }}/etc/logrotate.d/mysql{{ mysql_version_num }}.conf"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
+  tags:
+    - percona57
