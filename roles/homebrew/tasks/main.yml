@@ -22,7 +22,6 @@
     state: directory
     owner: '{{ brew_user }}'
     group: '{{ brew_group }}'
-    mode: '0775'
   with_items: "{{ brew_directories }}"
   become: yes
   tags:
@@ -43,43 +42,12 @@
     warn: false
   tags:
   - always
-#
-#- name: Ensure proper permissions on brew_brew_bin_path dirs.
-#  file:
-#    path: "{{ brew_brew_bin_path }}"
-#    mode: 0775
-#    state: directory
-#    recurse: true
-#  become: yes
-#  tags:
-#  - always
-#
-#- name: Ensure homebrew directories
-#  file:
-#    path: "{{ item }}"
-#    state: directory
-#  with_items:
-#  - "{{ brew_install_path }}/Cellar"
-#  - "{{ brew_install_path }}/Caskroom"
-#  - "{{ brew_install_path }}/Frameworks"
-#  - "{{ brew_install_path }}/bin"
-#  - "{{ brew_install_path }}/etc"
-#  - "{{ brew_install_path }}/docs"
-#  - "{{ brew_install_path }}/manpages"
-#  - "{{ brew_install_path }}/include"
-#  - "{{ brew_install_path }}/lib"
-#  - "{{ brew_install_path }}/opt"
-#  - "{{ brew_install_path }}/sbin"
-#  - "{{ brew_install_path }}/share"
-#  - "{{ brew_install_path }}/var"
-#  - "{{ brew_install_path }}/completions"
-#  become: yes
-#  tags:
-#  - always
 
 - name: Ensure proper ownership on brew_install_path subdirs.
   shell: >
-    ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}:{{ brew_group }}" "{{ brew_install_path }}/{}"
+    ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}" "{{ brew_install_path }}/{}"
+    ls -A "{{ brew_install_path }}" | xargs -I {} chgrp -R "{{ brew_group }}" "{{ brew_install_path }}/{}"
+    ls -A "{{ brew_install_path }}" | xargs -I {} chmod g+w "{{ brew_install_path }}/{}"
   become: yes
   tags:
   - always
