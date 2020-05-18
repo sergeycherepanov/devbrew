@@ -6,34 +6,28 @@ branches:
 matrix:
   include:
     - os: osx
-      osx_image: xcode9.3
-      env: TAGS=php56,percona56
-    - os: osx
-      osx_image: xcode9.3
+      osx_image: xcode11.3
       env: TAGS=php70,percona57
     - os: osx
-      osx_image: xcode9.3
+      osx_image: xcode11.3
       env: TAGS=php71,percona57
     - os: osx
-      osx_image: xcode9.3
+      osx_image: xcode11.3
       env: TAGS=php72,percona57
     - os: osx
-      osx_image: xcode9.3
-      env: TAGS=php56,xhgui,dnsmasq
+      osx_image: xcode11.3
+      env: TAGS=php72,xhgui,dnsmasq
     - os: linux
-      dist: xenial
-      env: TAGS=php56,percona56
-    - os: linux
-      dist: xenial
+      dist: bionic
       env: TAGS=php70,percona57
     - os: linux
-      dist: xenial
+      dist: bionic
       env: TAGS=php71,percona57
     - os: linux
-      dist: xenial
+      dist: bionic
       env: TAGS=php72,percona57
     - os: linux
-      dist: xenial
-      env: TAGS=php56,xhgui,dnsmasq
+      dist: bionic
+      env: TAGS=php72,xhgui,dnsmasq
 script:
   - travis_wait 60 $TRAVIS_BUILD_DIR/run.sh -v --tags "${TAGS}"
