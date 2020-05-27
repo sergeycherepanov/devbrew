@@ -18,11 +18,11 @@
 
 - name: Create a brew directories
   file:
-    path: '{{ item }}'
+    path: '{{ brew_directories }}'
     state: directory
     owner: '{{ brew_user }}'
     group: '{{ brew_group }}'
-  with_items: "{{ brew_directories }}"
+    mode: '0775'
   become: yes
   tags:
     - always
@@ -37,7 +37,6 @@
 
 - name: Extracting Homebrew.
   shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
-  become: yes
   args:
     warn: false
   tags:

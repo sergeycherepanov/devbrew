@@ -151,7 +151,7 @@
   template:
     src: homebrew.mxcl.supervisor.plist.j2
     dest: '/Library/LaunchDaemons/homebrew.mxcl.supervisor.plist'
-  become: true
+  become: yes
   when: ansible_system == "Darwin"
 
 - name: "Ensure /lib/systemd/system/supervisord-devbrew.service"
