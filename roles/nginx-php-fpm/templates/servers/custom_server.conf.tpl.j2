@@ -1,27 +1,27 @@
 server {
     listen 127.0.0.1:80;
     port_in_redirect off;
-    
+
     server_name <? .Env.HOSTNAME ?> www.<? .Env.HOSTNAME ?>;
-    
+
     set $project_name <? .Env.PROJECT_NAME ?>;
     set $pool <? .Env.POOL_NAME ?>;
-    
+
     include {{ brew_install_path }}/etc/nginx/dev.conf;
 }
 
 server {
     listen 127.0.0.1:443 http2 ssl;
     port_in_redirect off;
-    
+
     server_name <? .Env.HOSTNAME ?> www.<? .Env.HOSTNAME ?>;
-    
+
     set $project_name <? .Env.PROJECT_NAME ?>;
     set $pool <? .Env.POOL_NAME ?>;
-    
+
     ssl on;
     ssl_certificate {{ brew_install_path }}/etc/openssl/localCA/certs/<? .Env.HOSTNAME ?>_crt.pem;
     ssl_certificate_key {{ brew_install_path }}/etc/openssl/localCA/private/<? .Env.HOSTNAME ?>_key_encrypted.pem;
-    
+
     include {{ brew_install_path }}/etc/nginx/dev.conf;
 }
