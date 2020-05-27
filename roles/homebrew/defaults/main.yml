@@ -50,6 +50,7 @@ brew_directories:
   - '{{ brew_install_path }}/Cellar'
   - '{{ brew_install_path }}/Caskroom'
   - '{{ brew_install_path }}/Library'
+  - '{{ brew_install_path }}/Library/Homebrew/vendor/portable-ruby'
   - '{{ brew_install_path }}/Homebrew'
   - '{{ brew_install_path }}/Frameworks'
   - '{{ brew_install_path }}/etc/bash_completion.d'
