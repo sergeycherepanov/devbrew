@@ -79,6 +79,8 @@
 
 - name: Ensure proper ownership on brew_install_path subdirs.
   shell: >
+    # ls -A "/usr/local" | xargs -I {} chown -R username "/usr/local/{}"
+    # ls -A "/usr/local" | xargs -I {} chgrp -R staff "/usr/local/{}"
     ls -A "{{ brew_install_path }}" | xargs -I {} chown -R {{ brew_user }} "{{ brew_install_path }}/{}"
     ls -A "{{ brew_install_path }}" | xargs -I {} chgrp -R {{ brew_group }} "{{ brew_install_path }}/{}"
   become: yes
