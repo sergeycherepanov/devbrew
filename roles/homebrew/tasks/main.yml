@@ -1,104 +1,113 @@
 ---
-- name: "Creates ~/Library/LaunchAgents"
-  file:
-    path: "{{ brew_user_home_dir }}/Library/LaunchAgents"
-    state: directory
-  tags:
-  - always
+-   name: "Creates ~/Library/LaunchAgents"
+    file:
+        path: "{{ brew_user_home_dir }}/Library/LaunchAgents"
+        state: directory
+    tags:
+        - always
 
-- name: Ensure homebrew install path.
-  file:
-    path: "{{ brew_install_path }}"
-    mode: 0775
-    state: directory
-  ignore_errors: yes
-  become: yes
-  tags:
-  - always
+-   name: Ensure homebrew install path.
+    file:
+        path: "{{ brew_install_path }}"
+        mode: 0775
+        state: directory
+    ignore_errors: yes
+    become: yes
+    tags:
+        - always
 
-- name: Create a brew directories
-  file:
-    path: '{{ brew_directories }}'
-    state: directory
-    owner: '{{ brew_user }}'
-    group: '{{ brew_group }}'
-    mode: '0775'
-  become: yes
-  tags:
-    - always
+-   name: Ensure homebrew install path ownership.
+    file:
+        path: "{{ brew_install_path }}"
+        owner: '{{ brew_user }}'
+    ignore_errors: yes
+    become: yes
+    tags:
+        - always
 
-- name: Downloading Homebrew.
-  #shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ brew_install_path }}"
-  get_url:
-    url: "https://github.com/Homebrew/brew/tarball/master"
-    dest: "/tmp/brew-master.tgz"
-  tags:
-  - always
+-   name: Create a brew directories
+    file:
+        path: '{{ brew_directories }}'
+        state: directory
+        owner: '{{ brew_user }}'
+        group: '{{ brew_group }}'
+        mode: '0775'
+    become: yes
+    tags:
+        - always
 
-- name: Extracting Homebrew.
-  shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
-  args:
-    warn: false
-  tags:
-  - always
+-   name: Downloading Homebrew.
+    #shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ brew_install_path }}"
+    get_url:
+        url: "https://github.com/Homebrew/brew/tarball/master"
+        dest: "/tmp/brew-master.tgz"
+    tags:
+        - always
 
-- name: Ensure proper ownership on brew_install_path subdirs.
-  shell: >
-    ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}" "{{ brew_install_path }}/{}"
-    ls -A "{{ brew_install_path }}" | xargs -I {} chgrp -R "{{ brew_group }}" "{{ brew_install_path }}/{}"
-    ls -A "{{ brew_install_path }}" | xargs -I {} chmod g+w "{{ brew_install_path }}/{}"
-  become: yes
-  tags:
-  - always
+-   name: Extracting Homebrew.
+    shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
+    args:
+        warn: false
+    tags:
+        - always
 
-- name: Check if homebrew binary is already in place.
-  stat:
-    path: "{{ brew_install_path }}/bin/brew"
-  register: brew_binary
-  tags:
-  - always
+-   name: Ensure proper ownership on brew_install_path subdirs.
+    shell: >
+        ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}" "{{ brew_install_path }}/{}"
+        ls -A "{{ brew_install_path }}" | xargs -I {} chgrp -R "{{ brew_group }}" "{{ brew_install_path }}/{}"
+        ls -A "{{ brew_install_path }}" | xargs -I {} chmod g+w "{{ brew_install_path }}/{}"
+    become: yes
+    tags:
+        - always
 
-- name: "Adding homebrew to /etc/profile"
-  blockinfile:
-    create: yes
-    dest: '/etc/profile'
-    marker: "# {mark} homebrew PATH"
-    block: |
-      export PATH="{{ brew_install_path }}/sbin:{{ brew_install_path }}/bin:$PATH"
-  become: yes
-  tags:
-  - always
+-   name: Check if homebrew binary is already in place.
+    stat:
+        path: "{{ brew_install_path }}/bin/brew"
+    register: brew_binary
+    tags:
+        - always
 
-- name: Brew update
-  shell: 'brew update > /dev/null 2>&1'
-  ignore_errors: yes
-  retries: 2
-  delay: 1
-  tags:
-  - always
+-   name: "Adding homebrew to /etc/profile"
+    blockinfile:
+        create: yes
+        dest: '/etc/profile'
+        marker: "# {mark} homebrew PATH"
+        block: |
+            export PATH="{{ brew_install_path }}/sbin:{{ brew_install_path }}/bin:$PATH"
+    become: yes
+    tags:
+        - always
+
+-   name: Brew update
+    shell: 'brew update > /dev/null 2>&1'
+    ignore_errors: yes
+    retries: 2
+    delay: 1
+    tags:
+        - always
 
 # Tap.
-- name: Ensure configured taps are tapped.
-  shell: brew tap {{ item }}
-  with_items: "{{ brew_taps }}"
-  tags:
-  - always
+-   name: Ensure configured taps are tapped.
+    shell: brew tap {{ item }}
+    with_items: "{{ brew_taps }}"
+    tags:
+        - always
 
 # Brew.
-- name: Ensure configured homebrew packages are installed.
-  homebrew:
-    name: "{{ brew_installed_packages }}"
-    state: latest
-  tags:
-  - always
+-   name: Ensure configured homebrew packages are installed.
+    homebrew:
+        name: "{{ brew_installed_packages }}"
+        state: latest
+    tags:
+        - always
 
-- name: Upgrade all homebrew packages (if configured).
-  homebrew:
-    update_homebrew: yes
-    upgrade_all: yes
-  when: brew_upgrade_all_packages
-  tags:
-  - always
+-   name: Upgrade all homebrew packages (if configured).
+    homebrew:
+        update_homebrew: yes
+        upgrade_all: yes
+    when: brew_upgrade_all_packages
+    tags:
+        - always
 
 # Cask.
 #- name: Get list of apps installed with cask.
@@ -111,24 +120,24 @@
 #    - always
 
 # Use command module instead of brew_cask so appdir can be used.
-- name: Install configured cask applications.
-  command: >
-    bash -l -c '{{ brew_brew_bin_path }}/brew cask reinstall {{ item }} --appdir={{ brew_cask_appdir }}'
-  with_items: "{{ brew_cask_apps }}"
-  #  when: "item not in brew_cask_list.stdout"
-  tags:
-  - always
+-   name: Install configured cask applications.
+    command: >
+        bash -l -c '{{ brew_brew_bin_path }}/brew cask reinstall {{ item }} --appdir={{ brew_cask_appdir }}'
+    with_items: "{{ brew_cask_apps }}"
+    #  when: "item not in brew_cask_list.stdout"
+    tags:
+        - always
 
-- name: Check for Brewfile.
-  stat:
-    path: "{{ brew_brewfile_dir }}/Brewfile"
-  register: brew_brewfile
-  tags:
-  - always
+-   name: Check for Brewfile.
+    stat:
+        path: "{{ brew_brewfile_dir }}/Brewfile"
+    register: brew_brewfile
+    tags:
+        - always
 
-- name: Install from Brewfile.
-  command: "brew bundle chdir={{ brew_brewfile_dir }}"
-  when: brew_brewfile.stat.exists and brew_use_brewfile
-  tags:
-  - always
+-   name: Install from Brewfile.
+    command: "brew bundle chdir={{ brew_brewfile_dir }}"
+    when: brew_brewfile.stat.exists and brew_use_brewfile
+    tags:
+        - always
 
