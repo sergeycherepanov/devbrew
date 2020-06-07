@@ -47,6 +47,7 @@
 
 -   name: Extracting Homebrew.
     shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
+    become: yes
     args:
         warn: false
     tags:

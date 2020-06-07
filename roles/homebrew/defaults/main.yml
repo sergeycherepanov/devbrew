@@ -40,6 +40,9 @@ brew_use_brewfile: true
 brew_brewfile_dir: '~'
 brew_directories:
   - '{{ brew_install_path }}/bin'
+  - '{{ brew_install_path }}/docs'
+  - '{{ brew_install_path }}/completions'
+  - '{{ brew_install_path }}/manpages'
   - '{{ brew_install_path }}/etc'
   - '{{ brew_install_path }}/include'
   - '{{ brew_install_path }}/lib'
