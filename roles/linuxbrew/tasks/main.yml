@@ -39,6 +39,7 @@
         - always
 
 -   name: Extracting linuxbrew.
+#    shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}/Homebrew"
     shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
     become: yes
     args:
@@ -55,6 +56,14 @@
     become: yes
     tags:
         - always
+
+#-   name: Create a symbolic link
+#    file:
+#        src: '{{ brew_install_path }}/bin/brew'
+#        dest: '{{ brew_install_path }}/Homebrew/bin/brew'
+#        state: link
+#    tags:
+#        - always
 
 #- name: Check if linuxbrew binary is already in place
 #  stat:

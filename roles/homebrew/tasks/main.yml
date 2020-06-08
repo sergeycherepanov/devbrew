@@ -46,8 +46,7 @@
         - always
 
 -   name: Extracting Homebrew.
-    shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
-    become: yes
+    shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}/Homebrew"
     args:
         warn: false
     tags:
@@ -59,6 +58,14 @@
         ls -A "{{ brew_install_path }}" | xargs -I {} chgrp -R "{{ brew_group }}" "{{ brew_install_path }}/{}"
         ls -A "{{ brew_install_path }}" | xargs -I {} chmod g+w "{{ brew_install_path }}/{}"
     become: yes
+    tags:
+        - always
+
+-   name: Create a symbolic link
+    file:
+        src: '{{ brew_install_path }}/Homebrew/bin/brew'
+        dest: '{{ brew_install_path }}/bin/brew'
+        state: link
     tags:
         - always
 
