@@ -23,6 +23,8 @@ brew_installed_packages:
   - shellcheck
   - libmcrypt
   - yarn
+  - yq
+  - jq
 
 brew_upgrade_all_packages: no
 

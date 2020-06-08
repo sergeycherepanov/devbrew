@@ -24,6 +24,8 @@ brew_installed_packages:
   - pup
   - fswatch
   - libmcrypt
+  - yq
+  - jq
 
 brew_upgrade_all_packages: no
 
