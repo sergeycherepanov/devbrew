@@ -243,7 +243,9 @@
     block: |
       export LC_ALL=en_US.UTF-8
       export LANG=en_US.UTF-8
-      source $HOME/.fonts/*.sh
+      if [[ -d $HOME/.fonts ]]; then
+        source $HOME/.fonts/*.sh
+      fi
   tags:
     - zsh
 
