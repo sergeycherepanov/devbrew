@@ -1,7 +1,7 @@
 ---
 - name: Downloading flock
   get_url:
-    url: "https://github.com/discoteq/flock/releases/download/v0.2.3/flock-0.2.3.tar.gz"
+    url: "https://github.com/discoteq/flock/releases/download/v0.4.0/flock-0.4.0.tar.gz"
     dest: "/tmp/flock.tgz"
   
 - name: "Creating /tmp/flock"
@@ -13,5 +13,5 @@
   shell: "tar xzf /tmp/flock.tgz -C /tmp/flock"
   
 - name: Building flock
-  shell: "cd /tmp/flock/flock-0.2.3 && ./configure && make && make install"
+  shell: "cd /tmp/flock/flock-0.4.0 && ./configure && make && make install"
   
