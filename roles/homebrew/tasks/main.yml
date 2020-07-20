@@ -131,7 +131,7 @@
 # Use command module instead of brew_cask so appdir can be used.
 -   name: Install configured cask applications.
     command: >
-        bash -l -c '{{ brew_brew_bin_path }}/brew cask reinstall {{ item }} --appdir={{ brew_cask_appdir }}'
+        bash -l -c '{{ brew_brew_bin_path }}/brew cask reinstall -f {{ item }} --appdir={{ brew_cask_appdir }}'
     with_items: "{{ brew_cask_apps }}"
     #  when: "item not in brew_cask_list.stdout"
     tags:
