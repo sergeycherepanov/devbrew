@@ -19,12 +19,11 @@
   tags:
     - zsh
 
-- name: "Downloading 'hack' font"
+- name: "Downloading 'powerline' fonts"
   git:
     repo: 'https://github.com/powerline/fonts.git'
     dest: '/tmp/powerline_fonts'
     version: 'master'
-  when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   tags:
     - zsh
 
@@ -38,8 +37,23 @@
 
 - copy:
     src: '/tmp/powerline_fonts/Hack/'
+    dest: '/Library/Fonts'
+  when: 'ansible_system == "Darwin"'
+  become: yes
+  tags:
+    - zsh
+
+- copy:
+    src: '/tmp/powerline_fonts/Hack/'
     dest: '{{ brew_user_home_dir }}/.fonts/'
   when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
+  tags:
+    - zsh
+
+- copy:
+    src: '/tmp/powerline_fonts/Hack/'
+    dest: '{{ brew_user_home_dir }}/Library/Fonts/'
+  when: 'ansible_system == "Darwin"'
   tags:
     - zsh
 
@@ -48,7 +62,6 @@
     repo: 'https://github.com/gabrielelana/awesome-terminal-fonts.git'
     dest: '/tmp/awesome-terminal-fonts'
     version: 'master'
-  when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   tags:
     - zsh
 
@@ -60,11 +73,28 @@
   tags:
     - zsh
 
+- name: "Installing 'awesome-terminal-fonts' to {{ brew_user_home_dir }}/Library/Fonts/"
+  copy:
+    src: '/tmp/awesome-terminal-fonts/build/'
+    dest: '{{ brew_user_home_dir }}/Library/Fonts/'
+  when: 'ansible_system == "Darwin"'
+  tags:
+    - zsh
+
 - name: "Installing 'awesome-terminal-fonts' /usr/share/fonts/"
   copy:
     src: '/tmp/awesome-terminal-fonts/build/'
     dest: '/usr/share/fonts/'
   when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
+  become: yes
+  tags:
+    - zsh
+
+- name: "Installing 'awesome-terminal-fonts' /Library/Fonts"
+  copy:
+    src: '/tmp/awesome-terminal-fonts/build/'
+    dest: '/Library/Fonts'
+  when: 'ansible_system == "Darwin"'
   become: yes
   tags:
     - zsh

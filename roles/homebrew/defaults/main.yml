@@ -33,8 +33,7 @@ brew_taps:
   - djocker/common
   - homebrew/cask-fonts 
 
-brew_cask_apps:
-  - font-hack-nerd-font
+brew_cask_apps: []
 
 brew_cask_appdir: /Applications
 
