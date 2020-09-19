@@ -127,6 +127,11 @@
     src: supervisord.ini.j2
     dest: '{{ brew_install_path }}/etc/supervisord.ini'
 
+- name: "Absent {{ brew_install_path }}/etc/supervisord.conf"
+  file:
+    state: absent
+    path: "{{ brew_install_path }}/etc/supervisord.conf"
+
 - name: Ensure symlink for supervisord.ini
   file:
     src: "{{ brew_install_path }}/etc/supervisord.ini"
