@@ -19,7 +19,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 2. Install cli tools: `xcode-select --install` (it's starts XCODE installation process)
 3. Execute: `cd ~`
 4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
-5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php71,php72,php73,xhgui,percona57,nodejs,zsh,dnsmasq"` to make full install  
+5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php72,php73,php74,xhgui,percona57,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
 6. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
 
