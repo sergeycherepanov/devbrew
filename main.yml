@@ -164,6 +164,7 @@
     - php-72
     - php-73
     - php-74
+    - php-80
     - nginx-php-fpm
     - role: nodejs
       tags:

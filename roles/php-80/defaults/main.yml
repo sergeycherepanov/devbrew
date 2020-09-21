@@ -1,0 +1,21 @@
+---
+php_version: php80
+php_version_num: 8.0
+php_version_num_int: 80
+php_flags: ""
+php_dependencies:
+php_modules:
+    - php80-intl
+    - php80-mcrypt
+    - php80-xdebug
+    - php80-redis
+    - php80-tidy
+    - php80-opcache
+    - php80-pdo-pgsql
+    - php80-xhprof
+    - php80-mongodb
+    - php80-apcu
+    - php80-gmp
+    - php80-imagick
+    - php80-zip
+php_pear_packages: []

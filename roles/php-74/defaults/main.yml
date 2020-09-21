@@ -17,4 +17,5 @@ php_modules:
     - php74-apcu
     - php74-gmp
     - php74-imagick
+    - php74-zip
 php_pear_packages: []
