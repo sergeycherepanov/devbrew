@@ -4,7 +4,6 @@
     name: python@2
     state: latest
 
-
 - name: "Resolve local python path"
   shell: "cd $(brew --prefix python@2)/bin; cd $(dirname $(readlink python2)); pwd"
   register: result
