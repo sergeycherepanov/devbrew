@@ -49,6 +49,15 @@
     tags:
         - always
 
+-   name: Ensure Homebrew in your PATH and in your bash shell profile script.
+    shell: >
+        test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+        test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+        test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile
+        echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
+    tags:
+        - always
+
 #-   name: Create a symbolic link
 #    file:
 #        src: '{{ brew_install_path }}/bin/brew'
@@ -74,66 +83,66 @@
 #  tags:
 #  - always
 
--   name: "Ensure brew wrapper in /usr/local/bin/brew"
-    copy:
-        mode: 0755
-        group: root
-        dest: "/usr/local/bin/brew"
-        content: |
-            #!/bin/sh
-            # --- [ Check/Sync Environment ] ---
-            # here I use LINUXBREW_PREFIX as the major ENV,
-            # and HOMEBREW_PREFIX is for compatibility.
-            if [ -z ${LINUXBREW_PREFIX} ] && [ -z ${HOMEBREW_PREFIX}]; then
-              # when both ENV are not set, use default.
-              export LINUXBREW_PREFIX="{{ brew_install_path }}"
-              export HOMEBREW_PREFIX=${LINUXBREW_PREFIX}
-            elif [ -z ${HOMEBREW_PREFIX} ];then
-              # LINUXBREW_PREFIX is set.
-              export HOMEBREW_PREFIX=${LINUXBREW_PREFIX}
-            elif [ -z ${LINUXBREW_PREFIX} ];then
-              # HOMEBREW_PREFIX is set.
-              export LINUXBREW_PREFIX=${HOMEBREW_PREFIX}
-            else #[ ! -z ${LINUXBREW_PREFIX} ] && [ ! -z ${HOMEBREW_PREFIX}]
-              # both ENV are set (even if they are conflicting to each other),
-              # then we use LINUXBREW_PREFIX.  And export nothing
-              true
-            fi
-            export BREW_EXEC="${LINUXBREW_PREFIX}/bin/brew"   # real brew executable
-            # root ?
-            if [ `whoami` = "root" ]; then
-              # well, the upstream install script will stop when detected root.
-              # However, not stopping users who created linuxbrew for root user.
-              printf "W: be careful as root.\n"
-            fi
-
-            # ruby ?
-            if [ ! -x $(which ruby) ]; then
-              printf "E: ruby interpreter not available, abort.\n"
-              false
-            fi
-
-            # If there is brew instance available, just run it.
-            if [ -x ${BREW_EXEC} ]; then
-              exec ${BREW_EXEC} $@
-            elif [ -d ${LINUXBREW_PREFIX} ]; then
-              printf "E: Linuxbrew directory detected, but it seems to be broken.\n"
-              false
-            else
-              printf "E: Linuxbrew binary wasn't found.\n"
-            fi
-    become: yes
-    tags:
-        - always
-
--   name: "Updating rc"
-    blockinfile:
-        dest: '{{ brew_user_home_dir }}/{{item}}'
-        marker: "# {mark} homebrew env"
-        block: "eval $($(brew --prefix)/bin/brew shellenv)"
-    with_items: ['.zshrc', '.bashrc', '.profile']
-    tags:
-        - always
+#-   name: "Ensure brew wrapper in /usr/local/bin/brew"
+#    copy:
+#        mode: 0755
+#        group: root
+#        dest: "/usr/local/bin/brew"
+#        content: |
+#            #!/bin/sh
+#            # --- [ Check/Sync Environment ] ---
+#            # here I use LINUXBREW_PREFIX as the major ENV,
+#            # and HOMEBREW_PREFIX is for compatibility.
+#            if [ -z ${LINUXBREW_PREFIX} ] && [ -z ${HOMEBREW_PREFIX}]; then
+#              # when both ENV are not set, use default.
+#              export LINUXBREW_PREFIX="{{ brew_install_path }}"
+#              export HOMEBREW_PREFIX=${LINUXBREW_PREFIX}
+#            elif [ -z ${HOMEBREW_PREFIX} ];then
+#              # LINUXBREW_PREFIX is set.
+#              export HOMEBREW_PREFIX=${LINUXBREW_PREFIX}
+#            elif [ -z ${LINUXBREW_PREFIX} ];then
+#              # HOMEBREW_PREFIX is set.
+#              export LINUXBREW_PREFIX=${HOMEBREW_PREFIX}
+#            else #[ ! -z ${LINUXBREW_PREFIX} ] && [ ! -z ${HOMEBREW_PREFIX}]
+#              # both ENV are set (even if they are conflicting to each other),
+#              # then we use LINUXBREW_PREFIX.  And export nothing
+#              true
+#            fi
+#            export BREW_EXEC="${LINUXBREW_PREFIX}/bin/brew"   # real brew executable
+#            # root ?
+#            if [ `whoami` = "root" ]; then
+#              # well, the upstream install script will stop when detected root.
+#              # However, not stopping users who created linuxbrew for root user.
+#              printf "W: be careful as root.\n"
+#            fi
+#
+#            # ruby ?
+#            if [ ! -x $(which ruby) ]; then
+#              printf "E: ruby interpreter not available, abort.\n"
+#              false
+#            fi
+#
+#            # If there is brew instance available, just run it.
+#            if [ -x ${BREW_EXEC} ]; then
+#              exec ${BREW_EXEC} $@
+#            elif [ -d ${LINUXBREW_PREFIX} ]; then
+#              printf "E: Linuxbrew directory detected, but it seems to be broken.\n"
+#              false
+#            else
+#              printf "E: Linuxbrew binary wasn't found.\n"
+#            fi
+#    become: yes
+#    tags:
+#        - always
+#
+#-   name: "Updating rc"
+#    blockinfile:
+#        dest: '{{ brew_user_home_dir }}/{{item}}'
+#        marker: "# {mark} homebrew env"
+#        block: "eval $($(brew --prefix)/bin/brew shellenv)"
+#    with_items: ['.zshrc', '.bashrc', '.profile']
+#    tags:
+#        - always
 
 -   name: Stash brew changes
     shell: 'cd $(brew --prefix)/Library && git stash && git clean -d -f'
