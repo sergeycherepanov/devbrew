@@ -57,15 +57,19 @@
     tags:
         - always
 
--   name: "Update $HOME/.bash_profile"
+-   name: "Update {{ brew_user_home_dir }}/.bash_profile"
     lineinfile:
-        path: '$HOME/.bash_profile'
+        path: '{{ brew_user_home_dir }}/.bash_profile'
         line: 'eval $({{ brew_install_path }}/bin/brew shellenv)'
+    tags:
+        - always
 
--   name: "Update $HOME/.profile"
+-   name: "Update {{ brew_user_home_dir }}/.profile"
     lineinfile:
-        path: '$HOME/.profile'
+        path: '{{ brew_user_home_dir }}/.profile'
         line: 'eval $({{ brew_install_path }}/bin/brew shellenv)'
+    tags:
+        - always
 
 -   name: Stash brew changes
     shell: 'cd {{ brew_install_path }}/Homebrew/Library && git stash && git clean -d -f'
