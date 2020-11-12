@@ -57,14 +57,15 @@
     tags:
         - always
 
--   name: Ensure Homebrew in your PATH and in your bash shell profile script.
-    shell: >
-        test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
-        test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-        test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile
-        echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
-    tags:
-        - always
+-   name: "Update $HOME/.bash_profile"
+    lineinfile:
+        path: '$HOME/.bash_profile'
+        line: 'eval $({{ brew_install_path }}/bin/brew shellenv)'
+
+-   name: "Update $HOME/.profile"
+    lineinfile:
+        path: '$HOME/.profile'
+        line: 'eval $({{ brew_install_path }}/bin/brew shellenv)'
 
 -   name: Stash brew changes
     shell: 'cd $(brew --prefix)/Library && git stash && git clean -d -f'
