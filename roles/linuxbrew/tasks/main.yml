@@ -68,7 +68,7 @@
         line: 'eval $({{ brew_install_path }}/bin/brew shellenv)'
 
 -   name: Stash brew changes
-    shell: 'cd $(brew --prefix)/Library && git stash && git clean -d -f'
+    shell: 'cd {{ brew_install_path }}/Homebrew/Library && git stash && git clean -d -f'
     ignore_errors: yes
     when: brew_state.stat.exists
     tags:
