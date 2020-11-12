@@ -57,10 +57,22 @@
     tags:
         - always
 
+-   stat:
+        path: "{{ brew_user_home_dir }}/.bash_profile"
+    register: bash_profile_state
+    tags:
+        - always
+-   stat:
+        path: "{{ brew_user_home_dir }}/.profile"
+    register: profile_state
+    tags:
+        - always
+
 -   name: "Update {{ brew_user_home_dir }}/.bash_profile"
     lineinfile:
         path: '{{ brew_user_home_dir }}/.bash_profile'
         line: 'eval $({{ brew_install_path }}/bin/brew shellenv)'
+    when: bash_profile_state.stat.exists
     tags:
         - always
 
@@ -68,6 +80,7 @@
     lineinfile:
         path: '{{ brew_user_home_dir }}/.profile'
         line: 'eval $({{ brew_install_path }}/bin/brew shellenv)'
+    when: profile_state.stat.exists
     tags:
         - always
 
