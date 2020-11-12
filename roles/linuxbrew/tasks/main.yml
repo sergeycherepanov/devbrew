@@ -27,9 +27,7 @@
         - always
 
 -   name: Downloading linuxbrew
-    #shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ brew_install_path }}"
     get_url:
-        #url: "https://github.com/Homebrew/brew/archive/2.1.10.tar.gz"
         url: "https://github.com/Homebrew/brew/tarball/master"
         dest: "/tmp/brew-master.tgz"
     tags:
