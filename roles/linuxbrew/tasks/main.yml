@@ -5,15 +5,12 @@
     tags:
         - always
 
--   name: Ensure linuxbrew install path.
+-   name: Ensure homebrew install path ownership.
     file:
         path: "{{ brew_install_path }}"
-        owner: "{{ brew_user }}"
-        group: "{{ brew_group }}"
-        state: directory
-        mode: 0775
+        owner: '{{ brew_user }}'
+    ignore_errors: yes
     become: yes
-    when: not brew_state.stat.exists
     tags:
         - always
 
@@ -24,7 +21,7 @@
         owner: '{{ brew_user }}'
         group: '{{ brew_group }}'
         mode: '0775'
-    with_items: "{{ brew_directories }}"
+    with_items: '{{ brew_directories }}'
     become: yes
     tags:
         - always
@@ -38,13 +35,10 @@
     tags:
         - always
 
--   name: Extracting linuxbrew.
-#    shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}/Homebrew"
-    shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}"
-    become: yes
+-   name: Extracting Homebrew.
+    shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}/Homebrew"
     args:
         warn: false
-    when: not brew_state.stat.exists
     tags:
         - always
 
