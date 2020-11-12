@@ -23,7 +23,7 @@ else
   if [[ "Linux" == "$(uname)" ]]; then
     source /etc/os-release
     if [[ "debian" == "${ID}" ]] || [[ "debian" == "${ID_LIKE}" ]] || [[ "ubuntu" == "${ID_LIKE}" ]]; then
-      sudo apt -qq update && sudo apt install -yqq iptables ca-certificates build-essential curl file git python
+      sudo apt -qq update && sudo apt install -yqq iptables ca-certificates build-essential systemtap-sdt-dev curl file git python
       BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/home/linuxbrew/.linuxbrew}"
     else
       echo "Unsupported system: '$(uname):${ID_LIKE}'"
