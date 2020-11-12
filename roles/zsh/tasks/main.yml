@@ -112,6 +112,7 @@
     state: latest
     extra_args: --user
     executable: "{{ local_pip2_path }}"
+  ignore_errors: True
   tags:
     - zsh
 

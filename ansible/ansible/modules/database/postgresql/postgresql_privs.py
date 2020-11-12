@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: Ansible Project
+# Copyright: (c) 2019, Tobias Birkefeld (@tcraxs) <t@craxs.de>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -45,7 +46,7 @@ options:
   type:
     description:
     - Type of database object to set privileges on.
-    - The `default_prives` choice is available starting at version 2.7.
+    - The `default_privs` choice is available starting at version 2.7.
     - The 'foreign_data_wrapper' and 'foreign_server' object types are available from Ansible version '2.8'.
     type: str
     default: table
@@ -161,12 +162,6 @@ options:
     - ssl_rootcert
 
 notes:
-- Default authentication assumes that postgresql_privs is run by the
-  C(postgres) user on the remote host. (Ansible's C(user) or C(sudo-user)).
-- This module requires Python package I(psycopg2) to be installed on the
-  remote host. In the default case of the remote host also being the
-  PostgreSQL server, PostgreSQL has to be installed there as well, obviously.
-  For Debian/Ubuntu-based systems, install packages I(postgresql) and I(python-psycopg2).
 - Parameters that accept comma separated lists (I(privs), I(objs), I(roles))
   have singular alias names (I(priv), I(obj), I(role)).
 - To revoke only C(GRANT OPTION) for a specific object, set I(state) to
@@ -177,16 +172,27 @@ notes:
   specified via I(login). If R has been granted the same privileges by
   another user also, R can still access database objects via these privileges.
 - When revoking privileges, C(RESTRICT) is assumed (see PostgreSQL docs).
-- The ca_cert parameter requires at least Postgres version 8.4 and I(psycopg2) version 2.4.3.
 
-requirements:
-- psycopg2
+seealso:
+- module: postgresql_user
+- module: postgresql_owner
+- module: postgresql_membership
+- name: PostgreSQL privileges
+  description: General information about PostgreSQL privileges.
+  link: https://www.postgresql.org/docs/current/ddl-priv.html
+- name: PostgreSQL GRANT command reference
+  description: Complete reference of the PostgreSQL GRANT command documentation.
+  link: https://www.postgresql.org/docs/current/sql-grant.html
+- name: PostgreSQL REVOKE command reference
+  description: Complete reference of the PostgreSQL REVOKE command documentation.
+  link: https://www.postgresql.org/docs/current/sql-revoke.html
 
 extends_documentation_fragment:
 - postgres
 
 author:
 - Bernhard Weitzhofer (@b6d)
+- Tobias Birkefeld (@tcraxs)
 '''
 
 EXAMPLES = r'''
@@ -541,7 +547,7 @@ class Connection(object):
         query = """SELECT relacl
                    FROM pg_catalog.pg_class c
                    JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-                   WHERE nspname = %s AND relkind in ('r','p') AND relname = ANY (%s)
+                   WHERE nspname = %s AND relkind in ('r','p','v','m') AND relname = ANY (%s)
                    ORDER BY relname"""
         self.cursor.execute(query, (schema, tables))
         return [t[0] for t in self.cursor.fetchall()]
@@ -743,6 +749,16 @@ class Connection(object):
         executed_queries.append(query)
         self.cursor.execute(query)
         status_after = get_status(objs)
+
+        def nonesorted(e):
+            # For python 3+ that can fail trying
+            # to compare NoneType elements by sort method.
+            if e is None:
+                return ''
+            return e
+
+        status_before.sort(key=nonesorted)
+        status_after.sort(key=nonesorted)
         return status_before != status_after
 
 

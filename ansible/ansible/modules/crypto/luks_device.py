@@ -281,7 +281,7 @@ class CryptHandler(Handler):
                              % (device, result[STDERR]))
 
     def run_luks_add_key(self, device, keyfile, new_keyfile):
-        ''' Add new key to given 'device'; authentization done using 'keyfile'
+        ''' Add new key to given 'device'; authentication done using 'keyfile'
             Raises ValueError when command fails
         '''
         result = self._run_command([self._cryptsetup_bin, 'luksAddKey', device,
@@ -362,11 +362,11 @@ class ConditionsHandler(Handler):
             # container is not open
             return None
 
-        if (self._module.params['name'] is None):
+        if self._module.params['name'] is None:
             # container is already opened
             return name
 
-        if (name != self._module.params['name']):
+        if name != self._module.params['name']:
             # the container is already open but with different name:
             # suspicious. back off
             self._module.fail_json(msg="LUKS container is already opened "

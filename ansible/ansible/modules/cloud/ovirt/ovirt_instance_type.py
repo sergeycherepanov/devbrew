@@ -50,7 +50,7 @@ options:
             - C(interface) -  Type of the network interface. One of following I(virtio), I(e1000), I(rtl8139), default is I(virtio).
             - C(mac_address) - Custom MAC address of the network interface, by default it's obtained from MAC pool.
             - NOTE - This parameter is used only when C(state) is I(running) or I(present) and is able to only create NICs.
-              To manage NICs of the instance type in more depth please use M(ovirt_nics) module instead.
+              To manage NICs of the instance type in more depth please use M(ovirt_nic) module instead.
     memory_max:
         description:
             - Upper bound of instance type memory up to which memory hot-plug can be performed.
@@ -72,13 +72,15 @@ options:
         description:
             - Operating system of the Instance Type.
             - Default value is set by oVirt/RHV engine.
-            - "Possible values: debian_7, freebsd, freebsdx64, other, other_linux,
-               other_linux_ppc64, other_ppc64, rhel_3, rhel_4, rhel_4x64, rhel_5, rhel_5x64,
-               rhel_6, rhel_6x64, rhel_6_ppc64, rhel_7x64, rhel_7_ppc64, sles_11, sles_11_ppc64,
-               ubuntu_12_04, ubuntu_12_10, ubuntu_13_04, ubuntu_13_10, ubuntu_14_04, ubuntu_14_04_ppc64,
-               windows_10, windows_10x64, windows_2003, windows_2003x64, windows_2008, windows_2008x64,
-               windows_2008r2x64, windows_2008R2x64, windows_2012x64, windows_2012R2x64, windows_7,
-               windows_7x64, windows_8, windows_8x64, windows_xp"
+            - "Possible values: debian_7, freebsd, freebsdx64, other, other_linux, other_linux_kernel_4,
+               other_linux_ppc64, other_linux_s390x, other_ppc64, other_s390x, rhcos_x64, rhel_3,
+               rhel_3x64, rhel_4, rhel_4x64, rhel_5, rhel_5x64, rhel_6, rhel_6_9_plus_ppc64,
+               rhel_6_ppc64, rhel_6x64, rhel_7_ppc64, rhel_7_s390x, rhel_7x64, rhel_8x64,
+               rhel_atomic7x64, sles_11, sles_11_ppc64, sles_12_s390x, ubuntu_12_04, ubuntu_12_10,
+               ubuntu_13_04, ubuntu_13_10, ubuntu_14_04, ubuntu_14_04_ppc64, ubuntu_16_04_s390x,
+               windows_10, windows_10x64, windows_2003, windows_2003x64, windows_2008,
+               windows_2008R2x64, windows_2008x64, windows_2012R2x64, windows_2012x64, windows_2016x64,
+               windows_2019x64, windows_7, windows_7x64, windows_8, windows_8x64, windows_xp"
     boot_devices:
         description:
             - List of boot devices which should be used to boot. For example C([ cdrom, hd ]).
@@ -210,7 +212,7 @@ EXAMPLES = '''
     nics:
       - name: nic1
 
-# Enable usb suppport and serial console
+# Enable usb support and serial console
 - ovirt_instance_type:
     name: myit
     usb_support: True

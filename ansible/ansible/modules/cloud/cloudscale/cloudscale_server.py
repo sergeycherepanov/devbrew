@@ -21,7 +21,7 @@ short_description: Manages servers on the cloudscale.ch IaaS service
 description:
   - Create, update, start, stop and delete servers on the cloudscale.ch IaaS service.
 notes:
-  - Since version 2.8, I(uuid) and I(name) or not mututally exclusive anymore.
+  - Since version 2.8, I(uuid) and I(name) or not mutually exclusive anymore.
   - If I(uuid) option is provided, it takes precedence over I(name) for server selection. This allows to update the server's name.
   - If no I(uuid) option is provided, I(name) is used for server selection. If more than one server with this name exists, execution is aborted.
   - Only the I(name) and I(flavor) are evaluated for the update.
@@ -113,6 +113,11 @@ options:
     default: no
     type: bool
     version_added: '2.8'
+  tags:
+    description:
+      - Tags assosiated with the servers. Set this to C({}) to clear any tags.
+    type: dict
+    version_added: '2.9'
 extends_documentation_fragment: cloudscale
 '''
 
@@ -245,6 +250,12 @@ server_groups:
   type: list
   sample: [ {"href": "https://api.cloudscale.ch/v1/server-groups/...", "uuid": "...", "name": "db-group"} ]
   version_added: '2.8'
+tags:
+  description: Tags assosiated with the volume.
+  returned: success
+  type: dict
+  sample: { 'project': 'my project' }
+  version_added: '2.9'
 '''
 
 from datetime import datetime, timedelta
@@ -453,6 +464,7 @@ class AnsibleCloudscaleServer(AnsibleCloudscaleBase):
 
         server_info = self._update_param('flavor', server_info, requires_stop=True)
         server_info = self._update_param('name', server_info)
+        server_info = self._update_param('tags', server_info)
 
         if previous_state == "running":
             server_info = self._start_stop_server(server_info, target_state="running", ignore_diff=True)
@@ -508,7 +520,8 @@ def main():
         anti_affinity_with=dict(removed_in_version='2.11'),
         server_groups=dict(type='list'),
         user_data=dict(),
-        force=dict(type='bool', default=False)
+        force=dict(type='bool', default=False),
+        tags=dict(type='dict'),
     ))
 
     module = AnsibleModule(

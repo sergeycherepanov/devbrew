@@ -19,17 +19,17 @@ module: azure_rm_functionapp
 version_added: "2.4"
 short_description: Manage Azure Function Apps
 description:
-    - Create, update or delete an Azure Function App
+    - Create, update or delete an Azure Function App.
 options:
     resource_group:
         description:
-            - Name of resource group
+            - Name of resource group.
         required: true
         aliases:
             - resource_group_name
     name:
         description:
-            - Name of the Azure Function App
+            - Name of the Azure Function App.
         required: true
     location:
         description:
@@ -38,8 +38,8 @@ options:
         description:
             - App service plan.
             - It can be name of existing app service plan in same resource group as function app.
-            - "It can be resource id of existing app service plan. eg.,
-              /subscriptions/<subs_id>/resourceGroups/<resource_group>/providers/Microsoft.Web/serverFarms/<plan_name>"
+            - It can be resource id of existing app service plan.
+            - Resource id. For example /subscriptions/<subs_id>/resourceGroups/<resource_group>/providers/Microsoft.Web/serverFarms/<plan_name>.
             - It can be a dict which contains C(name), C(resource_group).
             - C(name). Name of app service plan.
             - C(resource_group). Resource group name of app service plan.
@@ -48,11 +48,14 @@ options:
         description: Web app container settings.
         suboptions:
             name:
-                description: Name of container. eg. "imagename:tag"
+                description:
+                    - Name of container. For example "imagename:tag".
             registry_server_url:
-                description: Container registry server url. eg. mydockerregistry.io
+                description:
+                    - Container registry server url. For example C(mydockerregistry.io).
             registry_server_user:
-                description: The container registry server user name.
+                description:
+                    - The container registry server user name.
             registry_server_password:
                 description:
                     - The container registry server password.
@@ -66,11 +69,10 @@ options:
             - storage_account_name
     app_settings:
         description:
-            - Dictionary containing application settings
+            - Dictionary containing application settings.
     state:
         description:
-            - Assert the state of the Function App. Use C(present) to create or update a Function App and
-              C(absent) to delete.
+            - Assert the state of the Function App. Use C(present) to create or update a Function App and C(absent) to delete.
         default: present
         choices:
             - absent
@@ -81,7 +83,7 @@ extends_documentation_fragment:
     - azure_tags
 
 author:
-    - "Thomas Stringer (@trstringer)"
+    - Thomas Stringer (@trstringer)
 '''
 
 EXAMPLES = '''
@@ -121,7 +123,8 @@ EXAMPLES = '''
 
 RETURN = '''
 state:
-    description: Current state of the Azure Function App
+    description:
+        - Current state of the Azure Function App.
     returned: success
     type: dict
     example:
@@ -149,7 +152,7 @@ state:
             host_type: Repository
         server_farm_id: /subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/myResourceGroup/providers/Microsoft.Web/serverfarms/EastUSPlan
         reserved: false
-        last_modified_time_utc: 2017-08-22T18:54:01.190Z
+        last_modified_time_utc: '2017-08-22T18:54:01.190Z'
         scm_site_also_stopped: false
         client_affinity_enabled: true
         client_cert_enabled: false

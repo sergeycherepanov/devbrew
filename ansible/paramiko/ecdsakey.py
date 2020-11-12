@@ -160,12 +160,12 @@ class ECDSAKey(PKey):
 
             pointinfo = msg.get_binary()
             try:
-                numbers = ec.EllipticCurvePublicNumbers.from_encoded_point(
+                key = ec.EllipticCurvePublicKey.from_encoded_point(
                     self.ecdsa_curve.curve_class(), pointinfo
                 )
+                self.verifying_key = key
             except ValueError:
                 raise SSHException("Invalid public key")
-            self.verifying_key = numbers.public_key(backend=default_backend())
 
     @classmethod
     def supported_key_format_identifiers(cls):
@@ -283,12 +283,33 @@ class ECDSAKey(PKey):
         self._decode_key(data)
 
     def _decode_key(self, data):
-        try:
-            key = serialization.load_der_private_key(
-                data, password=None, backend=default_backend()
-            )
-        except (ValueError, AssertionError) as e:
-            raise SSHException(str(e))
+        pkformat, data = data
+        if pkformat == self._PRIVATE_KEY_FORMAT_ORIGINAL:
+            try:
+                key = serialization.load_der_private_key(
+                    data, password=None, backend=default_backend()
+                )
+            except (ValueError, AssertionError) as e:
+                raise SSHException(str(e))
+        elif pkformat == self._PRIVATE_KEY_FORMAT_OPENSSH:
+            try:
+                msg = Message(data)
+                curve_name = msg.get_text()
+                verkey = msg.get_binary()  # noqa: F841
+                sigkey = msg.get_mpint()
+                name = "ecdsa-sha2-" + curve_name
+                curve = self._ECDSA_CURVES.get_by_key_format_identifier(name)
+                if not curve:
+                    raise SSHException("Invalid key curve identifier")
+                key = ec.derive_private_key(
+                    sigkey, curve.curve_class(), default_backend()
+                )
+            except Exception as e:
+                # PKey._read_private_key_openssh() should check or return
+                # keytype - parsing could fail for any reason due to wrong type
+                raise SSHException(str(e))
+        else:
+            self._got_bad_key_format_id(pkformat)
 
         self.signing_key = key
         self.verifying_key = key.public_key()
