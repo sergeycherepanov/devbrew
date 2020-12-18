@@ -1,0 +1,9 @@
+[program:{{ mysql_supervisord_name }}]
+command={{ supervisor_pidproxy_path }} {{ brew_install_path }}/var/run/mysql/{{ mysql_version_num }}/mysqld.pid {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --pid-file={{ brew_install_path }}/var/run/mysql/{{ mysql_version_num }}/mysqld.pid
+directory={{ brew_install_path }}/var
+stdout_logfile={{ brew_install_path }}/var/log/supervisor/{{ mysql_supervisord_name }}.log
+stderr_logfile={{ brew_install_path }}/var/log/supervisor/{{ mysql_supervisord_name }}.err
+autorestart=true
+user={{ mysql_user }}
+stopasgroup=true
+startsecs=10

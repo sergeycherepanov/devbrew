@@ -151,6 +151,9 @@
     - role: percona-server-57
       tags:
         - percona57
+    - role: mysql-80
+      tags:
+        - mysql80
     - role: ruby
       tags:
         - always
