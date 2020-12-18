@@ -4,6 +4,8 @@ socket             = {{ mysql_run_dir }}/mysqld.sock
 
 [mysqld_safe]
 socket             = {{ mysql_run_dir }}/mysqld.sock
+bind-address       = {{ mysql_listen_address }}
+port               = {{ mysql_listen_port }}
 nice               = 0
 
 [mysqld]
@@ -15,9 +17,8 @@ basedir            = {{ mysql_base_dir }}
 datadir            = {{ mysql_data_dir }}
 tmpdir             = {{ mysql_tmp_dir }}
 lc-messages-dir    = {{ mysql_base_dir }}/share/mysql
-
+bind-address       = {{ mysql_listen_address }}
 explicit_defaults_for_timestamp = 1
-bind-address = {{ mysql_listen_address }}
 
 secure_file_priv   = {{ mysql_tmp_dir }}
 general_log_file   = {{ mysql_log_dir }}/query.log
@@ -36,9 +37,6 @@ join_buffer_size      = 16M
 key_buffer_size       = 256M
 tmp_table_size        = 256M
 max_heap_table_size   = 256M
-query_cache_limit     = 16M
-query_cache_size      = 64M
-query_cache_type      = ON
 log_error             = {{ mysql_log_dir }}/error.log
 expire_logs_days      = 7
 
@@ -52,7 +50,6 @@ innodb_log_buffer_size          = 64M
 innodb_flush_log_at_trx_commit  = 2
 innodb_buffer_pool_size         = 2G
 innodb_buffer_pool_instances    = 8
-innodb_file_format              = Barracuda
 
 lower_case_table_names=2
 table_open_cache=250

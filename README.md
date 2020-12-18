@@ -16,21 +16,22 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 
 ## Installation on MacOS
 1. Open the terminal (just type **terminal** into spotlight)
-2. Install cli tools: `xcode-select --install` (it's starts XCODE installation process)
-3. Execute: `cd ~`
-4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
-5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php72,php73,php74,xhgui,percona57,nodejs,zsh,dnsmasq"` to make full install  
+1. Install cli tools: `xcode-select --install` (it's starts XCODE installation process)
+1. Execute: `cd ~`
+1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
+1. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php72,php73,php74,xhgui,percona57,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
-6. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
+1. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
+1. Add root crt to keychain `security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /usr/local/etc/openssl/localCA/cacert.pem`
 
 ## Installation on Linux (ElementaryOS/Ubuntu/Debian)
 1. Open the terminal
-2. Install dependencies: `sudo apt update && sudo apt install -yq curl git`
-3. Execute: `cd ~`
-4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
-5. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php72,php73,php74,xhgui,percona57,nodejs,zsh,dnsmasq"` to make full install  
+1. Install dependencies: `sudo apt update && sudo apt install -yq curl git`
+1. Execute: `cd ~`
+1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
+1. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php72,php73,php74,xhgui,percona57,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
-7. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
+1. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
 
 ## Installation on Windows Subsystem for Linux
 1. Enable WSL

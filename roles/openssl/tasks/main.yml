@@ -105,10 +105,10 @@
     environment:
         OPENSSL_CONF: "{{ brew_install_path }}/etc/openssl/localCA/caconfig.cnf"
 
--   name: "(macOS only) Installing root certificate to keychain"
-    shell: 'security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
-    become: true
-    when: ansible_system == "Darwin"
+#-   name: "(macOS only) Installing root certificate to keychain"
+#    shell: 'security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain {{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
+#    become: true
+#    when: ansible_system == "Darwin"
 
 -   name: "(Linux only) Installing root certificate /usr/share/ca-certificates/extra"
     copy:
