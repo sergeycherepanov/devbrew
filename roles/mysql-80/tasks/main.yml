@@ -1,0 +1,199 @@
+---
+- name: Ensure required taps are tapped.
+  homebrew_tap: "tap={{ item }} state=present"
+  with_items:
+    - "{{ mysql_tap }}"
+
+- name: "Ensure Mysql Server {{ mysql_formula }}"
+  homebrew: 
+    name: "{{ mysql_formula }}"
+    state: latest
+  
+- name: "Resolve mysql base dir"
+  shell: "brew --prefix {{ mysql_formula }}"
+  register: mysql_base_dir_output
+  
+- name: Register mysql_base_dir fact
+  set_fact: 
+    mysql_base_dir: "{{ mysql_base_dir_output.stdout | trim }}"
+  
+- name: Unlinking formula
+  homebrew:
+    name: "{{ mysql_formula }}"
+    state: unlinked
+  
+- name: "Check mysql already installed"
+  stat: 
+    path: "{{ mysql_data_dir }}"
+  register: mysql_data_dir_stat
+  
+- name: "Create directories"
+  file: 
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ mysql_etc_dir }}"
+    - "{{ mysql_data_dir }}"
+    - "{{ mysql_log_dir }}"
+    - "{{ mysql_run_dir }}"
+  
+- name: "Ensure proper ownership on"
+  file:
+    path: "{{ mysql_etc_dir }}"
+    state: directory
+    owner: "{{ mysql_user }}"
+    group: "{{ mysql_group }}"
+    recurse: true
+  become: yes
+  with_items:
+    - "{{ mysql_etc_dir }}"
+    - "{{ mysql_data_dir }}"
+    - "{{ mysql_log_dir }}"
+    - "{{ mysql_run_dir }}"
+  
+- stat:
+    path: "{{ mysql_etc_dir }}/my.cnf"
+  register: state
+  
+- name: "Create my.cnf"
+  template: 
+    src: my.cnf.j2
+    dest: "{{ mysql_etc_dir }}/my.cnf"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
+    mode: 0744
+  when: not state.stat.exists
+  
+- find: 
+    paths: "{{ mysql_data_dir }}"
+  register: mysql_data_dir_files
+  
+- name: Touch error.log file
+  file: 
+    path: "{{ mysql_log_dir }}/error.log"
+    state: touch
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
+  
+- name: "Install db (mysqld --initialize-insecure)"
+  shell: "{{ mysql_base_dir }}/bin/mysql_install_db --defaults-file={{ mysql_etc_dir }}/my.cnf --basedir={{ mysql_base_dir }} --datadir={{ mysql_data_dir }} --lc-messages-dir={{ mysql_base_dir }}/share/mysql"
+  when: mysql_data_dir_files.matched|int == 0
+  
+- stat: 
+    path: "{{ brew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
+  register: state
+  
+- name: "Create {{ brew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
+  template:
+    src: supervisord.ini.j2
+    dest: "{{ brew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
+  when: not state.stat.exists
+  
+- ini_file:
+    path: "{{ brew_install_path }}/etc/supervisor.d/{{ mysql_supervisord_name }}.ini"
+    section: "program:{{ mysql_supervisord_name }}"
+    option: "command" 
+    value: "{{ brew_install_path }}/bin/pidproxy {{ brew_install_path }}/var/run/mysql/{{ mysql_version_num }}/mysqld.proxy.pid {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf"
+  
+- homebrew: 
+    name: "{{ mysql_formula }}"
+    state: unlinked
+  
+- name: "Absent {{ brew_install_path }}/var/mysql"
+  file:
+    state: absent
+    path: "{{ brew_install_path }}/var/mysql/"
+  
+- name: "Absent /tmp/mysql.err"
+  file:
+    state: absent
+    path: "/tmp/mysql.err"
+  
+- stat:
+    path: "{{ mysql_run_dir }}/mysqld.pid"
+  register: state
+  
+- name: Stopping mysql
+  shell: "kill -15 $(cat {{ mysql_run_dir }}/mysqld.pid) && sleep 5"
+  args:
+    chdir: /tmp
+  when: state.stat.exists
+  
+- name: Starting mysql with --skip-grant-tables flag
+  shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables --log-error=/tmp/mysql.err > /tmp/mysql.log 2>&1 &"
+  args:
+    chdir: /tmp
+  
+- name: Waiting mysql
+  shell: "timeout 60s bash -c \"until grep 'ready for connections\\|Server socket created on' /tmp/mysql.err; do sleep 1; done\""
+  args:
+    chdir: /tmp
+  
+- name: Setting plugin=mysql_native_password and update root password
+  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -e 'update user set plugin=\"mysql_native_password\"; update user set authentication_string=password(\"{{ mysql_root_password }}\"), password_expired=\"N\", password_lifetime=0 where user=\"root\";' mysql && pgrep mysql"
+  args:
+    chdir: /tmp
+  
+- name: Stopping mysql
+  shell: "kill -15 $(cat {{ mysql_run_dir }}/mysqld.pid) && sleep 5"
+  args:
+    chdir: /tmp
+  
+- name: "Absent /tmp/mysql.err"
+  file:
+    state: absent
+    path: "/tmp/mysql.err"
+  
+- name: Starting mysql
+  shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --log-error=/tmp/mysql.err > /dev/null &"
+  args:
+    chdir: /tmp
+  
+- name: Waiting mysql
+  shell: timeout 60s bash -c "until grep 'ready for connections\\|Server socket created on' /tmp/mysql.err; do sleep 1; done"
+  args:
+    chdir: /tmp
+  
+- name: Create logrotate user
+  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -p'{{ mysql_root_password }}' -e 'CREATE USER IF NOT EXISTS \"{{ logrorate_user }}\"@\"localhost\"; update user set plugin=\"mysql_native_password\"; update user set authentication_string=password(\"{{ logrorate_password }}\"), password_expired=\"N\", password_lifetime=0 where user=\"{{ logrorate_user }}\";grant reload on *.* to \"{{ logrorate_user }}\"@\"localhost\"' mysql"
+  args:
+    chdir: /tmp
+  
+- name: Stopping mysql
+  shell: "kill -15 $(cat {{ mysql_run_dir }}/mysqld.pid) && sleep 5"
+  args:
+    chdir: /tmp
+  
+- name: "Absent /tmp/mysql.err"
+  file:
+    state: absent
+    path: "/tmp/mysql.err"
+  
+- name: "Add mysql{{ mysql_version_num }} wrapper"
+  template:
+    src: "mysql.j2"
+    dest: "{{ brew_install_path }}/bin/mysql{{ mysql_version_num }}"
+    owner: "{{ mysql_user }}"
+    mode: 0755
+  
+- name: "Add mysqldump{{ mysql_version_num }} wrapper"
+  template:
+    src: "mysqldump.j2"
+    dest: "{{ brew_install_path }}/bin/mysqldump{{ mysql_version_num }}"
+    owner: "{{ mysql_user }}"
+    mode: 0755
+  
+- name: "Add mysqladmin{{ mysql_version_num }} wrapper"
+  template:
+    src: "mysqladmin.j2"
+    dest: "{{ brew_install_path }}/bin/mysqladmin{{ mysql_version_num }}"
+    owner: "{{ mysql_user }}"
+    mode: 0755
+  
+- name: "Creates {{ brew_install_path }}/etc/logrotate.d/mysql{{ mysql_version_num }}.conf"
+  template:
+    src: logrotate.mysql.conf.j2
+    dest: "{{ brew_install_path }}/etc/logrotate.d/mysql{{ mysql_version_num }}.conf"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
+  

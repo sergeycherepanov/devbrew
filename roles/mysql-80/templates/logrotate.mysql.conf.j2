@@ -1,0 +1,18 @@
+{{ mysql_log_dir }}/*.log {{ mysql_log_dir }}/var/log/nginx/*.err {
+  size 10M
+  missingok
+  rotate 7
+  daily
+  compress
+  delaycompress
+  copytruncate
+  notifempty
+  postrotate
+    # if mysqld is really running
+    if test -x {{ mysql_base_dir }}/bin/mysqladmin && \
+       {{ mysql_base_dir }}/bin/mysqladmin -u{{ logrorate_user }} -p{{ logrorate_password }} ping &>/dev/null
+    then
+       {{ mysql_base_dir }}/bin/mysqladmin -u{{ logrorate_user }} -p{{ logrorate_password }} flush-logs
+    fi
+  endscript
+}

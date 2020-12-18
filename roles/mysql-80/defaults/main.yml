@@ -1,0 +1,16 @@
+---
+mysql_tap: "djocker/common"
+mysql_user: "{{ brew_user }}"
+mysql_group: "{{ brew_group }}"
+mysql_version: "8.0"
+mysql_version_num: "80"
+mysql_formula: "mysql"
+mysql_etc_dir: "{{ brew_install_path }}/etc/mysql/80"
+mysql_run_dir: "{{ brew_install_path }}/var/run/mysql/80"
+mysql_log_dir: "{{ brew_install_path }}/var/log/mysql/80"
+mysql_data_dir: "{{ brew_install_path }}/var/lib/mysql/80"
+mysql_tmp_dir: /tmp
+mysql_listen_port: 3380
+mysql_listen_address: 127.0.0.1
+mysql_supervisord_name: mysql80
+mysql_root_password: root
