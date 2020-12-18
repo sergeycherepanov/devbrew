@@ -17,19 +17,21 @@ import traceback
 from ansible import constants as C
 from ansible.errors import AnsibleError, AnsibleParserError, AnsibleUndefinedVariable, AnsibleConnectionFailure, AnsibleActionFail, AnsibleActionSkip
 from ansible.executor.task_result import TaskResult
+from ansible.executor.module_common import get_action_args_with_defaults
 from ansible.module_utils.six import iteritems, string_types, binary_type
 from ansible.module_utils.six.moves import xrange
 from ansible.module_utils._text import to_text, to_native
 from ansible.module_utils.connection import write_to_file_descriptor
 from ansible.playbook.conditional import Conditional
 from ansible.playbook.task import Task
-from ansible.plugins.loader import become_loader
+from ansible.plugins.loader import become_loader, cliconf_loader, connection_loader, httpapi_loader, netconf_loader, terminal_loader
 from ansible.template import Templar
+from ansible.utils.collection_loader import AnsibleCollectionLoader
 from ansible.utils.listify import listify_lookup_plugin_terms
-from ansible.utils.unsafe_proxy import UnsafeProxy, wrap_var
+from ansible.utils.unsafe_proxy import to_unsafe_text, wrap_var
 from ansible.vars.clean import namespace_facts, clean_facts
 from ansible.utils.display import Display
-from ansible.utils.vars import combine_vars
+from ansible.utils.vars import combine_vars, isidentifier
 
 display = Display()
 
@@ -149,10 +151,8 @@ class TaskExecutor:
                 res['changed'] = False
 
             def _clean_res(res, errors='surrogate_or_strict'):
-                if isinstance(res, UnsafeProxy):
-                    return res._obj
-                elif isinstance(res, binary_type):
-                    return to_text(res, errors=errors)
+                if isinstance(res, binary_type):
+                    return to_unsafe_text(res, errors=errors)
                 elif isinstance(res, dict):
                     for k in res:
                         try:
@@ -230,7 +230,7 @@ class TaskExecutor:
                 loop_terms = listify_lookup_plugin_terms(terms=self._task.loop, templar=templar, loader=self._loader, fail_on_undefined=fail,
                                                          convert_bare=False)
                 if not fail:
-                    loop_terms = [t for t in loop_terms if not templar._contains_vars(t)]
+                    loop_terms = [t for t in loop_terms if not templar.is_template(t)]
 
                 # get lookup
                 mylookup = self._shared_loader_obj.lookup_loader.get(self._task.loop_with, loader=self._loader, templar=templar)
@@ -242,7 +242,7 @@ class TaskExecutor:
                 setattr(mylookup, '_subdir', subdir + 's')
 
                 # run lookup
-                items = mylookup.run(terms=loop_terms, variables=self._job_vars, wantlist=True)
+                items = wrap_var(mylookup.run(terms=loop_terms, variables=self._job_vars, wantlist=True))
             else:
                 raise AnsibleError("Unexpected failure in finding the lookup named '%s' in the available lookup plugins" % self._task.loop_with)
 
@@ -263,11 +263,6 @@ class TaskExecutor:
                 self._job_vars[k] = old_vars[k]
             else:
                 del self._job_vars[k]
-
-        if items:
-            for idx, item in enumerate(items):
-                if item is not None and not isinstance(item, UnsafeProxy):
-                    items[idx] = UnsafeProxy(item)
 
         return items
 
@@ -299,7 +294,7 @@ class TaskExecutor:
             loop_pause = templar.template(self._task.loop_control.pause)
             extended = templar.template(self._task.loop_control.extended)
 
-            # This may be 'None',so it is tempalted below after we ensure a value and an item is assigned
+            # This may be 'None',so it is templated below after we ensure a value and an item is assigned
             label = self._task.loop_control.label
 
         # ensure we always have a label
@@ -323,6 +318,7 @@ class TaskExecutor:
 
             task_vars[loop_var] = item
             if index_var:
+                task_vars['ansible_index_var'] = index_var
                 task_vars[index_var] = item_index
 
             if extended:
@@ -344,7 +340,7 @@ class TaskExecutor:
                     task_vars['ansible_loop']['previtem'] = items[item_index - 1]
 
             # Update template vars to reflect current loop iteration
-            templar.set_available_variables(task_vars)
+            templar.available_variables = task_vars
 
             # pause between loop iterations
             if loop_pause and ran_once:
@@ -381,6 +377,7 @@ class TaskExecutor:
             res['ansible_loop_var'] = loop_var
             if index_var:
                 res[index_var] = item_index
+                res['ansible_index_var'] = index_var
             if extended:
                 res['ansible_loop'] = task_vars['ansible_loop']
 
@@ -408,6 +405,20 @@ class TaskExecutor:
             results.append(res)
             del task_vars[loop_var]
 
+            # clear 'connection related' plugin variables for next iteration
+            if self._connection:
+                clear_plugins = {
+                    'connection': self._connection._load_name,
+                    'shell': self._connection._shell._load_name
+                }
+                if self._connection.become:
+                    clear_plugins['become'] = self._connection.become._load_name
+
+                for plugin_type, plugin_name in iteritems(clear_plugins):
+                    for var in C.config.get_plugin_vars(plugin_type, plugin_name):
+                        if var in task_vars and var not in self._job_vars:
+                            del task_vars[var]
+
         self._task.no_log = no_log
 
         return results
@@ -426,7 +437,7 @@ class TaskExecutor:
             # with_items loop) so don't make the templated string permanent yet.
             templar = Templar(loader=self._loader, shared_loader_obj=self._shared_loader_obj, variables=variables)
             task_action = self._task.action
-            if templar._contains_vars(task_action):
+            if templar.is_template(task_action):
                 task_action = templar.template(task_action, fail_on_undefined=False)
 
             if len(items) > 0 and task_action in self.SQUASH_ACTIONS:
@@ -444,7 +455,7 @@ class TaskExecutor:
                     # contains a template that we can squash for
                     template_no_item = template_with_item = None
                     if name:
-                        if templar._contains_vars(name):
+                        if templar.is_template(name):
                             variables[loop_var] = '\0$'
                             template_no_item = templar.template(name, variables, cache=False)
                             variables[loop_var] = '\0@'
@@ -593,27 +604,22 @@ class TaskExecutor:
             # to be replaced with the one templated above, in case other data changed
             self._connection._play_context = self._play_context
 
-        self._set_connection_options(variables, templar)
+        if self._task.delegate_to:
+            # use vars from delegated host (which already include task vars) instead of original host
+            delegated_vars = variables.get('ansible_delegated_vars', {}).get(self._task.delegate_to, {})
+            orig_vars = templar.available_variables
+            templar.available_variables = delegated_vars
+            plugin_vars = self._set_connection_options(delegated_vars, templar)
+            templar.available_variables = orig_vars
+        else:
+            # just use normal host vars
+            plugin_vars = self._set_connection_options(variables, templar)
 
         # get handler
         self._handler = self._get_action_handler(connection=self._connection, templar=templar)
 
         # Apply default params for action/module, if present
-        # These are collected as a list of dicts, so we need to merge them
-        module_defaults = {}
-        for default in self._task.module_defaults:
-            module_defaults.update(default)
-        if module_defaults:
-            module_defaults = templar.template(module_defaults)
-        if self._task.action in module_defaults:
-            tmp_args = module_defaults[self._task.action].copy()
-            tmp_args.update(self._task.args)
-            self._task.args = tmp_args
-        if self._task.action in C.config.module_defaults_groups:
-            for group in C.config.module_defaults_groups.get(self._task.action, []):
-                tmp_args = (module_defaults.get('group/{0}'.format(group)) or {}).copy()
-                tmp_args.update(self._task.args)
-                self._task.args = tmp_args
+        self._task.args = get_action_args_with_defaults(self._task.action, self._task.args, self._task.module_defaults, templar)
 
         # And filter out any fields which were set to default(omit), and got the omit token value
         omit_token = variables.get('omit')
@@ -652,6 +658,8 @@ class TaskExecutor:
                 return dict(failed=True, msg=to_text(e))
             except AnsibleConnectionFailure as e:
                 return dict(unreachable=True, msg=to_text(e))
+            finally:
+                self._handler.cleanup()
             display.debug("handler run complete")
 
             # preserve no log
@@ -660,6 +668,9 @@ class TaskExecutor:
             # update the local copy of vars with the registered value, if specified,
             # or any facts which may have been generated by the module execution
             if self._task.register:
+                if not isidentifier(self._task.register):
+                    raise AnsibleError("Invalid variable name in 'register' specified: '%s'" % self._task.register)
+
                 vars_copy[self._task.register] = wrap_var(result)
 
             if self._task.async_val > 0:
@@ -739,6 +750,7 @@ class TaskExecutor:
                         display.debug('Retrying task, attempt %d of %d' % (attempt, retries))
                         self._final_q.put(TaskResult(self._host.name, self._task._uuid, result, task_fields=self._task.dump_attrs()), block=False)
                         time.sleep(delay)
+                        self._handler = self._get_action_handler(connection=self._connection, templar=templar)
         else:
             if retries > 1:
                 # we ran out of attempts, so mark the result as failed
@@ -768,15 +780,10 @@ class TaskExecutor:
 
         # add the delegated vars to the result, so we can reference them
         # on the results side without having to do any further templating
-        # FIXME: we only want a limited set of variables here, so this is currently
-        #        hardcoded but should be possibly fixed if we want more or if
-        #        there is another source of truth we can use
-        delegated_vars = variables.get('ansible_delegated_vars', dict()).get(self._task.delegate_to, dict()).copy()
-        if len(delegated_vars) > 0:
+        if self._task.delegate_to:
             result["_ansible_delegated_vars"] = {'ansible_delegated_host': self._task.delegate_to}
-            for k in ('ansible_host', ):
+            for k in plugin_vars:
                 result["_ansible_delegated_vars"][k] = delegated_vars.get(k)
-
         # and return
         display.debug("attempt loop complete, returning result")
         return result
@@ -852,6 +859,7 @@ class TaskExecutor:
             else:
                 return dict(failed=True, msg="async task produced unparseable results", async_result=async_result)
         else:
+            async_handler.cleanup(force=True)
             return async_result
 
     def _get_become(self, name):
@@ -868,21 +876,20 @@ class TaskExecutor:
         '''
 
         if self._task.delegate_to is not None:
-            # since we're delegating, we don't want to use interpreter values
-            # which would have been set for the original target host
-            for i in list(variables.keys()):
-                if isinstance(i, string_types) and i.startswith('ansible_') and i.endswith('_interpreter'):
-                    del variables[i]
-            # now replace the interpreter values with those that may have come
-            # from the delegated-to host
-            delegated_vars = variables.get('ansible_delegated_vars', dict()).get(self._task.delegate_to, dict())
-            if isinstance(delegated_vars, dict):
-                for i in delegated_vars:
-                    if isinstance(i, string_types) and i.startswith("ansible_") and i.endswith("_interpreter"):
-                        variables[i] = delegated_vars[i]
+            cvars = variables.get('ansible_delegated_vars', {}).get(self._task.delegate_to, {})
+        else:
+            cvars = variables
+
+        # use magic var if it exists, if not, let task inheritance do it's thing.
+        self._play_context.connection = cvars.get('ansible_connection', self._task.connection)
+
+        # TODO: play context has logic to update the conneciton for 'smart'
+        # (default value, will chose between ssh and paramiko) and 'persistent'
+        # (really paramiko), evnentually this should move to task object itself.
+        connection_name = self._play_context.connection
 
         # load connection
-        conn_type = self._play_context.connection
+        conn_type = connection_name
         connection = self._shared_loader_obj.connection_loader.get(
             conn_type,
             self._play_context,
@@ -895,28 +902,27 @@ class TaskExecutor:
             raise AnsibleError("the connection plugin '%s' was not found" % conn_type)
 
         # load become plugin if needed
-        become_plugin = None
-        if self._play_context.become:
-            become_plugin = self._get_become(self._play_context.become_method)
+        if cvars.get('ansible_become', self._task.become):
+            become_plugin = self._get_become(cvars.get('ansible_become_method', self._task.become_method))
 
-        if getattr(become_plugin, 'require_tty', False) and not getattr(connection, 'has_tty', False):
-            raise AnsibleError(
-                "The '%s' connection does not provide a tty which is requied for the selected "
-                "become plugin: %s." % (conn_type, become_plugin.name)
-            )
+            try:
+                connection.set_become_plugin(become_plugin)
+            except AttributeError:
+                # Older connection plugin that does not support set_become_plugin
+                pass
 
-        try:
-            connection.set_become_plugin(become_plugin)
-        except AttributeError:
-            # Connection plugin does not support set_become_plugin
-            pass
+            if getattr(connection.become, 'require_tty', False) and not getattr(connection, 'has_tty', False):
+                raise AnsibleError(
+                    "The '%s' connection does not provide a TTY which is required for the selected "
+                    "become plugin: %s." % (conn_type, become_plugin.name)
+                )
 
-        # Backwards compat for connection plugins that don't support become plugins
-        # Just do this unconditionally for now, we could move it inside of the
-        # AttributeError above later
-        self._play_context.set_become_plugin(become_plugin)
+            # Backwards compat for connection plugins that don't support become plugins
+            # Just do this unconditionally for now, we could move it inside of the
+            # AttributeError above later
+            self._play_context.set_become_plugin(become_plugin.name)
 
-        # FIXME: remove once all plugins pull all data from self._options
+        # Also backwards compat call for those still using play_context
         self._play_context.set_attributes_from_plugin(connection)
 
         if any(((connection.supports_persistence and C.USE_PERSISTENT_CONNECTIONS), connection.force_persistence)):
@@ -925,7 +931,7 @@ class TaskExecutor:
             display.vvvv('using connection plugin %s' % connection.transport, host=self._play_context.remote_addr)
 
             options = self._get_persistent_connection_options(connection, variables, templar)
-            socket_path = self._start_connection(options)
+            socket_path = start_connection(self._play_context, options, self._task._uuid)
             display.vvvv('local domain socket path is %s' % socket_path, host=self._play_context.remote_addr)
             setattr(connection, '_socket_path', socket_path)
 
@@ -936,7 +942,7 @@ class TaskExecutor:
 
         option_vars = C.config.get_plugin_vars('connection', connection._load_name)
         plugin = connection._sub_plugin
-        if plugin['type'] != 'external':
+        if plugin.get('type'):
             option_vars.extend(C.config.get_plugin_vars(plugin['type'], plugin['name']))
 
         options = {}
@@ -952,6 +958,7 @@ class TaskExecutor:
         except AttributeError:
             # Some plugins are assigned to private attrs, ``become`` is not
             plugin = getattr(self._connection, plugin_type)
+
         option_vars = C.config.get_plugin_vars(plugin_type, plugin._load_name)
         options = {}
         for k in option_vars:
@@ -960,60 +967,61 @@ class TaskExecutor:
         # TODO move to task method?
         plugin.set_options(task_keys=task_keys, var_options=options)
 
+        return option_vars
+
     def _set_connection_options(self, variables, templar):
 
-        # Keep the pre-delegate values for these keys
-        PRESERVE_ORIG = ('inventory_hostname',)
-
-        # create copy with delegation built in
-        final_vars = combine_vars(
-            variables,
-            variables.get('ansible_delegated_vars', {}).get(self._task.delegate_to, {})
-        )
+        # keep list of variable names possibly consumed
+        varnames = []
 
         # grab list of usable vars for this plugin
         option_vars = C.config.get_plugin_vars('connection', self._connection._load_name)
+        varnames.extend(option_vars)
 
         # create dict of 'templated vars'
         options = {'_extras': {}}
         for k in option_vars:
-            if k in PRESERVE_ORIG:
+            if k in variables:
                 options[k] = templar.template(variables[k])
-            elif k in final_vars:
-                options[k] = templar.template(final_vars[k])
 
         # add extras if plugin supports them
         if getattr(self._connection, 'allow_extras', False):
-            for k in final_vars:
+            for k in variables:
                 if k.startswith('ansible_%s_' % self._connection._load_name) and k not in options:
-                    options['_extras'][k] = templar.template(final_vars[k])
+                    options['_extras'][k] = templar.template(variables[k])
 
         task_keys = self._task.dump_attrs()
 
-        # set options with 'templated vars' specific to this plugin and dependant ones
+        # set options with 'templated vars' specific to this plugin and dependent ones
         self._connection.set_options(task_keys=task_keys, var_options=options)
-        self._set_plugin_options('shell', final_vars, templar, task_keys)
+        varnames.extend(self._set_plugin_options('shell', variables, templar, task_keys))
 
         if self._connection.become is not None:
-            # FIXME: find alternate route to provide passwords,
-            # keep out of play objects to avoid accidental disclosure
-            task_keys['become_pass'] = self._play_context.become_pass
-            self._set_plugin_options('become', final_vars, templar, task_keys)
+            if self._play_context.become_pass:
+                # FIXME: eventually remove from task and play_context, here for backwards compat
+                # keep out of play objects to avoid accidental disclosure, only become plugin should have
+                # The become pass is already in the play_context if given on
+                # the CLI (-K). Make the plugin aware of it in this case.
+                task_keys['become_pass'] = self._play_context.become_pass
+
+            varnames.extend(self._set_plugin_options('become', variables, templar, task_keys))
 
             # FOR BACKWARDS COMPAT:
-            for option in ('become_user', 'become_flags', 'become_exe'):
+            for option in ('become_user', 'become_flags', 'become_exe', 'become_pass'):
                 try:
                     setattr(self._play_context, option, self._connection.become.get_option(option))
                 except KeyError:
                     pass  # some plugins don't support all base flags
             self._play_context.prompt = self._connection.become.prompt
 
+        return varnames
+
     def _get_action_handler(self, connection, templar):
         '''
         Returns the correct action plugin to handle the requestion task action
         '''
 
-        module_prefix = self._task.action.split('_')[0]
+        module_prefix = self._task.action.split('.')[-1].split('_')[0]
 
         collections = self._task.collections
 
@@ -1021,7 +1029,7 @@ class TaskExecutor:
         if self._shared_loader_obj.action_loader.has_plugin(self._task.action, collection_list=collections):
             handler_name = self._task.action
         # FIXME: is this code path even live anymore? check w/ networking folks; it trips sometimes when it shouldn't
-        elif all((module_prefix in C.NETWORK_GROUP_MODULES, module_prefix in self._shared_loader_obj.action_loader)):
+        elif all((module_prefix in C.NETWORK_GROUP_MODULES, self._shared_loader_obj.action_loader.has_plugin(module_prefix, collection_list=collections))):
             handler_name = module_prefix
         else:
             # FUTURE: once we're comfortable with collections impl, preface this action with ansible.builtin so it can't be hijacked
@@ -1044,71 +1052,86 @@ class TaskExecutor:
 
         return handler
 
-    def _start_connection(self, variables):
-        '''
-        Starts the persistent connection
-        '''
-        candidate_paths = [C.ANSIBLE_CONNECTION_PATH or os.path.dirname(sys.argv[0])]
-        candidate_paths.extend(os.environ['PATH'].split(os.pathsep))
-        for dirname in candidate_paths:
-            ansible_connection = os.path.join(dirname, 'ansible-connection')
-            if os.path.isfile(ansible_connection):
-                break
-        else:
-            raise AnsibleError("Unable to find location of 'ansible-connection'. "
-                               "Please set or check the value of ANSIBLE_CONNECTION_PATH")
 
-        python = sys.executable
-        master, slave = pty.openpty()
-        p = subprocess.Popen(
-            [python, ansible_connection, to_text(os.getppid())],
-            stdin=slave, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
-        os.close(slave)
+def start_connection(play_context, variables, task_uuid=None):
+    '''
+    Starts the persistent connection
+    '''
+    candidate_paths = [C.ANSIBLE_CONNECTION_PATH or os.path.dirname(sys.argv[0])]
+    candidate_paths.extend(os.environ['PATH'].split(os.pathsep))
+    for dirname in candidate_paths:
+        ansible_connection = os.path.join(dirname, 'ansible-connection')
+        if os.path.isfile(ansible_connection):
+            break
+    else:
+        raise AnsibleError("Unable to find location of 'ansible-connection'. "
+                           "Please set or check the value of ANSIBLE_CONNECTION_PATH")
 
-        # We need to set the pty into noncanonical mode. This ensures that we
-        # can receive lines longer than 4095 characters (plus newline) without
-        # truncating.
-        old = termios.tcgetattr(master)
-        new = termios.tcgetattr(master)
-        new[3] = new[3] & ~termios.ICANON
+    env = os.environ.copy()
+    env.update({
+        # HACK; most of these paths may change during the controller's lifetime
+        # (eg, due to late dynamic role includes, multi-playbook execution), without a way
+        # to invalidate/update, ansible-connection won't always see the same plugins the controller
+        # can.
+        'ANSIBLE_BECOME_PLUGINS': become_loader.print_paths(),
+        'ANSIBLE_CLICONF_PLUGINS': cliconf_loader.print_paths(),
+        'ANSIBLE_COLLECTIONS_PATHS': os.pathsep.join(AnsibleCollectionLoader().n_collection_paths),
+        'ANSIBLE_CONNECTION_PLUGINS': connection_loader.print_paths(),
+        'ANSIBLE_HTTPAPI_PLUGINS': httpapi_loader.print_paths(),
+        'ANSIBLE_NETCONF_PLUGINS': netconf_loader.print_paths(),
+        'ANSIBLE_TERMINAL_PLUGINS': terminal_loader.print_paths(),
+    })
+    python = sys.executable
+    master, slave = pty.openpty()
+    p = subprocess.Popen(
+        [python, ansible_connection, to_text(os.getppid()), to_text(task_uuid)],
+        stdin=slave, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
+    )
+    os.close(slave)
 
+    # We need to set the pty into noncanonical mode. This ensures that we
+    # can receive lines longer than 4095 characters (plus newline) without
+    # truncating.
+    old = termios.tcgetattr(master)
+    new = termios.tcgetattr(master)
+    new[3] = new[3] & ~termios.ICANON
+
+    try:
+        termios.tcsetattr(master, termios.TCSANOW, new)
+        write_to_file_descriptor(master, variables)
+        write_to_file_descriptor(master, play_context.serialize())
+
+        (stdout, stderr) = p.communicate()
+    finally:
+        termios.tcsetattr(master, termios.TCSANOW, old)
+    os.close(master)
+
+    if p.returncode == 0:
+        result = json.loads(to_text(stdout, errors='surrogate_then_replace'))
+    else:
         try:
-            termios.tcsetattr(master, termios.TCSANOW, new)
-            write_to_file_descriptor(master, variables)
-            write_to_file_descriptor(master, self._play_context.serialize())
+            result = json.loads(to_text(stderr, errors='surrogate_then_replace'))
+        except getattr(json.decoder, 'JSONDecodeError', ValueError):
+            # JSONDecodeError only available on Python 3.5+
+            result = {'error': to_text(stderr, errors='surrogate_then_replace')}
 
-            (stdout, stderr) = p.communicate()
-        finally:
-            termios.tcsetattr(master, termios.TCSANOW, old)
-        os.close(master)
-
-        if p.returncode == 0:
-            result = json.loads(to_text(stdout, errors='surrogate_then_replace'))
-        else:
-            try:
-                result = json.loads(to_text(stderr, errors='surrogate_then_replace'))
-            except getattr(json.decoder, 'JSONDecodeError', ValueError):
-                # JSONDecodeError only available on Python 3.5+
-                result = {'error': to_text(stderr, errors='surrogate_then_replace')}
-
-        if 'messages' in result:
-            for level, message in result['messages']:
-                if level == 'log':
-                    display.display(message, log_only=True)
-                elif level in ('debug', 'v', 'vv', 'vvv', 'vvvv', 'vvvvv', 'vvvvvv'):
-                    getattr(display, level)(message, host=self._play_context.remote_addr)
+    if 'messages' in result:
+        for level, message in result['messages']:
+            if level == 'log':
+                display.display(message, log_only=True)
+            elif level in ('debug', 'v', 'vv', 'vvv', 'vvvv', 'vvvvv', 'vvvvvv'):
+                getattr(display, level)(message, host=play_context.remote_addr)
+            else:
+                if hasattr(display, level):
+                    getattr(display, level)(message)
                 else:
-                    if hasattr(display, level):
-                        getattr(display, level)(message)
-                    else:
-                        display.vvvv(message, host=self._play_context.remote_addr)
+                    display.vvvv(message, host=play_context.remote_addr)
 
-        if 'error' in result:
-            if self._play_context.verbosity > 2:
-                if result.get('exception'):
-                    msg = "The full traceback is:\n" + result['exception']
-                    display.display(msg, color=C.COLOR_ERROR)
-            raise AnsibleError(result['error'])
+    if 'error' in result:
+        if play_context.verbosity > 2:
+            if result.get('exception'):
+                msg = "The full traceback is:\n" + result['exception']
+                display.display(msg, color=C.COLOR_ERROR)
+        raise AnsibleError(result['error'])
 
-        return result['socket_path']
+    return result['socket_path']

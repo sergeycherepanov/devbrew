@@ -83,6 +83,8 @@ namespace Ansible.Basic
             { "no_log", new List<object>() { false, typeof(bool) } },
             { "options", new List<object>() { typeof(Hashtable), typeof(Hashtable) } },
             { "removed_in_version", new List<object>() { null, typeof(string) } },
+            { "removed_at_date", new List<object>() { null, typeof(DateTime) } },  // Ansible 2.10 compatibility
+            { "removed_from_collection", new List<object>() { null, typeof(string) } },  // Ansible 2.10 compatibility
             { "required", new List<object>() { false, typeof(bool) } },
             { "required_by", new List<object>() { typeof(Hashtable), typeof(Hashtable) } },
             { "required_if", new List<object>() { typeof(List<List<object>>), null } },
@@ -244,8 +246,33 @@ namespace Ansible.Basic
 
         public void Deprecate(string message, string version)
         {
+            Deprecate(message, version, null);
+        }
+
+        public void Deprecate(string message, string version, string collectionName)
+        {
+            // `collectionName` is a Ansible 2.10 parameter. We accept and ignore it,
+            // to avoid modules/plugins from 2.10 conformant collections to break with
+            // new enough versions of Ansible 2.9.
             deprecations.Add(new Dictionary<string, string>() { { "msg", message }, { "version", version } });
             LogEvent(String.Format("[DEPRECATION WARNING] {0} {1}", message, version));
+        }
+
+        public void Deprecate(string message, DateTime date)
+        {
+            // This function is only available for Ansible 2.10. We still accept and ignore it,
+            // to avoid modules/plugins from 2.10 conformant collections to break with new enough
+            // versions of Ansible 2.9.
+            Deprecate(message, date, null);
+        }
+
+        public void Deprecate(string message, DateTime date, string collectionName)
+        {
+            // This function is only available for Ansible 2.10. We still accept and ignore it,
+            // to avoid modules/plugins from 2.10 conformant collections to break with new enough
+            // versions of Ansible 2.9.
+            deprecations.Add(new Dictionary<string, string>() { { "msg", message }, { "version", null } });
+            LogEvent(String.Format("[DEPRECATION WARNING] {0} {1}", message, null));
         }
 
         public void ExitJson()
@@ -304,7 +331,8 @@ namespace Ansible.Basic
                 }
                 catch (System.Security.SecurityException)
                 {
-                    Warn(String.Format("Access error when creating EventLog source {0}, logging to the Application source instead", logSource));
+                    // Cannot call Warn as that calls LogEvent and we get stuck in a loop
+                    warnings.Add(String.Format("Access error when creating EventLog source {0}, logging to the Application source instead", logSource));
                     logSource = "Application";
                 }
             }
@@ -699,13 +727,18 @@ namespace Ansible.Basic
                 if ((bool)v["no_log"])
                 {
                     object noLogObject = parameters.Contains(k) ? parameters[k] : null;
-                    if (noLogObject != null)
-                        noLogValues.Add(noLogObject.ToString());
+                    string noLogString = noLogObject == null ? "" : noLogObject.ToString();
+                    if (!String.IsNullOrEmpty(noLogString))
+                        noLogValues.Add(noLogString);
                 }
 
                 object removedInVersion = v["removed_in_version"];
                 if (removedInVersion != null && parameters.Contains(k))
                     Deprecate(String.Format("Param '{0}' is deprecated. See the module docs for more information", k), removedInVersion.ToString());
+
+                object removedAtDate = v["removed_at_date"];
+                if (removedAtDate != null && parameters.Contains(k))
+                    Deprecate(String.Format("Param '{0}' is deprecated. See the module docs for more information", k), (string)null);
             }
         }
 
