@@ -100,7 +100,7 @@
     register: state
 
 -   name: "Generate the Certificate Authority (CA) certificate"
-    shell: 'openssl req -x509 -newkey rsa:2048 -out {{ brew_install_path }}/etc/openssl/localCA/cacert.pem -outform PEM -days 1825 -nodes'
+    shell: 'openssl req -x509 -sha256 -newkey rsa:2048 -nodes -days 1825 -outform PEM -out {{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
     when: not state.stat.exists
     environment:
         OPENSSL_CONF: "{{ brew_install_path }}/etc/openssl/localCA/caconfig.cnf"
