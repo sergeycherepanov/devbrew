@@ -118,6 +118,8 @@
   args:
     chdir: /tmp
   when: state.stat.exists
+  register: result
+  failed_when: result.rc == 1 and "No such process" not in result.stderr
   
 - name: Starting mysql with --skip-grant-tables flag
   shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables --log-error=/tmp/mysql.err > /tmp/mysql.log 2>&1 &"
@@ -130,7 +132,7 @@
     chdir: /tmp
   
 - name: Setting plugin=mysql_native_password and update root password
-  shell: "{{ mysql_base_dir }}/bin/mysql --defaults-file={{ mysql_etc_dir }}/my.cnf -uroot -e 'update user set plugin=\"mysql_native_password\"; update user set authentication_string=password(\"{{ mysql_root_password }}\"), password_expired=\"N\", password_lifetime=0 where user=\"root\";' mysql && pgrep mysql"
+  shell: "{{ mysql_base_dir }}/bin/mysql --defaults-file={{ mysql_etc_dir }}/my.cnf -uroot -e 'update user set plugin=\"mysql_native_password\"; update user set authentication_string=CONCAT(\"*\",UPPER(SHA1(UNHEX(SHA1(\"{{ mysql_root_password }}\"))))), password_expired=\"N\", password_lifetime=0 where user=\"root\";' mysql && pgrep mysql"
   args:
     chdir: /tmp
   
@@ -155,7 +157,7 @@
     chdir: /tmp
   
 - name: Create logrotate user
-  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -p'{{ mysql_root_password }}' -e 'CREATE USER IF NOT EXISTS \"{{ logrorate_user }}\"@\"localhost\"; update user set plugin=\"mysql_native_password\"; update user set authentication_string=password(\"{{ logrorate_password }}\"), password_expired=\"N\", password_lifetime=0 where user=\"{{ logrorate_user }}\";grant reload on *.* to \"{{ logrorate_user }}\"@\"localhost\"' mysql"
+  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -p'{{ mysql_root_password }}' -e 'CREATE USER IF NOT EXISTS \"{{ logrorate_user }}\"@\"localhost\"; update user set plugin=\"mysql_native_password\"; update user set authentication_string=authentication_string=CONCAT(\"*\",UPPER(SHA1(UNHEX(SHA1(\"{{ logrorate_password }}\"))))), password_expired=\"N\", password_lifetime=0 where user=\"{{ logrorate_user }}\";grant reload on *.* to \"{{ logrorate_user }}\"@\"localhost\"' mysql"
   args:
     chdir: /tmp
   

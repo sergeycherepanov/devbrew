@@ -9,6 +9,7 @@ port               = {{ mysql_listen_port }}
 nice               = 0
 
 [mysqld]
+default-authentication-plugin = mysql_native_password
 user               = {{ brew_user }}
 pid-file           = {{ mysql_run_dir }}/mysqld.pid
 socket             = {{ mysql_run_dir }}/mysqld.sock
