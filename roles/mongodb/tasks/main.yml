@@ -49,7 +49,7 @@
   shell: "echo 'db.adminCommand({setParameter: 1, internalQueryExecMaxBlockingSortBytes:100302864})' | {{ mongodb_path }}/bin/mongo admin"
 
 - name: "Ensure setParameter.internalQueryExecMaxBlockingSortBytes: 100302864 in {{ brew_install_path }}/etc/mongod.conf"
-  shell: "yq eval '.setParameter.internalQueryExecMaxBlockingSortBytes 100302864' {{ brew_install_path }}/etc/mongod.conf > {{ brew_install_path }}/etc/mongod.conf.tmp && mv {{ brew_install_path }}/etc/mongod.conf.tmp {{ brew_install_path }}/etc/mongod.conf"
+  shell: "yq eval '.setParameter.internalQueryExecMaxBlockingSortBytes = 100302864' {{ brew_install_path }}/etc/mongod.conf > {{ brew_install_path }}/etc/mongod.conf.tmp && mv {{ brew_install_path }}/etc/mongod.conf.tmp {{ brew_install_path }}/etc/mongod.conf"
 #
 #- name: "Ensure internalQueryExecMaxBlockingSortBytes with 100302864"
 #  yedit:

@@ -156,6 +156,8 @@
   args:
     chdir: /tmp
   when: state.stat.exists
+  register: result
+  failed_when: result.rc == 1 and "No such process" not in result.stderr
   tags:
     - percona57
 

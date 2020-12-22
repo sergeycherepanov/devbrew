@@ -132,32 +132,47 @@
     chdir: /tmp
   
 - name: Setting plugin=mysql_native_password and update root password
-  shell: "{{ mysql_base_dir }}/bin/mysql --defaults-file={{ mysql_etc_dir }}/my.cnf -uroot -e 'update user set plugin=\"mysql_native_password\"; update user set authentication_string=CONCAT(\"*\",UPPER(SHA1(UNHEX(SHA1(\"{{ mysql_root_password }}\"))))), password_expired=\"N\", password_lifetime=0 where user=\"root\";' mysql && pgrep mysql"
+  shell: "{{ mysql_base_dir }}/bin/mysql --defaults-file={{ mysql_etc_dir }}/my.cnf -uroot -e 'update user set plugin=\"mysql_native_password\" where user=\"root\"; update user set authentication_string=CONCAT(\"*\",UPPER(SHA1(UNHEX(SHA1(\"{{ mysql_root_password }}\"))))), password_expired=\"N\", password_lifetime=0 where user=\"root\";' mysql && pgrep mysql"
   args:
     chdir: /tmp
-  
+
+#- name: 'Grant user root'
+#  shell: "{{ mysql_base_dir }}/bin/mysql --defaults-file={{ mysql_etc_dir }}/my.cnf -uroot -e 'FLUSH PRIVILEGES; GRANT ALL PRIVILEGES ON *.* TO \"root\"@\"localhost\" WITH GRANT OPTION;' mysql && pgrep mysql"
+#  args:
+#    chdir: /tmp
+
 - name: Stopping mysql
   shell: "kill -15 $(cat {{ mysql_run_dir }}/mysqld.pid) && sleep 5"
   args:
     chdir: /tmp
-  
+
 - name: "Absent /tmp/mysql.err"
   file:
     state: absent
     path: "/tmp/mysql.err"
-  
+
 - name: Starting mysql
   shell: "nohup {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --log-error=/tmp/mysql.err > /dev/null &"
   args:
     chdir: /tmp
-  
+
 - name: Waiting mysql
   shell: timeout 60s bash -c "until grep 'ready for connections\\|Server socket created on' /tmp/mysql.err; do sleep 1; done"
   args:
     chdir: /tmp
   
 - name: Create logrotate user
-  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -p'{{ mysql_root_password }}' -e 'CREATE USER IF NOT EXISTS \"{{ logrorate_user }}\"@\"localhost\"; update user set plugin=\"mysql_native_password\"; update user set authentication_string=authentication_string=CONCAT(\"*\",UPPER(SHA1(UNHEX(SHA1(\"{{ logrorate_password }}\"))))), password_expired=\"N\", password_lifetime=0 where user=\"{{ logrorate_user }}\";grant reload on *.* to \"{{ logrorate_user }}\"@\"localhost\"' mysql"
+  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -p'{{ mysql_root_password }}' -e 'CREATE USER IF NOT EXISTS \"{{ logrorate_user }}\"@\"localhost\";' mysql"
+  args:
+    chdir: /tmp
+
+- name: Update logrotate user
+  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -p'{{ mysql_root_password }}' -e 'update user set plugin=\"mysql_native_password\" where user=\"{{ logrorate_user }}\"; update user set authentication_string=authentication_string=CONCAT(\"*\",UPPER(SHA1(UNHEX(SHA1(\"{{ logrorate_password }}\"))))), password_expired=\"N\", password_lifetime=0 where user=\"{{ logrorate_user }}\";' mysql"
+  args:
+    chdir: /tmp
+
+- name: Grant logrotate user
+  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -p'{{ mysql_root_password }}' -e 'GRANT RELOAD on *.* to \"{{ logrorate_user }}\"@\"localhost\"' mysql"
   args:
     chdir: /tmp
   
