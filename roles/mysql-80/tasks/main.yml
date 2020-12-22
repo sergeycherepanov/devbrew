@@ -136,10 +136,10 @@
   args:
     chdir: /tmp
 
-#- name: 'Grant user root'
-#  shell: "{{ mysql_base_dir }}/bin/mysql --defaults-file={{ mysql_etc_dir }}/my.cnf -uroot -e 'FLUSH PRIVILEGES; GRANT ALL PRIVILEGES ON *.* TO \"root\"@\"localhost\" WITH GRANT OPTION;' mysql && pgrep mysql"
-#  args:
-#    chdir: /tmp
+- name: 'Grant user root'
+  shell: "{{ mysql_base_dir }}/bin/mysql --defaults-file={{ mysql_etc_dir }}/my.cnf -uroot -e 'FLUSH PRIVILEGES; GRANT ALL PRIVILEGES ON *.* TO \"root\"@\"localhost\" WITH GRANT OPTION;' mysql && pgrep mysql"
+  args:
+    chdir: /tmp
 
 - name: Stopping mysql
   shell: "kill -15 $(cat {{ mysql_run_dir }}/mysqld.pid) && sleep 5"
