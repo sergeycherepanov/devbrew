@@ -92,6 +92,13 @@ location / {
     try_files $uri $uri/ @handler;
 }
 
+# Akeneo Media
+location /media/ {
+    if (!-f $request_filename) {
+        rewrite / /index.php last;
+    }
+}
+
 # Magento 2 static files
 location /pub/static/ {
     # Uncomment the following line in production mode
