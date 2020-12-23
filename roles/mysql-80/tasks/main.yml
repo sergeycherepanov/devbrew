@@ -162,17 +162,17 @@
     chdir: /tmp
   
 - name: Create logrotate user
-  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -p'{{ mysql_root_password }}' -e 'CREATE USER IF NOT EXISTS \"{{ logrorate_user }}\"@\"localhost\";' mysql"
+  shell: "{{ mysql_base_dir }}/bin/mysql --defaults-file={{ mysql_etc_dir }}/my.cnf -uroot -p'{{ mysql_root_password }}' -e 'CREATE USER IF NOT EXISTS \"{{ logrorate_user }}\"@\"localhost\" IDENTIFIED WITH mysql_native_password BY '{{ logrorate_user }}';' mysql"
   args:
     chdir: /tmp
 
 - name: Update logrotate user
-  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -p'{{ mysql_root_password }}' -e 'update user set plugin=\"mysql_native_password\" where user=\"{{ logrorate_user }}\"; update user set authentication_string=authentication_string=CONCAT(\"*\",UPPER(SHA1(UNHEX(SHA1(\"{{ logrorate_password }}\"))))), password_expired=\"N\", password_lifetime=0 where user=\"{{ logrorate_user }}\";' mysql"
+  shell: "{{ mysql_base_dir }}/bin/mysql --defaults-file={{ mysql_etc_dir }}/my.cnf -uroot -p'{{ mysql_root_password }}' -e 'UPDATE user set plugin=\"mysql_native_password\" where user=\"{{ logrorate_user }}\"; update user set authentication_string=CONCAT(\"*\",UPPER(SHA1(UNHEX(SHA1(\"{{ logrorate_password }}\"))))), password_expired=\"N\", password_lifetime=0 where user=\"{{ logrorate_user }}\";' mysql"
   args:
     chdir: /tmp
 
 - name: Grant logrotate user
-  shell: "{{ mysql_base_dir }}/bin/mysql -h{{ mysql_listen_address }} -P{{ mysql_listen_port }} -uroot -p'{{ mysql_root_password }}' -e 'GRANT RELOAD on *.* to \"{{ logrorate_user }}\"@\"localhost\"' mysql"
+  shell: "{{ mysql_base_dir }}/bin/mysql --defaults-file={{ mysql_etc_dir }}/my.cnf -uroot -p'{{ mysql_root_password }}' -e 'GRANT RELOAD on *.* to \"{{ logrorate_user }}\"@\"localhost\"' mysql"
   args:
     chdir: /tmp
   
