@@ -33,9 +33,15 @@
     tags:
         - always
 
+-   name: "Removing previously installed linuxbrew"
+    file:
+      state: absent
+      path: "{{ brew_install_path }}/Homebrew"
+
 -   name: Extracting Homebrew.
-    shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}/Homebrew"
+    shell: "tar -xzf /tmp/brew-master.tgz --strip 1"
     args:
+        chdir: "{{ brew_install_path }}/Homebrew"
         warn: false
     tags:
         - always
