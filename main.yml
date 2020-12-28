@@ -103,6 +103,8 @@
       include_role:
         name: linuxbrew
       when: "ansible_system == 'Linux'"
+      tags:
+        - always
     - role: openssl
       tags:
         - always
