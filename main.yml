@@ -109,7 +109,9 @@
     - role: python2
       tags:
         - always
-    - zsh
+    - role: zsh
+      tags:
+        - zsh
     - role: vim
       tags:
         - always

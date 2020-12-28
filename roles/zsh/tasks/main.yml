@@ -8,78 +8,58 @@
     - "/tmp/powerline_fonts"
     - "/tmp/oh-my-zsh"
   ignore_errors: yes
-  tags:
-    - zsh
 
 - name: Checking if fc-cache installed in the system
   shell: which fc-cache
   register: which_fc_cache
   failed_when: which_fc_cache.rc > 1
   when: 'ansible_system == "Linux"'
-  tags:
-    - zsh
 
 - name: "Downloading 'powerline' fonts"
   git:
     repo: 'https://github.com/powerline/fonts.git'
     dest: '/tmp/powerline_fonts'
     version: 'master'
-  tags:
-    - zsh
 
 - copy:
     src: '/tmp/powerline_fonts/Hack/'
     dest: '/usr/share/fonts/'
   when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   become: yes
-  tags:
-    - zsh
 
 - copy:
     src: '/tmp/powerline_fonts/Hack/'
     dest: '/Library/Fonts'
   when: 'ansible_system == "Darwin"'
   become: yes
-  tags:
-    - zsh
 
 - copy:
     src: '/tmp/powerline_fonts/Hack/'
     dest: '{{ brew_user_home_dir }}/.fonts/'
   when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
-  tags:
-    - zsh
 
 - copy:
     src: '/tmp/powerline_fonts/Hack/'
     dest: '{{ brew_user_home_dir }}/Library/Fonts/'
   when: 'ansible_system == "Darwin"'
-  tags:
-    - zsh
 
 - name: "Downloading 'awesome-terminal-fonts'"
   git:
     repo: 'https://github.com/gabrielelana/awesome-terminal-fonts.git'
     dest: '/tmp/awesome-terminal-fonts'
     version: 'master'
-  tags:
-    - zsh
 
 - name: "Installing 'awesome-terminal-fonts' to {{ brew_user_home_dir }}/.fonts/"
   copy:
     src: '/tmp/awesome-terminal-fonts/build/'
     dest: '{{ brew_user_home_dir }}/.fonts/'
   when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
-  tags:
-    - zsh
 
 - name: "Installing 'awesome-terminal-fonts' to {{ brew_user_home_dir }}/Library/Fonts/"
   copy:
     src: '/tmp/awesome-terminal-fonts/build/'
     dest: '{{ brew_user_home_dir }}/Library/Fonts/'
   when: 'ansible_system == "Darwin"'
-  tags:
-    - zsh
 
 - name: "Installing 'awesome-terminal-fonts' /usr/share/fonts/"
   copy:
@@ -87,8 +67,6 @@
     dest: '/usr/share/fonts/'
   when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   become: yes
-  tags:
-    - zsh
 
 - name: "Installing 'awesome-terminal-fonts' /Library/Fonts"
   copy:
@@ -96,15 +74,11 @@
     dest: '/Library/Fonts'
   when: 'ansible_system == "Darwin"'
   become: yes
-  tags:
-    - zsh
 
 - name: "Rebuild font cache"
   shell: "fc-cache -f -v"
   when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   become: yes
-  tags:
-    - zsh
 
 - name: "Installing powerline-status via pip"
   pip:
@@ -113,38 +87,28 @@
     extra_args: --user
     executable: "{{ local_pip2_path }}"
   ignore_errors: True
-  tags:
-    - zsh
 
 - name: "Installing zsh via homebrew"
   homebrew:
     name: zsh
     state: latest
-  tags:
-    - zsh
 
 - name: "Adding zsh to /etc/shells"
   lineinfile:
     path: '/etc/shells'
     line: '{{ brew_brew_bin_path }}/zsh'
   become: yes
-  tags:
-    - zsh
 
 - name: "Installing zsh-completions via homebrew"
   homebrew:
     name: zsh-completions
     state: latest
-  tags:
-    - zsh
 
 - name: "Installing prezto"
   git:
     repo: 'https://github.com/sorin-ionescu/prezto.git'
     dest: '{{ brew_user_home_dir }}/.zprezto'
     version: 'master'
-  tags:
-    - zsh
 
 #- name: "Configure zshrc: {{ brew_user_home_dir }}/.zshrc"
 #  shell: |
@@ -162,31 +126,23 @@
   stat:
     path: "{{ brew_user_home_dir }}/.oh-my-zsh"
   register: state
-  tags:
-    - zsh
 
 - name: "Clean {{ brew_user_home_dir }}/.oh-my-zsh"
   file:
     state: absent
     path: "{{ brew_user_home_dir }}/.oh-my-zsh"
   when: state.stat.exists
-  tags:
-    - zsh
 
 - name: "Downloading oh-my-zsh"
   git:
     repo: 'https://github.com/robbyrussell/oh-my-zsh.git'
     dest: '/tmp/oh-my-zsh'
     version: 'master'
-  tags:
-    - zsh
 
 - name: "Changing default shell to zsh "
   shell: 'chsh -s {{ brew_brew_bin_path }}/zsh {{ brew_user }}'
   become: true
   become_user: root
-  tags:
-    - zsh
 
 - name: "Installing Oh My Zsh"
   shell: '/tmp/oh-my-zsh/tools/install.sh'
@@ -195,8 +151,6 @@
     SHELL: "{{ brew_brew_bin_path }}/zsh"
   args:
     executable: "{{ brew_brew_bin_path }}/zsh"
-  tags:
-    - zsh
 
 #- name: "Adding homebrew to PATH in {{ brew_user_home_dir }}/.zshrc"
 #  blockinfile:
@@ -217,31 +171,23 @@
       if [[ -f ~/.aliases ]]; then
         source ~/.aliases
       fi
-  tags:
-    - zsh
 
 - name: "Setting EDITOR to vim"
   lineinfile:
     path: '{{ brew_user_home_dir }}/.zshrc'
     regexp: '^export EDITOR=.*'
     line: 'export EDITOR=vim'
-  tags:
-    - zsh
 
 - name: "Setting VISUAL to vim"
   lineinfile:
     path: '{{ brew_user_home_dir }}/.zshrc'
     regexp: '^export VISUAL=.*'
     line: 'export VISUAL=vim'
-  tags:
-    - zsh
 
 - lineinfile:
     path: '{{ brew_user_home_dir }}/.zshrc'
     regexp: '^DEFAULT_USER=.*'
     line: 'DEFAULT_USER="$USER"'
-  tags:
-    - zsh
 
 - name: "Adding Prezto modules to {{ brew_user_home_dir }}/.zpreztorc"
   blockinfile:
@@ -263,8 +209,6 @@
         'prompt'
 
       zstyle ':prezto:module:prompt' theme 'paradox'
-  tags:
-    - zsh
 
 - name: "Adding locales to PATH in {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
@@ -279,8 +223,6 @@
         source $HOME/.fonts/*.sh
       fi
       setopt -o nomatch
-  tags:
-    - zsh
 
 - name: "Adding Prezto to {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
@@ -294,8 +236,6 @@
       fi
 
       # Customize to your needs...
-  tags:
-    - zsh
 
 - name: "Resolve site-packages location"
   shell: "{{ local_python2_path }}/python -m site --user-site"
@@ -325,8 +265,6 @@
     marker: "# {mark} python_user_base_dir PATH"
     block: |
       export PATH="{{ python_user_base_dir }}/bin:$PATH"
-  tags:
-    - zsh
 
 - name: "Adding powerline to config {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
@@ -334,22 +272,16 @@
     marker: "# {mark} powerline"
     block: |
       source {{ site_packages_dir }}/powerline/bindings/zsh/powerline.zsh
-  tags:
-    - zsh
 
 - name: "Ensure permissions (macOS)"
   shell: "{{ brew_brew_bin_path }}/zsh -c '. ~/.zshrc && compaudit | xargs chmod g-w,o-w'"
   ignore_errors: yes
   when: "ansible_system == 'Darwin'"
-  tags:
-    - zsh
 
 - name: "Ensure permissions (Linux)"
   shell: "{{ brew_brew_bin_path }}/zsh -c '. ~/.zshrc && compaudit | xargs --no-run-if-empty chmod g-w,o-w'"
   ignore_errors: yes
   when: 'ansible_system == "Linux"'
-  tags:
-    - zsh
 
 
 
