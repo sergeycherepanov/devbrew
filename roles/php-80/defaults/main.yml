@@ -6,7 +6,6 @@ php_flags: ""
 php_dependencies:
 php_modules:
     - php80-intl
-    - php80-mcrypt
     - php80-xdebug
     - php80-redis
     - php80-tidy
