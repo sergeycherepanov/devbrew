@@ -37,7 +37,7 @@
     install_options: "build-from-source"
 
 - name: "Remove outdated {{ php_version }}"
-  shell: "brew upgrade --cleanup {{ php_version }} > /dev/null 2>&1"
+  shell: "brew cleanup {{ php_version }} > /dev/null 2>&1"
   ignore_errors: yes
 
 - name: "Installing {{ php_version }} pear packages"
