@@ -29,6 +29,16 @@
     file:
       state: absent
       path: "{{ brew_install_path }}/Homebrew"
+    become: yes
+
+-   name: "Ensuring {{ brew_install_path }}/Homebrew"
+    file:
+      path: "{{ brew_install_path }}/Homebrew"
+      state: directory
+      owner: '{{ brew_user }}'
+      group: '{{ brew_group }}'
+      mode: '0775'
+    become: yes
 
 -   name: Extracting Homebrew.
     shell: "tar -xzf /tmp/brew-master.tgz --strip 1"
