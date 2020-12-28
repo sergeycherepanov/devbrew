@@ -15,6 +15,7 @@ sendmail_path = {{ brew_install_path }}/bin/fake_sendmail.sh
 display_startup_errors = on
 log_errors = on
 error_log = {{ brew_install_path }}/var/log/php/{{ php_version_num }}/error.log
+soap.wsdl_cache_ttl = 1
 
 [Date]
 date.timezone=UTC
