@@ -9,24 +9,9 @@
     name: supervisord-devbrew
     state: stopped
   when: "'supervisord-devbrew.service' in ansible_facts.services"
+  become: yes
   tags:
   - always
-
-#- name: "Ensure linux requirements via apt"
-#  apt:
-#    name:
-#    - ca-certificates
-#    - git
-#    - curl
-#    - file
-#    - systemtap-sdt-dev
-#    - g++
-#    - make
-#    - uuid-runtime
-#    state: present
-#  become: yes
-#  tags:
-#  - always
 
 - name: Ensure symlink for libs
   shell: "{{ item }}"
