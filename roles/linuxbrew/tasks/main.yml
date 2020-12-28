@@ -80,7 +80,7 @@
     when: profile_state.stat.exists
 
 -   name: Stash brew changes
-    shell: 'cd {{ brew_install_path }}/Homebrew/Library && git stash && git clean -d -f'
+    shell: 'cd {{ brew_install_path }}/Homebrew/Library && { stat .git && { git stash && git clean -d -f; } || { exit 0; } ; }'
     ignore_errors: yes
     when: brew_state.stat.exists
 
