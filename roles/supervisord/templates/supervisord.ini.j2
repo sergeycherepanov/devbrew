@@ -13,9 +13,9 @@
 ;    "command=bash -c 'foo ; bar'" will truncate to "command=bash -c 'foo ".
 
 [unix_http_server]
-file={{ brew_install_path }}/var/run/supervisor.sock   ; the path to the socket file
+file={{ brew_install_path }}/var/run/supervisor.sock
 chmod = 0770
-;chown = root:{{ brew_group }}
+chown = root:{{ brew_group }}
 ;username=user              ; default is no username (open server)
 ;password=123               ; default is no password (open server)
 
