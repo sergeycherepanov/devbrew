@@ -1,0 +1,22 @@
+---
+- name: "Ensure python3"
+  homebrew: 
+    name: python@3.9
+    state: latest
+
+- name: "Resolve local python3 path"
+  shell: "cd $(brew --prefix python@3.9)/bin; cd $(dirname $(readlink python3)); pwd"
+  register: result
+
+- name: "Register local_python3_path fact"
+  set_fact: local_python3_path="{{ result.stdout }}"
+
+- name: "Resolve local pip3 path"
+  shell: "echo $(brew --prefix python@3.9)/bin/pip3"
+  register: result
+
+- name: "Register local_pip3_path fact"
+  set_fact: local_pip3_path="{{ result.stdout }}"
+
+- debug:
+    var: local_pip3_path
