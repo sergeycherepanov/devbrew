@@ -162,7 +162,7 @@
     chdir: /tmp
   
 - name: Create logrotate user
-  shell: "{{ mysql_base_dir }}/bin/mysql --defaults-file={{ mysql_etc_dir }}/my.cnf -uroot -p'{{ mysql_root_password }}' -e 'CREATE USER IF NOT EXISTS \"{{ logrorate_user }}\"@\"localhost\" IDENTIFIED WITH mysql_native_password BY '{{ logrorate_user }}';' mysql"
+  shell: "{{ mysql_base_dir }}/bin/mysql --defaults-file={{ mysql_etc_dir }}/my.cnf -uroot -p'{{ mysql_root_password }}' -e 'CREATE USER IF NOT EXISTS \"{{ logrorate_user }}\"@\"localhost\" IDENTIFIED WITH mysql_native_password BY \"{{ logrorate_user }}\";' mysql"
   args:
     chdir: /tmp
 
