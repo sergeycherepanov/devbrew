@@ -273,6 +273,22 @@
     block: |
       source {{ site_packages_dir }}/powerline/bindings/zsh/powerline.zsh
 
+- name: "Adding ssh agent init to {{ brew_user_home_dir }}/.zshrc"
+  blockinfile:
+    dest: '{{ brew_user_home_dir }}/.zshrc'
+    marker: "# {mark} ssh-agent"
+    block: |
+      [[ -f ~/.ssh-agent-init ]] && source ~/.ssh-agent-init
+      [[ -z $ITERM_PROFILE ]] || [[ "Default" == $ITERM_PROFILE ]] && {
+        [[ -f /tmp/ssh_agent_default.env ]] && {
+          eval "$(cat /tmp/ssh_agent_default.env)"
+        } || {
+          ssh-agent -s > /tmp/ssh_agent_default.env
+          eval "$(cat /tmp/ssh_agent_default.env)"
+          [[ -f ~/.ssh/id_rsa ]] && ssh-add ~/.ssh/id_rsa
+        }
+      }
+
 - name: "Ensure permissions (macOS)"
   shell: "{{ brew_brew_bin_path }}/zsh -c '. ~/.zshrc && compaudit | xargs chmod g-w,o-w'"
   ignore_errors: yes
