@@ -5,17 +5,7 @@ php_version_num_int: 74
 php_flags: ""
 php_dependencies:
 php_modules:
-    - php74-intl
-    - php74-mcrypt
+    - php74-common
     - php74-xdebug
-    - php74-redis
-    - php74-tidy
-    - php74-opcache
-    - php74-pdo-pgsql
     - php74-xhprof
-    - php74-mongodb
-    - php74-apcu
-    - php74-gmp
-    - php74-imagick
-    - php74-zip
 php_pear_packages: []

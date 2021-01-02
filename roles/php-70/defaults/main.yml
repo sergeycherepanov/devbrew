@@ -5,16 +5,7 @@ php_version_num_int: 70
 php_flags: ""
 php_dependencies:
 php_modules:
-    - php70-intl
-    - php70-mcrypt
+    - php70-common
     - php70-xdebug
-    - php70-redis
-    - php70-tidy
-    - php70-opcache
-    - php70-pdo-pgsql
     - php70-xhprof
-    - php70-mongodb
-    - php70-apcu
-    - php70-gmp
-    - php70-imagick
 php_pear_packages: []
