@@ -7,7 +7,7 @@
 - name: "Updating rc"
   blockinfile:
     dest: '{{ brew_user_home_dir }}/{{item}}'
-    marker: "# {mark} jenv"
+    marker: "# {mark} ruby"
     block: |
       export PATH="{{ brew_install_path }}/opt/ruby/bin:$PATH"
       export LDFLAGS="-L{{ brew_install_path }}/opt/ruby/lib"
