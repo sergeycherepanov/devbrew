@@ -7,7 +7,7 @@
 - name: Ensure required taps are tapped.
   homebrew_tap: "tap={{ item }} state=present"
   with_items:
-    - "djocker/common"
+    - "digitalspacestdio/common"
 
 - name: "Ensure zlib"
   homebrew:
@@ -23,7 +23,7 @@
 
 - name: "Installing Curl with openssl"
   homebrew: 
-    name: djocker/common/curl
+    name: digitalspacestdio/common/curl
     state: latest
     install_options: with-openssl,with-libssh2
   environment:

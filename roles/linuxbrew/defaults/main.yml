@@ -30,7 +30,7 @@ brew_installed_packages:
 brew_upgrade_all_packages: no
 
 brew_taps:
-  - djocker/common
+  - digitalspacestdio/common
 
 brew_use_brewfile: true
 brew_brewfile_dir: '~'

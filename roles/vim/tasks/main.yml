@@ -7,7 +7,7 @@
 #- name: Ensure vim taps are tapped.
 #  homebrew_tap: "tap={{ item }} state=present"
 #  with_items:
-#    - "djocker/common"
+#    - "digitalspacestdio/common"
 
 - name: "ln -s /usr/include/locale.h /usr/include/xlocale.h"
   file:
@@ -20,7 +20,7 @@
 
 - name: "Remove outdated vim"
   homebrew:
-    name: djocker/common/vim
+    name: digitalspacestdio/common/vim
     state: absent
 
 - name: "Ensure vim"

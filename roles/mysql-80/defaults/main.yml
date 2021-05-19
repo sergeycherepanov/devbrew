@@ -1,5 +1,5 @@
 ---
-mysql_tap: "djocker/common"
+mysql_tap: "digitalspacestdio/common"
 mysql_user: "{{ brew_user }}"
 mysql_group: "{{ brew_group }}"
 mysql_version: "8.0"
