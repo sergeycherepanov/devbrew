@@ -8,7 +8,7 @@ autorestart=true
 stopasgroup=true
 
 [program:{{ php_version }}-fpm-xdebug]
-command={{ brew_install_path }}/opt/{{ php_version }}/sbin/php-fpm --nodaemonize --fpm-config {{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm-xdebug.conf -c {{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini
+command={{ brew_install_path }}/opt/{{ php_version }}/sbin/php-fpm --nodaemonize --fpm-config {{ brew_install_path }}/etc/php/{{ php_version_num }}/php-fpm-xdebug.conf -c {{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini -d zend_extension="{{ brew_install_path }}/opt/{{ php_version }}-xdebug/xdebug.so"
 directory={{ brew_install_path }}/opt/{{ php_version }}
 stdout_logfile={{ brew_install_path }}/var/log/supervisor/{{ php_version }}-xdebug.log
 stderr_logfile={{ brew_install_path }}/var/log/supervisor/{{ php_version }}-xdebug.err

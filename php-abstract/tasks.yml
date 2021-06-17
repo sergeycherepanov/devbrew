@@ -93,12 +93,11 @@
     group: "{{ brew_group }}"
 
 - name: "Enabling xdebug in php-xdebug.ini for {{ php_version }}"
-  blockinfile:
-    dest: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/php-xdebug.ini'
-    marker: "; {mark} ansible xdebug"
-    block: |
+  copy:
+    dest: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xdebug.ini'
+    content: |
       [xdebug]
-      zend_extension="{{ brew_install_path }}/opt/{{ php_version }}-xdebug/xdebug.so"
+      ;zend_extension="{{ brew_install_path }}/opt/{{ php_version }}-xdebug/xdebug.so"
       xdebug.remote_enable=1
       xdebug.remote_autostart = 0
       xdebug.remote_connect_back = 0
