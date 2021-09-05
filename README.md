@@ -19,9 +19,9 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 1. Install cli tools: `xcode-select --install` (it's starts XCODE installation process)
 1. Execute: `cd ~`
 1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
-1. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php72,php73,php74,xhgui,percona57,nodejs,zsh,dnsmasq"` to make full install  
+1. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,percona57,mysql80,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
-1. Execute: `brew link php74` (setting default php for cli, you can choose other version (php56 or php70))
+1. Execute: `brew link php80` (setting default php for cli, you can choose other version (php56 or php74))
 1. Add root crt to keychain `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /usr/local/etc/openssl/localCA/cacert.pem`
 
 ## Installation on Linux (ElementaryOS/Ubuntu/Debian)
@@ -29,7 +29,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 1. Install dependencies: `sudo apt update && sudo apt install -yq curl git`
 1. Execute: `cd ~`
 1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
-1. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php72,php73,php74,xhgui,percona57,nodejs,zsh,dnsmasq"` to make full install  
+1. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,percona57,mysql80,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
 1. Execute: `brew link php74` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
 
@@ -42,18 +42,19 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 
 ## Tags
 > You can choose one or all of them, tags don't have conflict
-*  `zsh` - will install and configure ZSH with PowerLine and Oh-My-Zsh  
-*  `php56` - will install PHP version 5.6  
-*  `php70` - will install PHP version 7.0  
-*  `php71` - will install PHP version 7.1  
-*  `php72` - will install PHP version 7.2  
-*  `php73` - will install PHP version 7.3
-*  `php74` - will install PHP version 7.4  
-*  `xhgui` - will install xhgui for xhprof  
-*  `percona56` - will install Percona Server (mysql) version 5.6
-*  `percona57` - will install Percona Server (mysql) version 5.7  
-*  `nodejs` - will install NodeJS and NPM  
-*  `dnsmasq` - will install and configure a dnsmasq service 
+* `zsh` - will install and configure ZSH with PowerLine and Oh-My-Zsh  
+* `php56` - will install PHP version 5.6  
+* `php70` - will install PHP version 7.0  
+* `php71` - will install PHP version 7.1  
+* `php72` - will install PHP version 7.2  
+* `php73` - will install PHP version 7.3
+* `php74` - will install PHP version 7.4  
+* `php74` - will install PHP version 8.0
+* `percona56` - will install Percona Server (mysql) version 5.6
+* `percona57` - will install Percona Server (mysql) version 5.7
+* `mysql80` - will install Mysql Server 8.0
+* `nodejs` - will install NodeJS and NPM  
+* `dnsmasq` - will install and configure a dnsmasq service 
 
 ## Manage Services
 
