@@ -21,7 +21,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
 1. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php72,php73,php74,xhgui,percona57,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
-1. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56 or php70))
+1. Execute: `brew link php74` (setting default php for cli, you can choose other version (php56 or php70))
 1. Add root crt to keychain `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /usr/local/etc/openssl/localCA/cacert.pem`
 
 ## Installation on Linux (ElementaryOS/Ubuntu/Debian)
@@ -31,7 +31,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
 1. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php72,php73,php74,xhgui,percona57,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
-1. Execute: `brew link php71` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
+1. Execute: `brew link php74` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
 
 ## Installation on Windows Subsystem for Linux
 1. Enable WSL
