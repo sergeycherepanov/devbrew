@@ -17,9 +17,8 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 ## Installation on MacOS
 1. Open the terminal (just type **terminal** into spotlight)
 1. Install cli tools: `xcode-select --install` (it's starts XCODE installation process)
-1. Execute: `cd ~`
-1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
-1. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,percona57,mysql80,nodejs,zsh,dnsmasq"` to make full install  
+1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
+1. Execute: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
 1. Execute: `brew link php80` (setting default php for cli, you can choose other version (php56 or php74))
 1. Add root crt to keychain `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /usr/local/etc/openssl/localCA/cacert.pem`
@@ -27,9 +26,8 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 ## Installation on Linux (ElementaryOS/Ubuntu/Debian)
 1. Open the terminal
 1. Install dependencies: `sudo apt update && sudo apt install -yq curl git`
-1. Execute: `cd ~`
-1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git`
-1. Execute: `bash devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,percona57,mysql80,nodejs,zsh,dnsmasq"` to make full install  
+1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
+1. Execute: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
 1. Execute: `brew link php74` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
 

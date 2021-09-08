@@ -1,14 +1,5 @@
 ---
-#- name: "Remove old node packages"
-#  homebrew: 
-#    name: "{{ item }}"
-#    state: absent
-#  tags:
-#    - nodejs
-#  with_items:
-#    - node
-#    - npm
-    
+
 - name: "Installing nodejs"
   homebrew: 
     name: node 
@@ -23,3 +14,9 @@
   homebrew:
     name: yarn
     state: latest
+
+- name: nvm
+  shell: >
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+  args:
+    creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
