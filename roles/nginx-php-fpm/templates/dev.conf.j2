@@ -9,16 +9,16 @@ if ($http_user_agent ~* (360Spider|80legs.com|Abonti|AcoonBot|Acunetix|adbeat_bo
 
 set $good_user "${good_user_ip}${good_user_agent}";
 
-# Reject user when disallowed ip address and user agent
-if ($good_user = "00") {
-    return 410;
-}
+# Reject user when disallowed ip address and user agent (disabled by default)
+# if ($good_user = "00") {
+#     return 410;
+# }
 
 gzip on;
 gzip_proxied any;
 gzip_types text/plain text/xml text/css application/javascript application/json image/svg+xml application/ttf application/x-ttf application/x-font-ttf font/opentype font/x-woff font/ttf;
 gzip_vary on;
-gzip_comp_level 3;
+gzip_comp_level 1;
 
 # set default php version to {{ default_php }}
 set $php_version {{ default_php }};
@@ -30,28 +30,34 @@ if ($project_name ~ ^www\.(.+)$) {
 }
 
 set $projectDir $wwwRoot/$pool/$project_name;
+set $projectType "default";
 
 if (!-d $projectDir) {
     set $projectDir $wwwRoot;
 }
 
-set $documentRoot $projectDir/web;
+set $documentRoot $projectDir/pub;
 
 if (!-d $documentRoot) {
     set $documentRoot $projectDir/public;
 }
 
 if (!-d $documentRoot) {
-    set $documentRoot $projectDir/pub;
+    set $documentRoot $projectDir/web;
 }
 
 if (!-d $documentRoot) {
     set $documentRoot $projectDir;
 }
 
+# if the symfony like
+if (-f $projectDir/../bin/console) {
+    set $projectType "symfony";
+}
+
 # if the Magento 2
-if (-f $projectDir/bin/magento) {
-    set $documentRoot $projectDir;
+if (-f $projectDir/../bin/magento) {
+    set $projectType "magento2";
 }
 
 {% for version in php_versions %}
@@ -64,24 +70,17 @@ if (-f $documentRoot/.php{{ version }}) {
 {% endfor %}
 
 root   $documentRoot;
-index  app.php index.php index.html;
+index  app.php index.php index.html index.htm;
 
 if (-f $documentRoot/app.php) {
     set $cgiIndex /app.php;
 }
 
-if (!-f $documentRoot/app.php) {
+if (-f $documentRoot/index.php) {
     set $cgiIndex /index.php;
 }
 
 include {{ brew_install_path }}/opt/nginx-error-pages/snippets/error_pages_osx.conf;
-
-#deny magento protected files
-# location ~ ^(/app/|/media/downloadable/|/var/|/shell/|/pkginfo/|/media/customer/|/lib/|/includes/) {
-#location ~* ^/(app|var|downloader|includes|pkginfo|lib|media/customer|/media/downloadable)/ {
-#    deny all;
-#    rewrite ^ /index.php last;
-#}
 
 # deny access to hidden files
 location ~ /\. {
@@ -108,13 +107,17 @@ location /media/ {
 }
 
 # Magento 2 static files
-location /pub/static/ {
+location /static/ {
+    if ($projectType != "magento2") {
+        break;
+    }
+
     # Uncomment the following line in production mode
     # expires max;
 
     # Remove signature of the static files that is used to overcome the browser cache
-    location ~ ^/pub/static/version {
-        rewrite ^/pub/static/(version\d*/)?(.*)$ /pub/static/$2 last;
+    location ~ ^/static/version {
+        rewrite ^/static/(version\d*/)?(.*)$ /pub/static/$2 last;
     }
 
     location ~* \.(ico|jpg|jpeg|png|gif|svg|js|css|swf|eot|ttf|otf|woff|woff2|html|json)$ {
@@ -136,14 +139,18 @@ location /pub/static/ {
         }
     }
     if (!-f $request_filename) {
-        rewrite ^/pub/static/(version\d*/)?(.*)$ /pub/static.php?resource=$2 last;
+        rewrite ^/static/(version\d*/)?(.*)$ /static.php?resource=$2 last;
     }
     add_header X-Frame-Options "SAMEORIGIN";
 }
 
 # Magento 2 media files
-location /pub/media/ {
-    try_files $uri $uri/ /pub/get.php$is_args$args;
+location /media/ {
+    if ($projectType != "magento2") {
+        break;
+    }
+
+    try_files $uri $uri/ /get.php$is_args$args;
 
     location ~ ^/media/theme_customization/.*\.xml {
         deny all;
@@ -153,14 +160,14 @@ location /pub/media/ {
         add_header Cache-Control "public";
         add_header X-Frame-Options "SAMEORIGIN";
         expires +1y;
-        try_files $uri $uri/ /pub/get.php$is_args$args;
+        try_files $uri $uri/ /get.php$is_args$args;
     }
 
     location ~* \.(zip|gz|gzip|bz2|csv|xml)$ {
         add_header Cache-Control "no-store";
         add_header X-Frame-Options "SAMEORIGIN";
         expires    off;
-        try_files $uri $uri/ /pub/get.php$is_args$args;
+        try_files $uri $uri/ /get.php$is_args$args;
     }
     add_header X-Frame-Options "SAMEORIGIN";
 }
