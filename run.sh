@@ -1,9 +1,11 @@
 #!/bin/bash
+set -e
 set -x
+pushd `dirname $0` > /dev/null;DIR=`pwd -P`;popd > /dev/null
+cd $DIR
 git reset --hard
 git clean -fd
 git pull
-pushd `dirname $0` > /dev/null;DIR=`pwd -P`;popd > /dev/null
 export ANSIBLE_NOCOWS=1
 MAC_USER=${SUDO_USER-${USER}}
 MIN_PYTHON_VERSION_MACOS="2.7.15"
