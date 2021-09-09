@@ -29,11 +29,7 @@
     state: latest
 
 - name: "Installing powerline-status via pip3"
-  pip:
-    name: powerline-status
-    state: latest
-    extra_args: --user
-    executable: "{{ local_pip3_path }}"
+  shell: "$(brew --prefix python@3)/bin/pip3 install --user powerline-status"
   ignore_errors: True
 
 - name: "Creating .vim/autoload folder"
