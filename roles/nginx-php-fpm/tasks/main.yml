@@ -1,8 +1,8 @@
 ---
 - set_fact:
     default_php: "{{ php_versions[-1] }}"
-    tags:
-      - always
+  tags:
+    - always
 
 - name: Looking for outdated configs
   find:
