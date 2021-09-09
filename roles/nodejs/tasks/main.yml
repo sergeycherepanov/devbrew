@@ -1,6 +1,6 @@
 ---
 
-- name: "Installing nodejs"
+- name: "Ensure nodejs"
   homebrew: 
     name: node 
     state: latest
@@ -10,13 +10,22 @@
   set_fact: 
     nodejs_installed: true
 
-- name: "Installing yarn"
+- name: "Ensure yarn"
   homebrew:
     name: yarn
     state: latest
 
-- name: nvm
-  shell: >
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-  args:
-    creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+- name: "Ensure nvm"
+  homebrew:
+    name: nvm
+    state: latest
+
+- name: "Updating rc"
+  blockinfile:
+    dest: '{{ brew_user_home_dir }}/{{item}}'
+    marker: "# {mark} nvm"
+    block: |
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "{{ brew_install_path }}/opt/nvm/nvm.sh" ] && . "{{ brew_install_path }}/opt/nvm/nvm.sh"  # This loads nvm
+      [ -s "{{ brew_install_path }}/opt/nvm/etc/bash_completion.d/nvm" ] && . "{{ brew_install_path }}/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+  with_items: ['.zshrc', '.bashrc']

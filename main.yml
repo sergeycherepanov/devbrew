@@ -116,7 +116,7 @@
         - always
     - role: zsh
       tags:
-        - zsh
+        - always
     - role: vim
       tags:
         - always

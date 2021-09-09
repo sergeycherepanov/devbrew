@@ -110,7 +110,7 @@ location /static/ {
 
     # Remove signature of the static files that is used to overcome the browser cache
     location ~ ^/static/version {
-        rewrite ^/static/(version\d*/)?(.*)$ /pub/static/$2 last;
+        rewrite ^/static/(version\d*/)?(.*)$ /static/$2 last;
     }
 
     location ~* \.(ico|jpg|jpeg|png|gif|svg|js|css|swf|eot|ttf|otf|woff|woff2|html|json)$ {
@@ -119,7 +119,7 @@ location /static/ {
         expires +1y;
 
         if (!-f $request_filename) {
-            rewrite ^/pub/static/(version\d*/)?(.*)$ /pub/static.php?resource=$2 last;
+            rewrite ^/static/(version\d*/)?(.*)$ /static.php?resource=$2 last;
         }
     }
     location ~* \.(zip|gz|gzip|bz2|csv|xml)$ {
@@ -128,7 +128,7 @@ location /static/ {
         expires    off;
 
         if (!-f $request_filename) {
-           rewrite ^/pub/static/(version\d*/)?(.*)$ /pub/static.php?resource=$2 last;
+           rewrite ^/static/(version\d*/)?(.*)$ /static.php?resource=$2 last;
         }
     }
     if (!-f $request_filename) {
