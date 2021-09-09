@@ -148,5 +148,13 @@
     owner: "{{ brew_user }}"
     group: "{{ brew_group }}"
 
+- name: "Unlinking all already installed php packages"
+  shell: "brew list --formula | grep php | xargs brew unlink"
+  when: ansible_system == "Darwin"
+
+- name: "Unlinking all already installed php packages"
+  shell: "brew list --formula | grep php | xargs --no-run-if-empty brew unlink"
+  when: ansible_system == "Linux"
+
 - name: "Linking php"
   shell: "brew link {{ php_version }}"
