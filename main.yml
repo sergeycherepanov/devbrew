@@ -152,12 +152,9 @@
     - role: dnsmasq
       tags:
         - dnsmasq
-    - role: percona-server-56
+    - role: mysql-57
       tags:
-        - percona56
-    - role: percona-server-57
-      tags:
-        - percona57
+        - mysql57
     - role: mysql-80
       tags:
         - mysql80

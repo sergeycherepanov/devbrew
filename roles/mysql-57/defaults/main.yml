@@ -4,8 +4,7 @@ mysql_user: "{{ brew_user }}"
 mysql_group: "{{ brew_group }}"
 mysql_version: "5.7"
 mysql_version_num: "57"
-mysql_formula: "digitalspacestdio/common/percona-server@5.7"
-#mysql_base_dir: "{{ brew_install_path }}/opt/percona-server@5.7"
+mysql_formula: "mysql"
 mysql_etc_dir: "{{ brew_install_path }}/etc/mysql/57"
 mysql_run_dir: "{{ brew_install_path }}/var/run/mysql/57"
 mysql_log_dir: "{{ brew_install_path }}/var/log/mysql/57"
@@ -15,3 +14,4 @@ mysql_listen_port: 3306
 mysql_listen_address: 127.0.0.1
 mysql_supervisord_name: mysql57
 mysql_root_password: root
+
