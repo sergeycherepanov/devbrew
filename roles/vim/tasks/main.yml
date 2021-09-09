@@ -35,8 +35,6 @@
     extra_args: --user
     executable: "{{ local_pip3_path }}"
   ignore_errors: True
-  tags:
-  - zsh
 
 - name: "Creating .vim/autoload folder"
   file:

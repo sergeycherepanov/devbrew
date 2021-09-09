@@ -85,7 +85,7 @@
     name: powerline-status
     state: latest
     extra_args: --user
-    executable: "{{ local_pip2_path }}"
+    executable: "{{ local_pip3_path }}"
   ignore_errors: True
 
 - name: "Installing zsh via homebrew"
@@ -238,7 +238,7 @@
       # Customize to your needs...
 
 - name: "Resolve site-packages location"
-  shell: "{{ local_python2_path }}/python -m site --user-site"
+  shell: "{{ local_python3_path }}/python -m site --user-site"
   register: result
   tags:
     - always
@@ -249,7 +249,7 @@
     - always
 
 - name: "Resolve python user base dir"
-  shell: "{{ local_python2_path }}/python -m site --user-base"
+  shell: "{{ local_python3_path }}/python -m site --user-base"
   register: result
   tags:
     - always
