@@ -51,9 +51,9 @@ if (!-d $documentRoot) {
 }
 
 # if the symfony like
-if (-f $projectDir/../bin/console) {
-    set $projectType "symfony";
-}
+# if (-f $projectDir/../bin/console) {
+#    set $projectType "symfony";
+# }
 
 # if the Magento 2
 if (-f $projectDir/../bin/magento) {
@@ -99,13 +99,6 @@ location / {
     try_files $uri $uri/ @handler;
 }
 
-# Akeneo Media
-location /media/ {
-    if (!-f $request_filename) {
-        rewrite / /index.php last;
-    }
-}
-
 # Magento 2 static files
 location /static/ {
     if ($projectType != "magento2") {
@@ -144,9 +137,20 @@ location /static/ {
     add_header X-Frame-Options "SAMEORIGIN";
 }
 
+set $projectTypeFlag $projectType;
+
 # Magento 2 media files
 location /media/ {
-    if ($projectType != "magento2") {
+    if (!-f $request_filename) {
+        set $projectTypeFlag $projectType"_nofile";
+    }
+
+    if ($projectTypeFlag = "default_nofile") {
+        rewrite / /index.php last;
+        break;
+    }
+
+    if ($projectTypeFlag = "default") {
         break;
     }
 
@@ -224,7 +228,7 @@ location ~ ^.+\.php {
     fastcgi_busy_buffers_size       256k;
     fastcgi_buffering               off;
     fastcgi_temp_file_write_size    256k;
-    fastcgi_param                   MAGE_IS_DEVELOPER_MODE  true;
+    fastcgi_param                   MAGE_IS_DEVELOPER_MODE true;
     fastcgi_param                   SERVER_NAME $host;
     fastcgi_param                   HTTPS $fcgi_https;
     fastcgi_param                   PHP_PATH $php_version_path;
