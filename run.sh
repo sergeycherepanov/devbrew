@@ -1,5 +1,8 @@
 #!/bin/bash
 set -x
+git reset --hard
+git clean -fd
+git pull
 pushd `dirname $0` > /dev/null;DIR=`pwd -P`;popd > /dev/null
 export ANSIBLE_NOCOWS=1
 MAC_USER=${SUDO_USER-${USER}}
