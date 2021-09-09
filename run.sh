@@ -20,8 +20,6 @@ if [[ $(id -u ${MAC_USER}) -eq 0 ]]; then
   exit 1
 fi
 
-hash svnsync
-
 if [[ "Darwin" == "$(uname)" ]]; then
   BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/usr/local}"
 else
