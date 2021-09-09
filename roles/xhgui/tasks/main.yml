@@ -1,4 +1,7 @@
 ---
+- set_fact:
+    default_php: "{{ php_versions[-1] }}"
+
 - name: "Register mongo_bin_path fact"
   set_fact: mongo_bin_path="{{ mongodb_path }}/bin/mongo"
 

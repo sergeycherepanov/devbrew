@@ -124,9 +124,9 @@
   set_fact:
     php_versions: "{{ php_versions + [ php_version_num_int ] }}"
 
-- name: Setting default php to {{ php_version_num_int }}
-  set_fact:
-    default_php: "{{ php_version_num_int }}"
+#- name: Setting default php to {{ php_version_num_int }}
+#  set_fact:
+#    default_php: "{{ php_version_num_int }}"
 
 - debug:
     var: php_versions

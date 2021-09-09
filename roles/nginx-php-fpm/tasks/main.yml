@@ -1,4 +1,7 @@
 ---
+- set_fact:
+    default_php: "{{ php_versions[-1] }}"
+
 - name: Looking for outdated configs
   find:
     paths: "{{ brew_install_path }}/etc/nginx/servers"
