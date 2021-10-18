@@ -157,4 +157,4 @@
   when: ansible_system == "Linux"
 
 - name: "Linking php"
-  shell: "brew link {{ php_version }}"
+  shell: "brew link --overwrite {{ php_version }}"
