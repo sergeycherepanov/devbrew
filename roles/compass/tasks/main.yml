@@ -1,3 +1,0 @@
----
-- name: "Installing Compass"
-  shell: "$(brew --prefix ruby)/bin/gem install -n {{ brew_install_path }}/bin compass"

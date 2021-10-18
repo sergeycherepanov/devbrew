@@ -182,9 +182,6 @@
     - role: xhgui
       tags:
         - xhgui
-    - role: compass
-      tags:
-        - always
     - role: less
       tags:
         - always
