@@ -12,7 +12,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 * Akeneo PIM
 
 ## Modules which will be enabled by default for all versions of php (5.6, 7.0, 7.1, 7.2)
-`apcu`, `bcmath`, `calendar`, `Core`, `ctype`, `curl`, `date`, `dba`, `dom`, `exif`, `fileinfo`, `filter`, `ftp`, `gd`, `gettext`, `hash`, `iconv`, `igbinary`, `intl`, `json`, `ldap`, `libxml`, `mbstring`, `mcrypt`, `mongodb`, `mysqli`, `mysqlnd`, `odbc`, `openssl`, `pcntl`, `pcre`, `PDO`, `pdo_mysql`, `PDO_ODBC`, `pdo_pgsql`, `pdo_sqlite`, `Phar`, `posix`, `readline`, `redis`, `Reflection`, `session`, `shmop`, `SimpleXML`, `soap`, `sockets`, `sodium`, `SPL`, `sqlite3`, `standard`, `sysvmsg`, `sysvsem`, `sysvshm`, `tideways_xhprof`, `tidy`, `tokenizer`, `wddx`, `xml`, `xmlreader`, `xmlrpc`, `xmlwriter`, `Zend OPcache`, `zip`, `zlib`
+`apcu`, `bcmath`, `calendar`, `Core`, `ctype`, `curl`, `date`, `dba`, `dom`, `exif`, `fileinfo`, `filter`, `ftp`, `gd`, `gettext`, `hash`, `iconv`, `igbinary`, `intl`, `json`, `ldap`, `libxml`, `mbstring`, `mcrypt`, `mysqli`, `mysqlnd`, `odbc`, `openssl`, `pcntl`, `pcre`, `PDO`, `pdo_mysql`, `PDO_ODBC`, `pdo_pgsql`, `pdo_sqlite`, `Phar`, `posix`, `readline`, `redis`, `Reflection`, `session`, `shmop`, `SimpleXML`, `soap`, `sockets`, `sodium`, `SPL`, `sqlite3`, `standard`, `sysvmsg`, `sysvsem`, `sysvshm`, `tideways_xhprof`, `tidy`, `tokenizer`, `wddx`, `xml`, `xmlreader`, `xmlrpc`, `xmlwriter`, `Zend OPcache`, `zip`, `zlib`
 
 ## Installation on MacOS
 1. Open the terminal (just type **terminal** into spotlight)

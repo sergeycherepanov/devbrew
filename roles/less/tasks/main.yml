@@ -1,9 +1,0 @@
----
-- name: "Installing lesscss"
-  npm: 
-    name: less
-    global: yes
-    state: latest
-  when: nodejs_installed is defined and nodejs_installed
-  tags:
-    - always

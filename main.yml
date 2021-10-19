@@ -161,9 +161,6 @@
     - role: ruby
       tags:
         - always
-    - role: mongodb
-      tags:
-        - xhgui
     - redis
     - php-56
     - php-70
@@ -177,12 +174,6 @@
       tags:
         - always
     - role: php-tools
-      tags:
-        - always
-    - role: xhgui
-      tags:
-        - xhgui
-    - role: less
       tags:
         - always
   post_tasks:
