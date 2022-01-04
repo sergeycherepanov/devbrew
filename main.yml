@@ -108,9 +108,6 @@
     - role: openssl
       tags:
         - always
-    - role: python2
-      tags:
-        - always
     - role: python3
       tags:
         - always
