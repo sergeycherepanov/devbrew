@@ -15,6 +15,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 `apcu`, `bcmath`, `calendar`, `Core`, `ctype`, `curl`, `date`, `dba`, `dom`, `exif`, `fileinfo`, `filter`, `ftp`, `gd`, `gettext`, `hash`, `iconv`, `igbinary`, `intl`, `json`, `ldap`, `libxml`, `mbstring`, `mcrypt`, `mysqli`, `mysqlnd`, `odbc`, `openssl`, `pcntl`, `pcre`, `PDO`, `pdo_mysql`, `PDO_ODBC`, `pdo_pgsql`, `pdo_sqlite`, `Phar`, `posix`, `readline`, `redis`, `Reflection`, `session`, `shmop`, `SimpleXML`, `soap`, `sockets`, `sodium`, `SPL`, `sqlite3`, `standard`, `sysvmsg`, `sysvsem`, `sysvshm`, `tideways_xhprof`, `tidy`, `tokenizer`, `wddx`, `xml`, `xmlreader`, `xmlrpc`, `xmlwriter`, `Zend OPcache`, `zip`, `zlib`
 
 ## Installation on MacOS
+1. Install Homebrew
 1. Open the terminal (just type **terminal** into spotlight)
 1. Install cli tools: `xcode-select --install` (it's starts XCODE installation process)
 1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
@@ -24,6 +25,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 1. Add root crt to keychain `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /usr/local/etc/openssl/localCA/cacert.pem`
 
 ## Installation on Linux (ElementaryOS/Ubuntu/Debian)
+1. Install Homebrew
 1. Open the terminal
 1. Install dependencies: `sudo apt update && sudo apt install -yq curl git`
 1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
@@ -33,10 +35,11 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 
 ## Installation on Windows Subsystem for Linux
 1. Enable WSL
-2. Install Ubuntu 18.04 from app store
-3. Follow steps from  Linux section above
-4. Run supervisord by following command: `service supervisord-devbrew start`
-5. Update your network settings to use 127.0.1.1 as dns server
+1. Install Homebrew
+1. Install Ubuntu 18.04 from app store
+1. Follow steps from  Linux section above
+1. Run supervisord by following command: `service supervisord-devbrew start`
+1. Update your network settings to use 127.0.1.1 as dns server
 
 ## Tags
 > You can choose one or all of them, tags don't have conflict
