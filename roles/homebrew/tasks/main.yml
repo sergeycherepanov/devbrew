@@ -5,87 +5,87 @@
         state: directory
     tags:
         - always
-
--   name: Ensure homebrew install path.
-    file:
-        path: "{{ brew_install_path }}"
-        mode: 0775
-        state: directory
-    ignore_errors: yes
-    become: yes
-    tags:
-        - always
-
--   name: Ensure homebrew install path ownership.
-    file:
-        path: "{{ brew_install_path }}"
-        owner: '{{ brew_user }}'
-    ignore_errors: yes
-    become: yes
-    tags:
-        - always
-
--   name: Create a brew directories
-    file:
-        path: '{{ item }}'
-        state: directory
-        owner: '{{ brew_user }}'
-        group: '{{ brew_group }}'
-        mode: '0775'
-    with_items: '{{ brew_directories }}'
-    become: yes
-    tags:
-        - always
-
--   name: Downloading Homebrew.
-    #shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ brew_install_path }}"
-    get_url:
-        url: "https://github.com/Homebrew/brew/tarball/master"
-        dest: "/tmp/brew-master.tgz"
-    tags:
-        - always
-
--   name: Extracting Homebrew.
-    shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}/Homebrew"
-    args:
-        warn: false
-    tags:
-        - always
-
--   name: Ensure proper ownership on brew_install_path subdirs.
-    shell: >
-        ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}" "{{ brew_install_path }}/{}"
-        ls -A "{{ brew_install_path }}" | xargs -I {} chgrp -R "{{ brew_group }}" "{{ brew_install_path }}/{}"
-        ls -A "{{ brew_install_path }}" | xargs -I {} chmod g+w "{{ brew_install_path }}/{}"
-    become: yes
-    tags:
-        - always
-
--   name: Create a symbolic link
-    file:
-        src: '{{ brew_install_path }}/Homebrew/bin/brew'
-        dest: '{{ brew_install_path }}/bin/brew'
-        state: link
-    tags:
-        - always
-
--   name: Check if homebrew binary is already in place.
-    stat:
-        path: "{{ brew_install_path }}/bin/brew"
-    register: brew_binary
-    tags:
-        - always
-
--   name: "Adding homebrew to /etc/profile"
-    blockinfile:
-        create: yes
-        dest: '/etc/profile'
-        marker: "# {mark} homebrew PATH"
-        block: |
-            export PATH="{{ brew_install_path }}/sbin:{{ brew_install_path }}/bin:$PATH"
-    become: yes
-    tags:
-        - always
+#
+#-   name: Ensure homebrew install path.
+#    file:
+#        path: "{{ brew_install_path }}"
+#        mode: 0775
+#        state: directory
+#    ignore_errors: yes
+#    become: yes
+#    tags:
+#        - disabled
+#
+#-   name: Ensure homebrew install path ownership.
+#    file:
+#        path: "{{ brew_install_path }}"
+#        owner: '{{ brew_user }}'
+#    ignore_errors: yes
+#    become: yes
+#    tags:
+#        - always
+#
+#-   name: Create a brew directories
+#    file:
+#        path: '{{ item }}'
+#        state: directory
+#        owner: '{{ brew_user }}'
+#        group: '{{ brew_group }}'
+#        mode: '0775'
+#    with_items: '{{ brew_directories }}'
+#    become: yes
+#    tags:
+#        - always
+#
+#-   name: Downloading Homebrew.
+#    #shell: "curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C {{ brew_install_path }}"
+#    get_url:
+#        url: "https://github.com/Homebrew/brew/tarball/master"
+#        dest: "/tmp/brew-master.tgz"
+#    tags:
+#        - always
+#
+#-   name: Extracting Homebrew.
+#    shell: "tar xzf /tmp/brew-master.tgz --strip 1 -C {{ brew_install_path }}/Homebrew"
+#    args:
+#        warn: false
+#    tags:
+#        - always
+#
+#-   name: Ensure proper ownership on brew_install_path subdirs.
+#    shell: >
+#        ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}" "{{ brew_install_path }}/{}"
+#        ls -A "{{ brew_install_path }}" | xargs -I {} chgrp -R "{{ brew_group }}" "{{ brew_install_path }}/{}"
+#        ls -A "{{ brew_install_path }}" | xargs -I {} chmod g+w "{{ brew_install_path }}/{}"
+#    become: yes
+#    tags:
+#        - always
+#
+#-   name: Create a symbolic link
+#    file:
+#        src: '{{ brew_install_path }}/Homebrew/bin/brew'
+#        dest: '{{ brew_install_path }}/bin/brew'
+#        state: link
+#    tags:
+#        - always
+#
+#-   name: Check if homebrew binary is already in place.
+#    stat:
+#        path: "{{ brew_install_path }}/bin/brew"
+#    register: brew_binary
+#    tags:
+#        - always
+#
+#-   name: "Adding homebrew to /etc/profile"
+#    blockinfile:
+#        create: yes
+#        dest: '/etc/profile'
+#        marker: "# {mark} homebrew PATH"
+#        block: |
+#            export PATH="{{ brew_install_path }}/sbin:{{ brew_install_path }}/bin:$PATH"
+#    become: yes
+#    tags:
+#        - always
 
 -   name: Brew update
     shell: 'brew update > /dev/null 2>&1'

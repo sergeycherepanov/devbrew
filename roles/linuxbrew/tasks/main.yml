@@ -1,88 +1,88 @@
 ---
--   stat:
-        path: "{{ brew_install_path }}/bin/brew"
-    register: brew_state
-
--   name: Ensure homebrew install path ownership.
-    file:
-        path: "{{ brew_install_path }}"
-        owner: '{{ brew_user }}'
-    ignore_errors: yes
-    become: yes
-
--   name: Create a brew directories
-    file:
-        path: '{{ item }}'
-        state: directory
-        owner: '{{ brew_user }}'
-        group: '{{ brew_group }}'
-        mode: '0775'
-    with_items: '{{ brew_directories }}'
-    become: yes
-
--   name: Downloading linuxbrew
-    get_url:
-        url: "https://github.com/Homebrew/brew/tarball/master"
-        dest: "/tmp/brew-master.tgz"
-
--   name: "Removing previously installed linuxbrew"
-    file:
-      state: absent
-      path: "{{ brew_install_path }}/Homebrew"
-    become: yes
-
--   name: "Ensuring {{ brew_install_path }}/Homebrew"
-    file:
-      path: "{{ brew_install_path }}/Homebrew"
-      state: directory
-      owner: '{{ brew_user }}'
-      group: '{{ brew_group }}'
-      mode: '0775'
-    become: yes
-
--   name: Extracting Homebrew.
-    shell: "tar -xzf /tmp/brew-master.tgz --strip 1"
-    args:
-        chdir: "{{ brew_install_path }}/Homebrew"
-        warn: false
-
--   name: Ensure proper ownership on brew_install_path subdirs.
-    shell: >
-        ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}" "{{ brew_install_path }}/{}"
-        ls -A "{{ brew_install_path }}" | xargs -I {} chgrp -R "{{ brew_group }}" "{{ brew_install_path }}/{}"
-        ls -A "{{ brew_install_path }}" | xargs -I {} chmod g+w "{{ brew_install_path }}/{}"
-    become: yes
-
--   name: Create a symbolic link
-    file:
-        src: '{{ brew_install_path }}/Homebrew/bin/brew'
-        dest: '{{ brew_install_path }}/bin/brew'
-        state: link
-
--   stat:
-        path: "{{ brew_user_home_dir }}/.bash_profile"
-    register: bash_profile_state
-
--   stat:
-        path: "{{ brew_user_home_dir }}/.profile"
-    register: profile_state
-
--   name: "Update {{ brew_user_home_dir }}/.bash_profile"
-    lineinfile:
-        path: '{{ brew_user_home_dir }}/.bash_profile'
-        line: 'eval $({{ brew_install_path }}/bin/brew shellenv)'
-    when: bash_profile_state.stat.exists
-
--   name: "Update {{ brew_user_home_dir }}/.profile"
-    lineinfile:
-        path: '{{ brew_user_home_dir }}/.profile'
-        line: 'eval $({{ brew_install_path }}/bin/brew shellenv)'
-    when: profile_state.stat.exists
-
--   name: Stash brew changes
-    shell: 'cd {{ brew_install_path }}/Homebrew/Library && { stat .git && { git stash && git clean -d -f; } || { exit 0; } ; }'
-    ignore_errors: yes
-    when: brew_state.stat.exists
+#-   stat:
+#        path: "{{ brew_install_path }}/bin/brew"
+#    register: brew_state
+#
+#-   name: Ensure homebrew install path ownership.
+#    file:
+#        path: "{{ brew_install_path }}"
+#        owner: '{{ brew_user }}'
+#    ignore_errors: yes
+#    become: yes
+#
+#-   name: Create a brew directories
+#    file:
+#        path: '{{ item }}'
+#        state: directory
+#        owner: '{{ brew_user }}'
+#        group: '{{ brew_group }}'
+#        mode: '0775'
+#    with_items: '{{ brew_directories }}'
+#    become: yes
+#
+#-   name: Downloading linuxbrew
+#    get_url:
+#        url: "https://github.com/Homebrew/brew/tarball/master"
+#        dest: "/tmp/brew-master.tgz"
+#
+#-   name: "Removing previously installed linuxbrew"
+#    file:
+#      state: absent
+#      path: "{{ brew_install_path }}/Homebrew"
+#    become: yes
+#
+#-   name: "Ensuring {{ brew_install_path }}/Homebrew"
+#    file:
+#      path: "{{ brew_install_path }}/Homebrew"
+#      state: directory
+#      owner: '{{ brew_user }}'
+#      group: '{{ brew_group }}'
+#      mode: '0775'
+#    become: yes
+#
+#-   name: Extracting Homebrew.
+#    shell: "tar -xzf /tmp/brew-master.tgz --strip 1"
+#    args:
+#        chdir: "{{ brew_install_path }}/Homebrew"
+#        warn: false
+#
+#-   name: Ensure proper ownership on brew_install_path subdirs.
+#    shell: >
+#        ls -A "{{ brew_install_path }}" | xargs -I {} chown -R "{{ brew_user }}" "{{ brew_install_path }}/{}"
+#        ls -A "{{ brew_install_path }}" | xargs -I {} chgrp -R "{{ brew_group }}" "{{ brew_install_path }}/{}"
+#        ls -A "{{ brew_install_path }}" | xargs -I {} chmod g+w "{{ brew_install_path }}/{}"
+#    become: yes
+#
+#-   name: Create a symbolic link
+#    file:
+#        src: '{{ brew_install_path }}/Homebrew/bin/brew'
+#        dest: '{{ brew_install_path }}/bin/brew'
+#        state: link
+#
+#-   stat:
+#        path: "{{ brew_user_home_dir }}/.bash_profile"
+#    register: bash_profile_state
+#
+#-   stat:
+#        path: "{{ brew_user_home_dir }}/.profile"
+#    register: profile_state
+#
+#-   name: "Update {{ brew_user_home_dir }}/.bash_profile"
+#    lineinfile:
+#        path: '{{ brew_user_home_dir }}/.bash_profile'
+#        line: 'eval $({{ brew_install_path }}/bin/brew shellenv)'
+#    when: bash_profile_state.stat.exists
+#
+#-   name: "Update {{ brew_user_home_dir }}/.profile"
+#    lineinfile:
+#        path: '{{ brew_user_home_dir }}/.profile'
+#        line: 'eval $({{ brew_install_path }}/bin/brew shellenv)'
+#    when: profile_state.stat.exists
+#
+#-   name: Stash brew changes
+#    shell: 'cd {{ brew_install_path }}/Homebrew/Library && { stat .git && { git stash && git clean -d -f; } || { exit 0; } ; }'
+#    ignore_errors: yes
+#    when: brew_state.stat.exists
 
 -   name: Brew update
     shell: 'brew update > /dev/null 2>&1'

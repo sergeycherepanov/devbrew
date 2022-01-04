@@ -11,6 +11,7 @@
     - service_disabled: []
     - service_restarted: []
     - service_started: []
+    - brew_brew_bin_path: "{{ brew_install_path }}/bin"
   pre_tasks:
     - name: "Register brew_user fact"
       set_fact:
@@ -95,16 +96,16 @@
 
   roles:
     - name: yedit
-#    - name: homebrew
-#      include_role:
-#        name: homebrew
-#      when: "ansible_system == 'Darwin'"
-#    - name: linuxbrew
-#      include_role:
-#        name: linuxbrew
-#      when: "ansible_system == 'Linux'"
-#      tags:
-#        - always
+    - name: homebrew
+      include_role:
+        name: homebrew
+      when: "ansible_system == 'Darwin'"
+    - name: linuxbrew
+      include_role:
+        name: linuxbrew
+      when: "ansible_system == 'Linux'"
+      tags:
+        - always
     - role: openssl
       tags:
         - always

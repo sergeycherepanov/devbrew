@@ -20,24 +20,12 @@ if [[ $(id -u ${MAC_USER}) -eq 0 ]]; then
   exit 1
 fi
 
+if ! which brew; then
+  echo "Homebrew not found!"
+  exit 1
+fi
+
 hash -r
 
-if [[ "Darwin" == "$(uname)" ]]; then
-  BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/usr/local}"
-else
-  if [[ "Linux" == "$(uname)" ]]; then
-    source /etc/os-release
-    if [[ "debian" == "${ID}" ]] || [[ "debian" == "${ID_LIKE}" ]] || [[ "ubuntu" == "${ID_LIKE}" ]]; then
-      sudo apt -qq update && sudo apt install -yqq iptables ca-certificates build-essential systemtap-sdt-dev curl file git python
-      BREW_INSTALL_PATH="${BREW_INSTALL_PATH-/home/linuxbrew/.linuxbrew}"
-    else
-      echo "Unsupported system: '$(uname):${ID_LIKE}'"
-      exit 1
-    fi
-  else
-    echo "Unsupported system: '$(uname):${ID_LIKE}'"
-    exit 1
-  fi
-fi
 sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_CMD} --version
-sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_CMD} -i "localhost," -c local "${DIR}/main.yml" --extra-vars="ansible_python_interpreter=$(which python)" -e "mac_user=${MAC_USER}" -e "brew_install_path=${BREW_INSTALL_PATH}" "$@"
+sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_CMD} -i "localhost," -c local "${DIR}/main.yml" --extra-vars="ansible_python_interpreter=$(which python)" -e "mac_user=${MAC_USER}" -e "brew_install_path=$(brew --prefix)" "$@"
