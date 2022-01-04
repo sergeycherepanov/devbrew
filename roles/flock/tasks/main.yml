@@ -1,7 +1,7 @@
 ---
 - name: "Installing flock"
   homebrew:
-    name: flock
+    name: discoteq/discoteq/flock
     state: latest
   tags:
     - always
