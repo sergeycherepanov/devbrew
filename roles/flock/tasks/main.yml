@@ -1,17 +1,24 @@
 ---
-- name: Downloading flock
-  get_url:
-    url: "https://github.com/discoteq/flock/releases/download/v0.4.0/flock-0.4.0.tar.gz"
-    dest: "/tmp/flock.tgz"
-  
-- name: "Creating /tmp/flock"
-  file:
-    path: "/tmp/flock"
-    state: directory
-  
-- name: Extracting flock
-  shell: "tar xzf /tmp/flock.tgz -C /tmp/flock"
-  
-- name: Building flock
-  shell: "cd /tmp/flock/flock-0.4.0 && ./configure && make && make install"
-  
+- name: "Installing flock"
+  homebrew:
+    name: flock
+    state: latest
+  tags:
+    - always
+
+#- name: Downloading flock
+#  get_url:
+#    url: "https://github.com/discoteq/flock/releases/download/v0.4.0/flock-0.4.0.tar.gz"
+#    dest: "/tmp/flock.tgz"
+#
+#- name: "Creating /tmp/flock"
+#  file:
+#    path: "/tmp/flock"
+#    state: directory
+#
+#- name: Extracting flock
+#  shell: "tar xzf /tmp/flock.tgz -C /tmp/flock"
+#
+#- name: Building flock
+#  shell: "cd /tmp/flock/flock-0.4.0 && ./configure && make && make install"
+#
