@@ -3,6 +3,8 @@
   # strategy: debug
   environment:
     PATH: "{{ brew_install_path }}/bin:{{ brew_install_path }}/sbin:{{ ansible_env.PATH}}"
+    HOMEBREW_NO_AUTO_UPDATE: 1
+    HOMEBREW_NO_INSTALL_CLEANUP: 1
   vars:
     - php_versions: []
     - systemd_service_disabled: []
