@@ -4,4 +4,6 @@
     name: composer
     state: latest
   ignore_errors: yes
+  retries: 3
+  delay: 1
 
