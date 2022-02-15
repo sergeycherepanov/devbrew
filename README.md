@@ -27,7 +27,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 ## Installation on Linux (ElementaryOS/Ubuntu/Debian)
 1. Install Homebrew
 1. Open the terminal
-1. Install dependencies: `sudo apt update && sudo apt install -yq curl git`
+1. Install dependencies: `sudo apt update && sudo apt install -yq curl systemtap-sdt-dev python`
 1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
 1. Execute: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
@@ -50,7 +50,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 * `php72` - will install PHP version 7.2  
 * `php73` - will install PHP version 7.3
 * `php74` - will install PHP version 7.4  
-* `php74` - will install PHP version 8.0
+* `php80` - will install PHP version 8.0
 * `percona56` - will install Percona Server (mysql) version 5.6
 * `percona57` - will install Percona Server (mysql) version 5.7
 * `mysql80` - will install Mysql Server 8.0
