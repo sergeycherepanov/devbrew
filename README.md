@@ -27,7 +27,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 ## Installation on Linux (ElementaryOS/Ubuntu/Debian)
 1. Install Homebrew
 1. Open the terminal
-1. Install dependencies: `sudo apt update && sudo apt install -yq curl systemtap-sdt-dev python`
+1. Install dependencies: `sudo apt update && sudo apt install -yq curl git systemtap-sdt-dev python`
 1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
 1. Execute: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
