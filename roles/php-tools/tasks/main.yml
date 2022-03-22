@@ -1,7 +1,15 @@
 ---
-- name: "Installing composer"
+- name: "Removing composer"
   homebrew:
     name: composer
+    state: absent
+  ignore_errors: yes
+  retries: 3
+  delay: 1
+
+- name: "Installing composer@2.2"
+  homebrew:
+    name: composer@2.2
     state: latest
   ignore_errors: yes
   retries: 3
