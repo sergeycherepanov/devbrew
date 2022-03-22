@@ -1,0 +1,11 @@
+---
+php_version: php81
+php_version_num: 8.1
+php_version_num_int: 81
+php_flags: ""
+php_dependencies:
+php_modules:
+    - php81-common
+    - php81-xdebug
+    - php81-xhprof
+php_pear_packages: []
