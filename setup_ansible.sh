@@ -7,5 +7,14 @@ rm -rf ${DIR}/ansible
 tar -jxf ${DIR}/portable-ansible.tar.bz2
 rm ${DIR}/portable-ansible.tar.bz2
 
+$(which python3) ansible-galaxy collection install community.general
+$(which python3) ansible-galaxy collection install community.crypto
+$(which python3) ansible-galaxy collection install community.docker
+if [[ -d ./.ansible_library ]]; then
+git add ./.ansible_library
+fi
+if [[ -d ./.ansible_collections ]]; then
+git add ./.ansible_collections
+fi
 git add ansible
 
