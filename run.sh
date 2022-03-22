@@ -28,4 +28,4 @@ fi
 hash -r
 
 sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_CMD} --version
-sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_CMD} -i "localhost," -c local "${DIR}/main.yml" --extra-vars="ansible_python_interpreter=$(which python)" -e "mac_user=${MAC_USER}" -e "brew_install_path=$(brew --prefix)" "$@"
+sudo -H -u "${MAC_USER}" ${ANSIBLE_PLAYBOOK_CMD} -i "localhost," -c local "${DIR}/main.yml" --extra-vars="ansible_python_interpreter=${PYTHON_BIN}" -e "mac_user=${MAC_USER}" -e "brew_install_path=$(brew --prefix)" "$@"
