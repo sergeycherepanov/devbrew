@@ -6,7 +6,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
     lookup: first_found
-    author: Seth Vidal <skvidal@fedoraproject.org>
+    author: Seth Vidal (!UNKNOWN) <skvidal@fedoraproject.org>
     version_added: historical
     short_description: return first file found from list
     description:
@@ -49,7 +49,7 @@ EXAMPLES = """
       files:
         - path/tasks.yaml
         - path/other_tasks.yaml
-  loop: "{{ q('first_found', params, errors='ignore') }}"
+  loop: "{{ query('first_found', params, errors='ignore') }}"
 
 - name: |
         copy first existing file found to /some/file,
@@ -88,7 +88,7 @@ EXAMPLES = """
   vars:
     params:
       files:
-        - '{{ansible_os_distribution}}.yml'
+        - '{{ansible_distribution}}.yml'
         - '{{ansible_os_family}}.yml'
         - default.yml
       paths:
@@ -99,6 +99,8 @@ RETURN = """
   _raw:
     description:
       - path to file found
+    type: list
+    elements: path
 """
 import os
 

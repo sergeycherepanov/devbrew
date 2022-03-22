@@ -122,7 +122,7 @@ class ConsoleCLI(CLI, cmd.Cmd):
         else:
             prompt += "$ "
             color = self.NORMAL_PROMPT
-        self.prompt = stringc(prompt, color)
+        self.prompt = stringc(prompt, color, wrap_nonvisible_chars=True)
 
     def list_modules(self):
         modules = set()
@@ -182,7 +182,7 @@ class ConsoleCLI(CLI, cmd.Cmd):
 
         result = None
         try:
-            check_raw = module in ('command', 'shell', 'script', 'raw')
+            check_raw = module in C._ACTION_ALLOWS_RAW_ARGS
             play_ds = dict(
                 name="Ansible Shell",
                 hosts=self.cwd,
@@ -397,7 +397,7 @@ class ConsoleCLI(CLI, cmd.Cmd):
 
     def module_args(self, module_name):
         in_path = module_loader.find_plugin(module_name)
-        oc, a, _, _ = plugin_docs.get_docstring(in_path, fragment_loader)
+        oc, a, _, _ = plugin_docs.get_docstring(in_path, fragment_loader, is_module=True)
         return list(oc['options'].keys())
 
     def run(self):

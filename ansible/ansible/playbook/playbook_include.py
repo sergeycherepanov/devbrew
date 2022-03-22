@@ -21,6 +21,7 @@ __metaclass__ = type
 
 import os
 
+import ansible.constants as C
 from ansible.errors import AnsibleParserError, AnsibleAssertionError
 from ansible.module_utils.six import iteritems, string_types
 from ansible.parsing.splitter import split_args, parse_kv
@@ -30,6 +31,9 @@ from ansible.playbook.base import Base
 from ansible.playbook.conditional import Conditional
 from ansible.playbook.taggable import Taggable
 from ansible.template import Templar
+from ansible.utils.display import Display
+
+display = Display()
 
 
 class PlaybookInclude(Base, Conditional, Taggable):
@@ -114,7 +118,7 @@ class PlaybookInclude(Base, Conditional, Taggable):
             new_ds.ansible_pos = ds.ansible_pos
 
         for (k, v) in iteritems(ds):
-            if k in ('include', 'import_playbook'):
+            if k in C._ACTION_ALL_IMPORT_PLAYBOOKS:
                 self._preprocess_import(ds, new_ds, k, v)
             else:
                 # some basic error checking, to make sure vars are properly
@@ -144,8 +148,9 @@ class PlaybookInclude(Base, Conditional, Taggable):
         if len(items) == 0:
             raise AnsibleParserError("import_playbook statements must specify the file name to import", obj=ds)
         else:
-            new_ds['import_playbook'] = items[0]
+            new_ds['import_playbook'] = items[0].strip()
             if len(items) > 1:
+                display.warning('Additional parameters in import_playbook statements are not supported. This will be an error in version 2.14')
                 # rejoin the parameter portion of the arguments and
                 # then use parse_kv() to get a dict of params back
                 params = parse_kv(" ".join(items[1:]))

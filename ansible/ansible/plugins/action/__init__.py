@@ -18,7 +18,7 @@ import time
 from abc import ABCMeta, abstractmethod
 
 from ansible import constants as C
-from ansible.errors import AnsibleError, AnsibleConnectionFailure, AnsibleActionSkip, AnsibleActionFail
+from ansible.errors import AnsibleError, AnsibleConnectionFailure, AnsibleActionSkip, AnsibleActionFail, AnsiblePluginRemovedError
 from ansible.executor.module_common import modify_module
 from ansible.executor.interpreter_discovery import discover_interpreter, InterpreterDiscoveryRequiredError
 from ansible.module_utils.common._collections_compat import Sequence
@@ -28,6 +28,7 @@ from ansible.module_utils.six.moves import shlex_quote
 from ansible.module_utils._text import to_bytes, to_native, to_text
 from ansible.parsing.utils.jsonify import jsonify
 from ansible.release import __version__
+from ansible.utils.collection_loader import resource_from_fqcr
 from ansible.utils.display import Display
 from ansible.utils.unsafe_proxy import wrap_var, AnsibleUnsafeText
 from ansible.vars.clean import remove_internal_keys
@@ -152,38 +153,58 @@ class ActionBase(with_metaclass(ABCMeta, object)):
             return True
         return False
 
-    def _configure_module(self, module_name, module_args, task_vars=None):
+    def _configure_module(self, module_name, module_args, task_vars):
         '''
         Handles the loading and templating of the module code through the
         modify_module() function.
         '''
-
-        if task_vars is None:
-            use_vars = dict()
-
         if self._task.delegate_to:
             use_vars = task_vars.get('ansible_delegated_vars')[self._task.delegate_to]
         else:
             use_vars = task_vars
+
+        split_module_name = module_name.split('.')
+        collection_name = '.'.join(split_module_name[0:2]) if len(split_module_name) > 2 else ''
+        leaf_module_name = resource_from_fqcr(module_name)
 
         # Search module path(s) for named module.
         for mod_type in self._connection.module_implementation_preferences:
             # Check to determine if PowerShell modules are supported, and apply
             # some fixes (hacks) to module name + args.
             if mod_type == '.ps1':
-                # win_stat, win_file, and win_copy are not just like their
+                # FIXME: This should be temporary and moved to an exec subsystem plugin where we can define the mapping
+                # for each subsystem.
+                win_collection = 'ansible.windows'
+                rewrite_collection_names = ['ansible.builtin', 'ansible.legacy', '']
+                # async_status, win_stat, win_file, win_copy, and win_ping are not just like their
                 # python counterparts but they are compatible enough for our
                 # internal usage
-                if module_name in ('stat', 'file', 'copy') and self._task.action != module_name:
-                    module_name = 'win_%s' % module_name
+                # NB: we only rewrite the module if it's not being called by the user (eg, an action calling something else)
+                # and if it's unqualified or FQ to a builtin
+                if leaf_module_name in ('stat', 'file', 'copy', 'ping') and \
+                        collection_name in rewrite_collection_names and self._task.action != module_name:
+                    module_name = '%s.win_%s' % (win_collection, leaf_module_name)
+                elif leaf_module_name == 'async_status' and collection_name in rewrite_collection_names:
+                    module_name = '%s.%s' % (win_collection, leaf_module_name)
 
+                # TODO: move this tweak down to the modules, not extensible here
                 # Remove extra quotes surrounding path parameters before sending to module.
-                if module_name in ('win_stat', 'win_file', 'win_copy', 'slurp') and module_args and hasattr(self._connection._shell, '_unquote'):
+                if leaf_module_name in ['win_stat', 'win_file', 'win_copy', 'slurp'] and module_args and \
+                        hasattr(self._connection._shell, '_unquote'):
                     for key in ('src', 'dest', 'path'):
                         if key in module_args:
                             module_args[key] = self._connection._shell._unquote(module_args[key])
 
-            module_path = self._shared_loader_obj.module_loader.find_plugin(module_name, mod_type, collection_list=self._task.collections)
+            result = self._shared_loader_obj.module_loader.find_plugin_with_context(module_name, mod_type, collection_list=self._task.collections)
+
+            if not result.resolved:
+                if result.redirect_list and len(result.redirect_list) > 1:
+                    # take the last one in the redirect list, we may have successfully jumped through N other redirects
+                    target_module_name = result.redirect_list[-1]
+
+                    raise AnsibleError("The module {0} was redirected to {1}, which could not be loaded.".format(module_name, target_module_name))
+
+            module_path = result.plugin_resolved_path
             if module_path:
                 break
         else:  # This is a for-else: http://bit.ly/1ElPkyg
@@ -225,20 +246,18 @@ class ActionBase(with_metaclass(ABCMeta, object)):
                 # we'll propagate back to the controller in the task result
                 discovered_key = 'discovered_interpreter_%s' % idre.interpreter_name
 
+                # update the local vars copy for the retry
+                use_vars['ansible_facts'][discovered_key] = self._discovered_interpreter
+
                 # TODO: this condition prevents 'wrong host' from being updated
                 # but in future we would want to be able to update 'delegated host facts'
                 # irrespective of task settings
                 if not self._task.delegate_to or self._task.delegate_facts:
                     # store in local task_vars facts collection for the retry and any other usages in this worker
-                    if use_vars.get('ansible_facts') is None:
-                        task_vars['ansible_facts'] = {}
                     task_vars['ansible_facts'][discovered_key] = self._discovered_interpreter
                     # preserve this so _execute_module can propagate back to controller as a fact
                     self._discovered_interpreter_key = discovered_key
                 else:
-                    task_vars['ansible_delegated_vars'][self._task.delegate_to]
-                    if task_vars['ansible_delegated_vars'][self._task.delegate_to].get('ansible_facts') is None:
-                        task_vars['ansible_delegated_vars'][self._task.delegate_to]['ansible_facts'] = {}
                     task_vars['ansible_delegated_vars'][self._task.delegate_to]['ansible_facts'][discovered_key] = self._discovered_interpreter
 
         return (module_style, module_shebang, module_data, module_path)
@@ -288,20 +307,30 @@ class ActionBase(with_metaclass(ABCMeta, object)):
         Determines if we are required and can do pipelining
         '''
 
-        # any of these require a true
-        for condition in [
-            self._connection.has_pipelining,
-            self._play_context.pipelining or self._connection.always_pipeline_modules,  # pipelining enabled for play or connection requires it (eg winrm)
-            module_style == "new",                     # old style modules do not support pipelining
-            not C.DEFAULT_KEEP_REMOTE_FILES,           # user wants remote files
-            not wrap_async or self._connection.always_pipeline_modules,  # async does not normally support pipelining unless it does (eg winrm)
-            (self._connection.become.name if self._connection.become else '') != 'su',  # su does not work with pipelining,
-            # FIXME: we might need to make become_method exclusion a configurable list
-        ]:
-            if not condition:
-                return False
+        try:
+            is_enabled = self._connection.get_option('pipelining')
+        except (KeyError, AttributeError, ValueError):
+            is_enabled = self._play_context.pipelining
 
-        return True
+        # winrm supports async pipeline
+        # TODO: make other class property 'has_async_pipelining' to separate cases
+        always_pipeline = self._connection.always_pipeline_modules
+
+        # su does not work with pipelining
+        # TODO: add has_pipelining class prop to become plugins
+        become_exception = (self._connection.become.name if self._connection.become else '') != 'su'
+
+        # any of these require a true
+        conditions = [
+            self._connection.has_pipelining,    # connection class supports it
+            is_enabled or always_pipeline,      # enabled via config or forced via connection (eg winrm)
+            module_style == "new",              # old style modules do not support pipelining
+            not C.DEFAULT_KEEP_REMOTE_FILES,    # user wants remote files
+            not wrap_async or always_pipeline,  # async does not normally support pipelining unless it does (eg winrm)
+            become_exception,
+        ]
+
+        return all(conditions)
 
     def _get_admin_users(self):
         '''
@@ -535,12 +564,12 @@ class ActionBase(with_metaclass(ABCMeta, object)):
                     raise AnsibleError('Failed to change ownership of the temporary files Ansible needs to create despite connecting as a privileged user. '
                                        'Unprivileged become user would be unable to read the file.')
                 elif res['rc'] != 0:
-                    if C.ALLOW_WORLD_READABLE_TMPFILES:
+                    if self.get_shell_option('world_readable_temp', C.ALLOW_WORLD_READABLE_TMPFILES):
                         # chown and fs acls failed -- do things this insecure
                         # way only if the user opted in in the config file
                         display.warning('Using world-readable permissions for temporary files Ansible needs to create when becoming an unprivileged user. '
                                         'This may be insecure. For information on securing this, see '
-                                        'https://docs.ansible.com/ansible/become.html#becoming-an-unprivileged-user')
+                                        'https://docs.ansible.com/ansible/user_guide/become.html#risks-of-becoming-an-unprivileged-user')
                         res = self._remote_chmod(remote_paths, 'a+%s' % chmod_mode)
                         if res['rc'] != 0:
                             raise AnsibleError('Failed to set file mode on remote files (rc: {0}, err: {1})'.format(res['rc'], to_native(res['stderr'])))
@@ -598,7 +627,7 @@ class ActionBase(with_metaclass(ABCMeta, object)):
             get_checksum=checksum,
             checksum_algorithm='sha1',
         )
-        mystat = self._execute_module(module_name='stat', module_args=module_args, task_vars=all_vars,
+        mystat = self._execute_module(module_name='ansible.legacy.stat', module_args=module_args, task_vars=all_vars,
                                       wrap_async=False)
 
         if mystat.get('failed'):
@@ -723,7 +752,8 @@ class ActionBase(with_metaclass(ABCMeta, object)):
             module_args['_ansible_check_mode'] = False
 
         # set no log in the module arguments, if required
-        module_args['_ansible_no_log'] = self._play_context.no_log or C.DEFAULT_NO_TARGET_SYSLOG
+        no_target_syslog = C.config.get_config_value('DEFAULT_NO_TARGET_SYSLOG', variables=task_vars)
+        module_args['_ansible_no_log'] = self._play_context.no_log or no_target_syslog
 
         # set debug in the module arguments, if required
         module_args['_ansible_debug'] = C.DEFAULT_DEBUG
@@ -818,7 +848,7 @@ class ActionBase(with_metaclass(ABCMeta, object)):
                 msg = "Setting the async dir from the environment keyword " \
                       "ANSIBLE_ASYNC_DIR is deprecated. Set the async_dir " \
                       "shell option instead"
-                self._display.deprecated(msg, "2.12")
+                self._display.deprecated(msg, "2.12", collection_name='ansible.builtin')
             else:
                 # ANSIBLE_ASYNC_DIR is not set on the task, we get the value
                 # from the shell option and temporarily add to the environment
@@ -888,8 +918,8 @@ class ActionBase(with_metaclass(ABCMeta, object)):
 
         if wrap_async and not self._connection.always_pipeline_modules:
             # configure, upload, and chmod the async_wrapper module
-            (async_module_style, shebang, async_module_data, async_module_path) = self._configure_module(module_name='async_wrapper', module_args=dict(),
-                                                                                                         task_vars=task_vars)
+            (async_module_style, shebang, async_module_data, async_module_path) = self._configure_module(
+                module_name='ansible.legacy.async_wrapper', module_args=dict(), task_vars=task_vars)
             async_module_remote_filename = self._connection._shell.get_remote_filename(async_module_path)
             remote_async_module_path = self._connection._shell.join_path(tmpdir, async_module_remote_filename)
             self._transfer_data(remote_async_module_path, async_module_data)
@@ -1068,7 +1098,7 @@ class ActionBase(with_metaclass(ABCMeta, object)):
         ruser = self._get_remote_user()
         buser = self.get_become_option('become_user')
         if (sudoable and self._connection.become and  # if sudoable and have become
-                self._connection.transport != 'network_cli' and  # if not using network_cli
+                resource_from_fqcr(self._connection.transport) != 'network_cli' and  # if not using network_cli
                 (C.BECOME_ALLOW_SAME_USER or (buser != ruser or not any((ruser, buser))))):  # if we allow same user PE or users are different and either is set
             display.debug("_low_level_execute_command(): using become for this command")
             cmd = self._connection.become.build_become_command(cmd, self._connection._shell)
@@ -1128,7 +1158,9 @@ class ActionBase(with_metaclass(ABCMeta, object)):
 
         diff = {}
         display.debug("Going to peek to see if file has changed permissions")
-        peek_result = self._execute_module(module_name='file', module_args=dict(path=destination, _diff_peek=True), task_vars=task_vars, persist_files=True)
+        peek_result = self._execute_module(
+            module_name='ansible.legacy.file', module_args=dict(path=destination, _diff_peek=True),
+            task_vars=task_vars, persist_files=True)
 
         if peek_result.get('failed', False):
             display.warning(u"Failed to get diff between '%s' and '%s': %s" % (os.path.basename(source), destination, to_text(peek_result.get(u'msg', u''))))
@@ -1144,7 +1176,9 @@ class ActionBase(with_metaclass(ABCMeta, object)):
                 diff['dst_larger'] = C.MAX_FILE_SIZE_FOR_DIFF
             else:
                 display.debug(u"Slurping the file %s" % source)
-                dest_result = self._execute_module(module_name='slurp', module_args=dict(path=destination), task_vars=task_vars, persist_files=True)
+                dest_result = self._execute_module(
+                    module_name='ansible.legacy.slurp', module_args=dict(path=destination),
+                    task_vars=task_vars, persist_files=True)
                 if 'content' in dest_result:
                     dest_contents = dest_result['content']
                     if dest_result['encoding'] == u'base64':

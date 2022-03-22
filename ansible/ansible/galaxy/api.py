@@ -12,14 +12,14 @@ import tarfile
 import uuid
 import time
 
-from ansible import context
+from ansible import constants as C
 from ansible.errors import AnsibleError
 from ansible.galaxy.user_agent import user_agent
 from ansible.module_utils.six import string_types
 from ansible.module_utils.six.moves.urllib.error import HTTPError
 from ansible.module_utils.six.moves.urllib.parse import quote as urlquote, urlencode, urlparse
 from ansible.module_utils._text import to_bytes, to_native, to_text
-from ansible.module_utils.urls import open_url
+from ansible.module_utils.urls import open_url, prepare_multipart
 from ansible.utils.display import Display
 from ansible.utils.hashing import secure_hash_s
 
@@ -169,14 +169,14 @@ class CollectionVersionMetadata:
 class GalaxyAPI:
     """ This class is meant to be used as a API client for an Ansible Galaxy server """
 
-    def __init__(self, galaxy, name, url, username=None, password=None, token=None):
+    def __init__(self, galaxy, name, url, username=None, password=None, token=None, validate_certs=True):
         self.galaxy = galaxy
         self.name = name
         self.username = username
         self.password = password
         self.token = token
         self.api_server = url
-        self.validate_certs = not context.CLIARGS['ignore_certs']
+        self.validate_certs = validate_certs
         self._available_api_versions = {}
 
         display.debug('Validate TLS certificates for %s: %s' % (self.api_server, self.validate_certs))
@@ -215,8 +215,8 @@ class GalaxyAPI:
             return
 
         if not self.token and required:
-            raise AnsibleError("No access token or username set. A token can be set with --api-key, with "
-                               "'ansible-galaxy login', or set in ansible.cfg.")
+            raise AnsibleError("No access token or username set. A token can be set with --api-key "
+                               "or at {0}.".format(to_native(C.GALAXY_TOKEN_PATH)))
 
         if self.token:
             headers.update(self.token.headers())
@@ -307,7 +307,7 @@ class GalaxyAPI:
             done = (data.get('next_link', None) is None)
 
             # https://github.com/ansible/ansible/issues/64355
-            # api_server contains part of the API path but next_link includes the the /api part so strip it out.
+            # api_server contains part of the API path but next_link includes the /api part so strip it out.
             url_info = urlparse(self.api_server)
             base_url = "%s://%s/" % (url_info.scheme, url_info.netloc)
 
@@ -426,29 +426,21 @@ class GalaxyAPI:
                                "build' to create a proper release artifact." % to_native(collection_path))
 
         with open(b_collection_path, 'rb') as collection_tar:
-            data = collection_tar.read()
+            sha256 = secure_hash_s(collection_tar.read(), hash_func=hashlib.sha256)
 
-        boundary = '--------------------------%s' % uuid.uuid4().hex
-        b_file_name = os.path.basename(b_collection_path)
-        part_boundary = b"--" + to_bytes(boundary, errors='surrogate_or_strict')
-
-        form = [
-            part_boundary,
-            b"Content-Disposition: form-data; name=\"sha256\"",
-            b"",
-            to_bytes(secure_hash_s(data, hash_func=hashlib.sha256), errors='surrogate_or_strict'),
-            part_boundary,
-            b"Content-Disposition: file; name=\"file\"; filename=\"%s\"" % b_file_name,
-            b"Content-Type: application/octet-stream",
-            b"",
-            data,
-            b"%s--" % part_boundary,
-        ]
-        data = b"\r\n".join(form)
+        content_type, b_form_data = prepare_multipart(
+            {
+                'sha256': sha256,
+                'file': {
+                    'filename': b_collection_path,
+                    'mime_type': 'application/octet-stream',
+                },
+            }
+        )
 
         headers = {
-            'Content-type': 'multipart/form-data; boundary=%s' % boundary,
-            'Content-length': len(data),
+            'Content-type': content_type,
+            'Content-length': len(b_form_data),
         }
 
         if 'v3' in self.available_api_versions:
@@ -456,9 +448,10 @@ class GalaxyAPI:
         else:
             n_url = _urljoin(self.api_server, self.available_api_versions['v2'], 'collections') + '/'
 
-        resp = self._call_galaxy(n_url, args=data, headers=headers, method='POST', auth_required=True,
+        resp = self._call_galaxy(n_url, args=b_form_data, headers=headers, method='POST', auth_required=True,
                                  error_context_msg='Error when publishing collection to %s (%s)'
                                                    % (self.name, self.api_server))
+
         return resp['task']
 
     @g_connect(['v2', 'v3'])
@@ -526,7 +519,7 @@ class GalaxyAPI:
 
         :param namespace: The collection namespace.
         :param name: The collection name.
-        :param version: Optional version of the collection to get the information for.
+        :param version: Version of the collection to get the information for.
         :return: CollectionVersionMetadata about the collection at the version requested.
         """
         api_path = self.available_api_versions.get('v3', self.available_api_versions.get('v2'))

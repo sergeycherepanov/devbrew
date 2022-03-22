@@ -71,7 +71,7 @@ class VaultCLI(CLI):
         vault_id = opt_help.argparse.ArgumentParser(add_help=False)
         vault_id.add_argument('--encrypt-vault-id', default=[], dest='encrypt_vault_id',
                               action='store', type=str,
-                              help='the vault id used to encrypt (required if more than vault-id is provided)')
+                              help='the vault id used to encrypt (required if more than one vault-id is provided)')
 
         create_parser = subparsers.add_parser('create', help='Create new vault encrypted file', parents=[vault_id, common])
         create_parser.set_defaults(func=self.execute_create)
@@ -312,11 +312,14 @@ class VaultCLI(CLI):
         # read from stdin
         if self.encrypt_string_read_stdin:
             if sys.stdout.isatty():
-                display.display("Reading plaintext input from stdin. (ctrl-d to end input)", stderr=True)
+                display.display("Reading plaintext input from stdin. (ctrl-d to end input, twice if your content does not already have a newline)", stderr=True)
 
             stdin_text = sys.stdin.read()
             if stdin_text == '':
                 raise AnsibleOptionsError('stdin was empty, not encrypting')
+
+            if sys.stdout.isatty() and not stdin_text.endswith("\n"):
+                display.display("\n")
 
             b_plaintext = to_bytes(stdin_text)
 
@@ -421,7 +424,7 @@ class VaultCLI(CLI):
     def execute_create(self):
         ''' create and open a file in an editor that will be encrypted with the provided vault secret when closed'''
 
-        if len(context.CLIARGS['args']) > 1:
+        if len(context.CLIARGS['args']) != 1:
             raise AnsibleOptionsError("ansible-vault create can take only one filename argument")
 
         self.editor.create_file(context.CLIARGS['args'][0], self.encrypt_secret,

@@ -4,11 +4,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'core'}
-
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
     inventory: toml
     version_added: "2.8"
     short_description: Uses a specific TOML file as an inventory source.
@@ -19,7 +15,8 @@ DOCUMENTATION = '''
         - Requires the 'toml' python library
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
+# Following are examples of 3 different inventories in TOML format
 example1: |
     [all.vars]
     has_java = false
@@ -101,6 +98,7 @@ from ansible.module_utils.six import string_types, text_type
 from ansible.parsing.yaml.objects import AnsibleSequence, AnsibleUnicode
 from ansible.plugins.inventory import BaseFileInventoryPlugin
 from ansible.utils.display import Display
+from ansible.utils.unsafe_proxy import AnsibleUnsafeBytes, AnsibleUnsafeText
 
 try:
     import toml
@@ -124,6 +122,8 @@ if HAS_TOML and hasattr(toml, 'TomlEncoder'):
             self.dump_funcs.update({
                 AnsibleSequence: self.dump_funcs.get(list),
                 AnsibleUnicode: self.dump_funcs.get(str),
+                AnsibleUnsafeBytes: self.dump_funcs.get(str),
+                AnsibleUnsafeText: self.dump_funcs.get(str),
             })
     toml_dumps = partial(toml.dumps, encoder=AnsibleTomlEncoder())
 else:
@@ -159,7 +159,7 @@ class InventoryModule(BaseFileInventoryPlugin):
     NAME = 'toml'
 
     def _parse_group(self, group, group_data):
-        if not isinstance(group_data, (MutableMapping, type(None))):
+        if group_data is not None and not isinstance(group_data, MutableMapping):
             self.display.warning("Skipping '%s' as this is not a valid group definition" % group)
             return
 

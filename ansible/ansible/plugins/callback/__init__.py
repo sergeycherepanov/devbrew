@@ -184,6 +184,8 @@ class CallbackBase(AnsiblePlugin):
                 for x in ['before', 'after']:
                     if isinstance(diff[x], MutableMapping):
                         diff[x] = self._serialize_diff(diff[x])
+                    elif diff[x] is None:
+                        diff[x] = ''
                 if 'before_header' in diff:
                     before_header = u"before: %s" % diff['before_header']
                 else:
@@ -240,7 +242,8 @@ class CallbackBase(AnsiblePlugin):
     def _get_item(self, result):
         ''' here for backwards compat, really should have always been named: _get_item_label'''
         cback = getattr(self, 'NAME', os.path.basename(__file__))
-        self._display.deprecated("The %s callback plugin should be updated to use the _get_item_label method instead" % cback, version="2.11")
+        self._display.deprecated("The %s callback plugin should be updated to use the _get_item_label method instead" % cback,
+                                 version="2.11", collection_name='ansible.builtin')
         return self._get_item_label(result)
 
     def _process_items(self, result):
@@ -251,7 +254,7 @@ class CallbackBase(AnsiblePlugin):
         ''' removes data from results for display '''
 
         # mostly controls that debug only outputs what it was meant to
-        if task_name == 'debug':
+        if task_name in C._ACTION_DEBUG:
             if 'msg' in result:
                 # msg should be alone
                 for key in list(result.keys()):

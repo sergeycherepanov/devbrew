@@ -71,6 +71,7 @@ class DistributionFiles:
         {'path': '/etc/sourcemage-release', 'name': 'SMGL'},
         {'path': '/usr/lib/os-release', 'name': 'ClearLinux'},
         {'path': '/etc/coreos/update.conf', 'name': 'Coreos'},
+        {'path': '/etc/flatcar/update.conf', 'name': 'Flatcar'},
         {'path': '/etc/os-release', 'name': 'NA'},
     )
 
@@ -210,7 +211,7 @@ class DistributionFiles:
         if 'Slackware' not in data:
             return False, slackware_facts  # TODO: remove
         slackware_facts['distribution'] = name
-        version = re.findall(r'\w+[.]\w+', data)
+        version = re.findall(r'\w+[.]\w+\+?', data)
         if version:
             slackware_facts['distribution_version'] = version[0]
         return True, slackware_facts
@@ -270,10 +271,6 @@ class DistributionFiles:
                     else:
                         release = "0"  # no minor number, so it is the first release
                     suse_facts['distribution_release'] = release
-                # Starting with SLES4SAP12 SP3 NAME reports 'SLES' instead of 'SLES_SAP'
-                # According to SuSe Support (SR101182877871) we should use the CPE_NAME to detect SLES4SAP
-                if re.search("^CPE_NAME=.*sles_sap.*$", line):
-                    suse_facts['distribution'] = 'SLES_SAP'
         elif path == '/etc/SuSE-release':
             if 'open' in data.lower():
                 data = data.splitlines()
@@ -295,6 +292,10 @@ class DistributionFiles:
                     if release:
                         suse_facts['distribution_release'] = release.group(1)
                         suse_facts['distribution_version'] = collected_facts['distribution_version'] + '.' + release.group(1)
+
+        # See https://www.suse.com/support/kb/doc/?id=000019341 for SLES for SAP
+        if os.path.islink('/etc/products.d/baseproduct') and os.path.realpath('/etc/products.d/baseproduct').endswith('SLES_SAP.prod'):
+            suse_facts['distribution'] = 'SLES_SAP'
 
         return True, suse_facts
 
@@ -320,7 +321,8 @@ class DistributionFiles:
         elif 'SteamOS' in data:
             debian_facts['distribution'] = 'SteamOS'
             # nothing else to do, SteamOS gets correct info from python functions
-        elif path == '/etc/lsb-release' and 'Kali' in data:
+        elif path in ('/etc/lsb-release', '/etc/os-release') and 'Kali' in data:
+            # Kali does not provide /etc/lsb-release anymore
             debian_facts['distribution'] = 'Kali'
             release = re.search('DISTRIB_RELEASE=(.*)', data)
             if release:
@@ -401,6 +403,21 @@ class DistributionFiles:
 
         return True, coreos_facts
 
+    def parse_distribution_file_Flatcar(self, name, data, path, collected_facts):
+        flatcar_facts = {}
+        distro = get_distribution()
+
+        if distro.lower() == 'flatcar':
+            if not data:
+                return False, flatcar_facts
+            release = re.search("^GROUP=(.*)", data)
+            if release:
+                flatcar_facts['distribution_release'] = release.group(1).strip('"')
+        else:
+            return False, flatcar_facts
+
+        return True, flatcar_facts
+
     def parse_distribution_file_ClearLinux(self, name, data, path, collected_facts):
         clear_facts = {}
         if "clearlinux" not in name.lower():
@@ -452,6 +469,7 @@ class Distribution(object):
         {'path': '/etc/sourcemage-release', 'name': 'SMGL'},
         {'path': '/usr/lib/os-release', 'name': 'ClearLinux'},
         {'path': '/etc/coreos/update.conf', 'name': 'Coreos'},
+        {'path': '/etc/flatcar/update.conf', 'name': 'Flatcar'},
         {'path': '/etc/os-release', 'name': 'NA'},
     )
 
@@ -466,9 +484,11 @@ class Distribution(object):
     # keep keys in sync with Conditionals page of docs
     OS_FAMILY_MAP = {'RedHat': ['RedHat', 'Fedora', 'CentOS', 'Scientific', 'SLC',
                                 'Ascendos', 'CloudLinux', 'PSBM', 'OracleLinux', 'OVS',
-                                'OEL', 'Amazon', 'Virtuozzo', 'XenServer', 'Alibaba'],
+                                'OEL', 'Amazon', 'Virtuozzo', 'XenServer', 'Alibaba',
+                                'EulerOS', 'openEuler'],
                      'Debian': ['Debian', 'Ubuntu', 'Raspbian', 'Neon', 'KDE neon',
-                                'Linux Mint', 'SteamOS', 'Devuan', 'Kali', 'Cumulus Linux'],
+                                'Linux Mint', 'SteamOS', 'Devuan', 'Kali', 'Cumulus Linux',
+                                'Pop!_OS', ],
                      'Suse': ['SuSE', 'SLES', 'SLED', 'openSUSE', 'openSUSE Tumbleweed',
                               'SLES_SAP', 'SUSE_LINUX', 'openSUSE Leap'],
                      'Archlinux': ['Archlinux', 'Antergos', 'Manjaro'],

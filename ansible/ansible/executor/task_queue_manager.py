@@ -20,7 +20,9 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 import os
+import sys
 import tempfile
+import time
 
 from ansible import constants as C
 from ansible import context
@@ -137,35 +139,70 @@ class TaskQueueManager:
         else:
             raise AnsibleError("callback must be an instance of CallbackBase or the name of a callback plugin")
 
-        for callback_plugin in callback_loader.all(class_only=True):
+        # get all configured loadable callbacks (adjacent, builtin)
+        callback_list = list(callback_loader.all(class_only=True))
+
+        # add whitelisted callbacks that refer to collections, which might not appear in normal listing
+        for c in C.DEFAULT_CALLBACK_WHITELIST:
+            # load all, as collection ones might be using short/redirected names and not a fqcn
+            plugin = callback_loader.get(c, class_only=True)
+
+            # TODO: check if this skip is redundant, loader should handle bad file/plugin cases already
+            if plugin:
+                # avoids incorrect and dupes possible due to collections
+                if plugin not in callback_list:
+                    callback_list.append(plugin)
+            else:
+                display.warning("Skipping callback plugin '%s', unable to load" % c)
+
+        # for each callback in the list see if we should add it to 'active callbacks' used in the play
+        for callback_plugin in callback_list:
+
             callback_type = getattr(callback_plugin, 'CALLBACK_TYPE', '')
             callback_needs_whitelist = getattr(callback_plugin, 'CALLBACK_NEEDS_WHITELIST', False)
-            (callback_name, _) = os.path.splitext(os.path.basename(callback_plugin._original_path))
+
+            # try to get collection world name first
+            cnames = getattr(callback_plugin, '_redirected_names', [])
+            if cnames:
+                # store the name the plugin was loaded as, as that's what we'll need to compare to the configured callback list later
+                callback_name = cnames[0]
+            else:
+                # fallback to 'old loader name'
+                (callback_name, _) = os.path.splitext(os.path.basename(callback_plugin._original_path))
+
+            display.vvvvv("Attempting to use '%s' callback." % (callback_name))
             if callback_type == 'stdout':
                 # we only allow one callback of type 'stdout' to be loaded,
                 if callback_name != self._stdout_callback or stdout_callback_loaded:
+                    display.vv("Skipping callback '%s', as we already have a stdout callback." % (callback_name))
                     continue
                 stdout_callback_loaded = True
             elif callback_name == 'tree' and self._run_tree:
-                # special case for ansible cli option
+                # TODO: remove special case for tree, which is an adhoc cli option --tree
                 pass
             elif not self._run_additional_callbacks or (callback_needs_whitelist and (
+                # only run if not adhoc, or adhoc was specifically configured to run + check enabled list
                     C.DEFAULT_CALLBACK_WHITELIST is None or callback_name not in C.DEFAULT_CALLBACK_WHITELIST)):
                 # 2.x plugins shipped with ansible should require whitelisting, older or non shipped should load automatically
                 continue
 
-            callback_obj = callback_plugin()
-            callback_obj.set_options()
-            self._callback_plugins.append(callback_obj)
-
-        for callback_plugin_name in (c for c in C.DEFAULT_CALLBACK_WHITELIST if AnsibleCollectionRef.is_valid_fqcr(c)):
-            # TODO: need to extend/duplicate the stdout callback check here (and possible move this ahead of the old way
-            callback_obj = callback_loader.get(callback_plugin_name)
-            if callback_obj:
-                callback_obj.set_options()
-                self._callback_plugins.append(callback_obj)
-            else:
-                display.warning("Skipping '%s', unable to load or use as a callback" % callback_plugin_name)
+            try:
+                callback_obj = callback_plugin()
+                # avoid bad plugin not returning an object, only needed cause we do class_only load and bypass loader checks,
+                # really a bug in the plugin itself which we ignore as callback errors are not supposed to be fatal.
+                if callback_obj:
+                    # skip initializing if we already did the work for the same plugin (even with diff names)
+                    if callback_obj not in self._callback_plugins:
+                        callback_obj.set_options()
+                        self._callback_plugins.append(callback_obj)
+                    else:
+                        display.vv("Skipping callback '%s', already loaded as '%s'." % (callback_plugin, callback_name))
+                else:
+                    display.warning("Skipping callback '%s', as it does not create a valid plugin instance." % callback_name)
+                    continue
+            except Exception as e:
+                display.warning("Skipping callback '%s', unable to load due to: %s" % (callback_name, to_native(e)))
+                continue
 
         self._callbacks_loaded = True
 
@@ -257,8 +294,33 @@ class TaskQueueManager:
         self._final_q.close()
         self._cleanup_processes()
 
+        # A bug exists in Python 2.6 that causes an exception to be raised during
+        # interpreter shutdown. This is only an issue in our CI testing but we
+        # hit it frequently enough to add a small sleep to avoid the issue.
+        # This can be removed once we have split controller available in CI.
+        #
+        # Further information:
+        #     Issue: https://bugs.python.org/issue4106
+        #     Fix:   https://hg.python.org/cpython/rev/d316315a8781
+        #
+        try:
+            if (2, 6) == (sys.version_info[0:2]):
+                time.sleep(0.0001)
+        except (IndexError, AttributeError):
+            # In case there is an issue getting the version info, don't raise an Exception
+            pass
+
     def _cleanup_processes(self):
         if hasattr(self, '_workers'):
+            for attempts_remaining in range(C.WORKER_SHUTDOWN_POLL_COUNT - 1, -1, -1):
+                if not any(worker_prc and worker_prc.is_alive() for worker_prc in self._workers):
+                    break
+
+                if attempts_remaining:
+                    time.sleep(C.WORKER_SHUTDOWN_POLL_DELAY)
+                else:
+                    display.warning('One or more worker processes are still running and will be terminated.')
+
             for worker_prc in self._workers:
                 if worker_prc and worker_prc.is_alive():
                     try:

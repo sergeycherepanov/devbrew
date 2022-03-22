@@ -262,6 +262,20 @@ def find_ini_config_file(warnings=None):
     return path
 
 
+def _add_base_defs_deprecations(base_defs):
+    '''Add deprecation source 'ansible.builtin' to deprecations in base.yml'''
+    def process(entry):
+        if 'deprecated' in entry:
+            entry['deprecated']['collection_name'] = 'ansible.builtin'
+
+    for dummy, data in base_defs.items():
+        process(data)
+        for section in ('ini', 'env', 'vars'):
+            if section in data:
+                for entry in data[section]:
+                    process(entry)
+
+
 class ConfigManager(object):
 
     DEPRECATED = []
@@ -277,6 +291,7 @@ class ConfigManager(object):
         self.data = ConfigData()
 
         self._base_defs = self._read_config_yaml_file(defs_file or ('%s/base.yml' % os.path.dirname(__file__)))
+        _add_base_defs_deprecations(self._base_defs)
 
         if self._config_file is None:
             # set config using ini
@@ -289,12 +304,6 @@ class ConfigManager(object):
 
         # update constants
         self.update_config_data()
-        try:
-            self.update_module_defaults_groups()
-        except Exception as e:
-            # Since this is a 2.7 preview feature, we want to have it fail as gracefully as possible when there are issues.
-            sys.stderr.write('Could not load module_defaults_groups: %s: %s\n\n' % (type(e).__name__, e))
-            self.module_defaults_groups = {}
 
     def _read_config_yaml_file(self, yml_file):
         # TODO: handle relative paths as relative to the directory containing the current playbook instead of CWD
@@ -435,10 +444,12 @@ class ConfigManager(object):
         defs = self.get_configuration_definitions(plugin_type, plugin_name)
         if config in defs:
 
+            aliases = defs[config].get('aliases', [])
+
             # direct setting via plugin arguments, can set to None so we bypass rest of processing/defaults
             direct_aliases = []
             if direct:
-                direct_aliases = [direct[alias] for alias in defs[config].get('aliases', []) if alias in direct]
+                direct_aliases = [direct[alias] for alias in aliases if alias in direct]
             if direct and config in direct:
                 value = direct[config]
                 origin = 'Direct'
@@ -453,9 +464,20 @@ class ConfigManager(object):
                     origin = 'var: %s' % origin
 
                 # use playbook keywords if you have em
-                if value is None and keys and config in keys:
-                    value, origin = keys[config], 'keyword'
-                    origin = 'keyword: %s' % origin
+                if value is None and keys:
+                    if config in keys:
+                        value = keys[config]
+                        keyword = config
+
+                    elif aliases:
+                        for alias in aliases:
+                            if alias in keys:
+                                value = keys[alias]
+                                keyword = alias
+                                break
+
+                    if value is not None:
+                        origin = 'keyword: %s' % keyword
 
                 # env vars are next precedence
                 if value is None and defs[config].get('env'):
@@ -524,14 +546,6 @@ class ConfigManager(object):
             self._plugins[plugin_type] = {}
 
         self._plugins[plugin_type][name] = defs
-
-    def update_module_defaults_groups(self):
-        defaults_config = self._read_config_yaml_file(
-            '%s/module_defaults.yml' % os.path.join(os.path.dirname(__file__))
-        )
-        if defaults_config.get('version') not in ('1', '1.0', 1, 1.0):
-            raise AnsibleError('module_defaults.yml has an invalid version "%s" for configuration. Could be a bad install.' % defaults_config.get('version'))
-        self.module_defaults_groups = defaults_config.get('groupings', {})
 
     def update_config_data(self, defs=None, configfile=None):
         ''' really: update constants '''

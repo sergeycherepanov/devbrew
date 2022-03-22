@@ -24,7 +24,7 @@ from functools import wraps
 
 from ansible.errors import AnsibleError
 from ansible.plugins import AnsiblePlugin
-from ansible.module_utils._text import to_native
+from ansible.module_utils._text import to_native, to_text
 from ansible.module_utils.basic import missing_required_lib
 
 try:
@@ -269,6 +269,7 @@ class NetconfBase(AnsiblePlugin):
                         and set a token on the ongoing confirmed commit
         :return: Returns xml string containing the RPC response received from remote host
         """
+        timeout = to_text(timeout, errors='surrogate_or_strict')
         resp = self.m.commit(confirmed=confirmed, timeout=timeout, persist=persist)
         return resp.data_xml if hasattr(resp, 'data_xml') else resp.xml
 
@@ -353,7 +354,7 @@ class NetconfBase(AnsiblePlugin):
         operations['supports_startup'] = ':startup' in capabilities
         operations['supports_xpath'] = ':xpath' in capabilities
         operations['supports_writable_running'] = ':writable-running' in capabilities
-        operations['supports_validate'] = ':writable-validate' in capabilities
+        operations['supports_validate'] = ':validate' in capabilities
 
         operations['lock_datastore'] = []
         if operations['supports_writable_running']:

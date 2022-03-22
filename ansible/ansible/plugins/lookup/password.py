@@ -10,9 +10,9 @@ DOCUMENTATION = """
     lookup: password
     version_added: "1.1"
     author:
-      - Daniel Hokka Zakrisson <daniel@hozac.com>
-      - Javier Candeira <javier@candeira.com>
-      - Maykel Moya <mmoya@speedyrails.com>
+      - Daniel Hokka Zakrisson (!UNKNOWN) <daniel@hozac.com>
+      - Javier Candeira (!UNKNOWN) <javier@candeira.com>
+      - Maykel Moya (!UNKNOWN) <mmoya@speedyrails.com>
     short_description: retrieve or generate a random password, stored in a file
     description:
       - Generates a random plaintext password and stores it in a file at a given filepath.
@@ -28,7 +28,7 @@ DOCUMENTATION = """
          required: True
       encrypt:
         description:
-           - Which hash scheme to encrypt the returning password, should be one hash scheme from C(passlib.hash).
+           - Which hash scheme to encrypt the returning password, should be one hash scheme from C(passlib.hash; md5_crypt, bcrypt, sha256_crypt, sha512_crypt)
            - If not provided, the password will be returned in plain text.
            - Note that the password is always stored as plain text, only the returning password is encrypted.
            - Encrypt also forces saving the salt value for idempotence.
@@ -90,6 +90,8 @@ RETURN = """
 _raw:
   description:
     - a password
+  type: list
+  elements: str
 """
 
 import os

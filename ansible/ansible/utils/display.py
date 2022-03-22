@@ -35,8 +35,8 @@ from termios import TIOCGWINSZ
 
 from ansible import constants as C
 from ansible.errors import AnsibleError, AnsibleAssertionError
-from ansible.module_utils._text import to_bytes, to_text
-from ansible.module_utils.six import with_metaclass
+from ansible.module_utils._text import to_bytes, to_text, to_native
+from ansible.module_utils.six import with_metaclass, string_types
 from ansible.utils.color import stringc
 from ansible.utils.singleton import Singleton
 from ansible.utils.unsafe_proxy import wrap_var
@@ -79,7 +79,8 @@ logger = None
 if getattr(C, 'DEFAULT_LOG_PATH'):
     path = C.DEFAULT_LOG_PATH
     if path and (os.path.exists(path) and os.access(path, os.W_OK)) or os.access(os.path.dirname(path), os.W_OK):
-        logging.basicConfig(filename=path, level=logging.DEBUG,
+        # NOTE: level is kept at INFO to avoid security disclosures caused by certain libraries when using DEBUG
+        logging.basicConfig(filename=path, level=logging.INFO,  # DO NOT set to logging.DEBUG
                             format='%(asctime)s p=%(process)d u=%(user)s n=%(name)s | %(message)s')
 
         logger = logging.getLogger('ansible')
@@ -249,31 +250,56 @@ class Display(with_metaclass(Singleton, object)):
             else:
                 self.display("<%s> %s" % (host, msg), color=C.COLOR_VERBOSE, stderr=to_stderr)
 
-    def deprecated(self, msg, version=None, removed=False, date=None, collection_name=None):
+    def get_deprecation_message(self, msg, version=None, removed=False, date=None, collection_name=None):
         ''' used to print out a deprecation message.'''
+        msg = msg.strip()
+        if msg and msg[-1] not in ['!', '?', '.']:
+            msg += '.'
 
-        # `date` and `collection_name` are Ansible 2.10 parameters. We accept and ignore them,
-        # to avoid modules/plugins from 2.10 conformant collections to break with new enough
-        # versions of Ansible 2.9.
+        if collection_name == 'ansible.builtin':
+            collection_name = 'ansible-base'
 
+        if removed:
+            header = '[DEPRECATED]: {0}'.format(msg)
+            removal_fragment = 'This feature was removed'
+            help_text = 'Please update your playbooks.'
+        else:
+            header = '[DEPRECATION WARNING]: {0}'.format(msg)
+            removal_fragment = 'This feature will be removed'
+            # FUTURE: make this a standalone warning so it only shows up once?
+            help_text = 'Deprecation warnings can be disabled by setting deprecation_warnings=False in ansible.cfg.'
+
+        if collection_name:
+            from_fragment = 'from {0}'.format(collection_name)
+        else:
+            from_fragment = ''
+
+        if date:
+            when = 'in a release after {0}.'.format(date)
+        elif version:
+            when = 'in version {0}.'.format(version)
+        else:
+            when = 'in a future release.'
+
+        message_text = ' '.join(f for f in [header, removal_fragment, from_fragment, when, help_text] if f)
+
+        return message_text
+
+    def deprecated(self, msg, version=None, removed=False, date=None, collection_name=None):
         if not removed and not C.DEPRECATION_WARNINGS:
             return
 
-        if not removed:
-            if version:
-                new_msg = "[DEPRECATION WARNING]: %s. This feature will be removed in version %s." % (msg, version)
-            else:
-                new_msg = "[DEPRECATION WARNING]: %s. This feature will be removed in a future release." % (msg)
-            new_msg = new_msg + " Deprecation warnings can be disabled by setting deprecation_warnings=False in ansible.cfg.\n\n"
-        else:
-            raise AnsibleError("[DEPRECATED]: %s.\nPlease update your playbooks." % msg)
+        message_text = self.get_deprecation_message(msg, version=version, removed=removed, date=date, collection_name=collection_name)
 
-        wrapped = textwrap.wrap(new_msg, self.columns, drop_whitespace=False)
-        new_msg = "\n".join(wrapped) + "\n"
+        if removed:
+            raise AnsibleError(message_text)
 
-        if new_msg not in self._deprecations:
-            self.display(new_msg.strip(), color=C.COLOR_DEPRECATE, stderr=True)
-            self._deprecations[new_msg] = 1
+        wrapped = textwrap.wrap(message_text, self.columns, drop_whitespace=False)
+        message_text = "\n".join(wrapped) + "\n"
+
+        if message_text not in self._deprecations:
+            self.display(message_text.strip(), color=C.COLOR_DEPRECATE, stderr=True)
+            self._deprecations[message_text] = 1
 
     def warning(self, msg, formatted=False):
 
@@ -405,8 +431,8 @@ class Display(with_metaclass(Singleton, object)):
         return encoding
 
     def _set_column_width(self):
-        if os.isatty(0):
-            tty_size = unpack('HHHH', fcntl.ioctl(0, TIOCGWINSZ, pack('HHHH', 0, 0, 0, 0)))[1]
+        if os.isatty(1):
+            tty_size = unpack('HHHH', fcntl.ioctl(1, TIOCGWINSZ, pack('HHHH', 0, 0, 0, 0)))[1]
         else:
             tty_size = 0
         self.columns = max(79, tty_size - 1)

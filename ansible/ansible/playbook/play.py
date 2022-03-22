@@ -53,7 +53,7 @@ class Play(Base, Taggable, CollectionSearch):
     """
 
     # =================================================================================
-    _hosts = FieldAttribute(isa='list', required=True, listof=string_types, always_post_validate=True)
+    _hosts = FieldAttribute(isa='list', required=True, listof=string_types, always_post_validate=True, priority=-1)
 
     # Facts
     _gather_facts = FieldAttribute(isa='bool', default=None, always_post_validate=True)
@@ -211,9 +211,11 @@ class Play(Base, Taggable, CollectionSearch):
         if new_ds is not None:
             for prompt_data in new_ds:
                 if 'name' not in prompt_data:
-                    raise AnsibleParserError("Invalid vars_prompt data structure", obj=ds)
-                else:
-                    vars_prompts.append(prompt_data)
+                    raise AnsibleParserError("Invalid vars_prompt data structure, missing 'name' key", obj=ds)
+                for key in prompt_data:
+                    if key not in ('name', 'prompt', 'default', 'private', 'confirm', 'encrypt', 'salt_size', 'salt', 'unsafe'):
+                        raise AnsibleParserError("Invalid vars_prompt data structure, found unsupported key '%s'" % key, obj=ds)
+                vars_prompts.append(prompt_data)
         return vars_prompts
 
     def _compile_roles(self):
