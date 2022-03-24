@@ -239,13 +239,18 @@
       # Customize to your needs...
 
 - name: "Resolve site-packages location"
-  shell: "{{ local_python3_path }}/python3 -m site --user-site"
+  shell: "{{ local_python3_path }}/python3 -c 'import site; print(site.getsitepackages())'"
   register: result
   tags:
     - always
 
 - name: "Register site_packages_dir fact"
   set_fact: site_packages_dir="{{ result.stdout }}"
+  tags:
+    - always
+
+- name: "Installing powerline-status"
+  shell: "{{ local_python3_path }}/pip3 install powerline-status"
   tags:
     - always
 
