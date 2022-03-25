@@ -93,6 +93,25 @@
     group: "{{ brew_group }}"
 
 - name: "Enabling xdebug in php-xdebug.ini for {{ php_version }}"
+  when: "{{ php_version_num_int }} < 73"
+  copy:
+    dest: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xdebug.ini'
+    content: |
+      [xdebug]
+      ;zend_extension="{{ brew_install_path }}/opt/{{ php_version }}-xdebug/xdebug.so"
+      xdebug.remote_enable = 1
+      xdebug.remote_autostart = 0
+      xdebug.remote_connect_back = 0
+      xdebug.remote_host = 127.0.0.1
+      xdebug.remote_port = 92{{ php_version_num_int }}
+      xdebug.profiler_enable = 0
+      xdebug.profiler_output_dir = /tmp/xdebug{{ php_version_num_int }}
+      xdebug.idekey = PHPSTORM
+      xdebug.overload_var_dump = 0
+      xdebug.max_nesting_level = 500
+
+- name: "Enabling xdebug in php-xdebug.ini for {{ php_version }}"
+  when: "{{ php_version_num_int }} > 72"
   copy:
     dest: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xdebug.ini'
     content: |
@@ -104,7 +123,7 @@
       xdebug.client_port = 92{{ php_version_num_int }}
       xdebug.discover_client_host = false
       xdebug.remote_cookie_expire_time = 3600
-      xdebug.idekey=PHPSTORM
+      xdebug.idekey = PHPSTORM
       xdebug.overload_var_dump = 0
       xdebug.max_nesting_level = 500
 
