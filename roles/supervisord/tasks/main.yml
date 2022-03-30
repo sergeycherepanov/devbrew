@@ -186,6 +186,6 @@
     group: "{{ brew_group }}"
     mode: 0755
 
-- name: Postpone restart for network-manager
+- name: Postpone restart for supervisord-devbrew
   set_fact:
     service_started: "{{ service_started + [ 'supervisord-devbrew' ] }}"
