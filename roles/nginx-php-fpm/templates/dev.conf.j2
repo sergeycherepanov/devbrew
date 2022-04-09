@@ -69,6 +69,8 @@ if (-f $documentRoot/.php{{ version }}) {
 
 {% endfor %}
 
+include php[.]d/*.conf;
+
 root   $documentRoot;
 index  app.php index.php index.html index.htm;
 
