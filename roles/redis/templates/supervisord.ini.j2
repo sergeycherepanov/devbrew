@@ -1,5 +1,5 @@
 [program:redisdb]
-command={{ brew_install_path }}/opt/redis/bin/redis-server {{ brew_install_path }}/etc/redis.conf --daemonize no
+command={{ brew_install_path }}/opt/redis/bin/redis-server {{ brew_install_path }}/etc/redis.conf --daemonize no --bind 127.0.0.1 --port 6379
 directory={{ brew_install_path }}/var
 stdout_logfile={{ brew_install_path }}/var/log/supervisor/redisdb.log
 stderr_logfile={{ brew_install_path }}/var/log/supervisor/redisdb.err
