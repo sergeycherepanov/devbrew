@@ -96,7 +96,7 @@
         src: "/etc/ssl/certs/ca-certificates.crt"
         dest: "{{ brew_install_path }}/etc/openssl/cert.pem"
         state: link
-    when: ansible_system == "Linux" and state.stat.exists
+    when: ansible_system == "Linux" and ca_certificates_state.stat.exists
     become: true
 
 
@@ -105,7 +105,7 @@
         src: "/var/lib/ca-certificates/ca-bundle.pem"
         dest: "{{ brew_install_path }}/etc/openssl/cert.pem"
         state: link
-    when: ansible_system == "Linux" and ca_bundle_state.stat.exists and not state.stat.exists
+    when: ansible_system == "Linux" and ca_bundle_state.stat.exists and not ca_certificates_state.stat.exists
     become: true
 
 -   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/private"
