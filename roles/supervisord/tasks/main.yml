@@ -166,6 +166,17 @@
     owner: root
     group: root
   when: ansible_system == "Linux"
+  ignore_errors: yes
+  become: yes
+
+- name: "Ensure /usr/lib/systemd/system/supervisord-devbrew.service"
+  template:
+    src: supervisord-devbrew.service.j2
+    dest: /usr/lib/systemd/system/supervisord-devbrew.service
+    owner: root
+    group: root
+  when: ansible_system == "Linux"
+  ignore_errors: yes
   become: yes
 
 - name: "Ensure /etc/init.d/supervisord-devbrew"
