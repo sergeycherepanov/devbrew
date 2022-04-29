@@ -77,12 +77,35 @@
     when: ansible_system == "Linux"
     become: true
 
--   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/certs/ca-certificates.crt"
+-   name: "Check if /etc/ssl/certs/ca-certificates.crt exists"
+    stat:
+        path: "/etc/ssl/certs/ca-certificates.crt"
+    register: ca_certificates_state
+    when: ansible_system == "Linux"
+    become: true
+
+-   name: "Check if /var/lib/ca-certificates/ca-bundle.pem exists"
+    stat:
+        path: "/var/lib/ca-certificates/ca-bundle.pem"
+    register: ca_bundle_state
+    when: ansible_system == "Linux"
+    become: true
+
+-   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/certs/ca-certificates.crt -> /etc/ssl/certs/ca-certificates.crt"
     file:
         src: "/etc/ssl/certs/ca-certificates.crt"
         dest: "{{ brew_install_path }}/etc/openssl/cert.pem"
         state: link
-    when: ansible_system == "Linux"
+    when: ansible_system == "Linux" and state.stat.exists
+    become: true
+
+
+-   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/certs/ca-certificates.crt -> /var/lib/ca-certificates/ca-bundle.pem"
+    file:
+        src: "/var/lib/ca-certificates/ca-bundle.pem"
+        dest: "{{ brew_install_path }}/etc/openssl/cert.pem"
+        state: link
+    when: ansible_system == "Linux" and ca_bundle_state.stat.exists and not state.stat.exists
     become: true
 
 -   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/private"
