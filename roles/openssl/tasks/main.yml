@@ -133,19 +133,34 @@
 #    become: true
 #    when: ansible_system == "Darwin"
 
+-   name: "Check if /usr/share/ca-certificates/extra exists"
+    stat:
+        path: "/usr/share/ca-certificates/extra"
+    register: usr_share_ca_certificates_extra_state
+
+-   name: "Check if /usr/local/share/ca-certificates exists"
+    stat:
+        path: "/usr/local/share/ca-certificates"
+    register: usr_local_share_ca_certificates_state
+
 -   name: "(Linux only) Installing root certificate /usr/share/ca-certificates/extra"
+    copy:
+        src: '{{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
+        dest: '/usr/share/ca-certificates/extra/cacert.crt'
+    become: yes
+    when: ansible_system == "Linux" and usr_share_ca_certificates_extra_state.stat.exists
+
+-   name: "(Linux only) Installing root certificate /usr/local/share/ca-certificates"
     copy:
         src: '{{ brew_install_path }}/etc/openssl/localCA/cacert.pem'
         dest: '/usr/local/share/ca-certificates/cacert.crt'
     become: yes
-    when: ansible_system == "Linux"
+    when: ansible_system == "Linux" and usr_local_share_ca_certificates_state.stat.exists
 
 -   name: "(Linux only) Running update-ca-certificates"
     shell: 'update-ca-certificates'
     become: yes
     when: ansible_system == "Linux"
-    tags:
-        - always
 
 -   name: "Checking if the Certificate Database already exists"
     stat:
