@@ -93,7 +93,7 @@
     group: "{{ brew_group }}"
 
 - name: "Enabling xdebug in php-xdebug.ini for {{ php_version }}"
-  when: "{{ php_version_num_int }} < 73"
+  when: "php_version_num_int < 73"
   copy:
     dest: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xdebug.ini'
     content: |
@@ -111,7 +111,7 @@
       xdebug.max_nesting_level = 500
 
 - name: "Enabling xdebug in php-xdebug.ini for {{ php_version }}"
-  when: "{{ php_version_num_int }} > 72"
+  when: "php_version_num_int > 72"
   copy:
     dest: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xdebug.ini'
     content: |
