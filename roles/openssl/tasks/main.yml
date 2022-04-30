@@ -91,21 +91,73 @@
     when: ansible_system == "Linux"
     become: true
 
+-   name: "Check if openssl folder exists"
+    stat:
+        path: "{{ brew_install_path }}/etc/openssl"
+    register: brew_etc_openssl_dir
+    when: ansible_system == "Linux"
+    become: true
+
 -   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/certs/ca-certificates.crt -> /etc/ssl/certs/ca-certificates.crt"
     file:
         src: "/etc/ssl/certs/ca-certificates.crt"
         dest: "{{ brew_install_path }}/etc/openssl/cert.pem"
         state: link
-    when: ansible_system == "Linux" and ca_certificates_state.stat.exists
+    when: ansible_system == "Linux" and ca_certificates_state.stat.exists and brew_etc_openssl_dir.stat.exists
     become: true
-
 
 -   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/certs/ca-certificates.crt -> /var/lib/ca-certificates/ca-bundle.pem"
     file:
         src: "/var/lib/ca-certificates/ca-bundle.pem"
         dest: "{{ brew_install_path }}/etc/openssl/cert.pem"
         state: link
-    when: ansible_system == "Linux" and ca_bundle_state.stat.exists and not ca_certificates_state.stat.exists
+    when: ansible_system == "Linux" and ca_bundle_state.stat.exists and brew_etc_openssl_dir.stat.exists and not ca_certificates_state.stat.exists
+    become: true
+
+-   name: "Check if openssl@1.1 folder exists"
+    stat:
+        path: "{{ brew_install_path }}/etc/openssl@1.1"
+    register: brew_etc_openssl11_dir
+    when: ansible_system == "Linux"
+    become: true
+
+-   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl@1.1/certs/ca-certificates.crt -> /etc/ssl/certs/ca-certificates.crt"
+    file:
+        src: "/etc/ssl/certs/ca-certificates.crt"
+        dest: "{{ brew_install_path }}/etc/openssl@1.1/cert.pem"
+        state: link
+    when: ansible_system == "Linux" and ca_certificates_state.stat.exists and brew_etc_openssl11_dir.stat.exists
+    become: true
+
+-   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl@1.1/certs/ca-certificates.crt -> /var/lib/ca-certificates/ca-bundle.pem"
+    file:
+        src: "/var/lib/ca-certificates/ca-bundle.pem"
+        dest: "{{ brew_install_path }}/etc/openssl@1.1/cert.pem"
+        state: link
+    when: ansible_system == "Linux" and ca_bundle_state.stat.exists and brew_etc_openssl11_dir.stat.exists and not ca_certificates_state.stat.exists
+    become: true
+
+-   name: "Check if openssl@3 folder exists"
+    stat:
+        path: "{{ brew_install_path }}/etc/openssl@3"
+    register: brew_etc_openssl3_dir
+    when: ansible_system == "Linux"
+    become: true
+
+-   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl@3/certs/ca-certificates.crt -> /etc/ssl/certs/ca-certificates.crt"
+    file:
+        src: "/etc/ssl/certs/ca-certificates.crt"
+        dest: "{{ brew_install_path }}/etc/openssl@3/cert.pem"
+        state: link
+    when: ansible_system == "Linux" and ca_certificates_state.stat.exists and brew_etc_openssl3_dir.stat.exists
+    become: true
+
+-   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl@3/certs/ca-certificates.crt -> /var/lib/ca-certificates/ca-bundle.pem"
+    file:
+        src: "/var/lib/ca-certificates/ca-bundle.pem"
+        dest: "{{ brew_install_path }}/etc/openssl@3/cert.pem"
+        state: link
+    when: ansible_system == "Linux" and ca_bundle_state.stat.exists and brew_etc_openssl3_dir.stat.exists and not ca_certificates_state.stat.exists
     become: true
 
 -   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/private"
