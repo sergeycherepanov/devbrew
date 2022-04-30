@@ -70,13 +70,6 @@
     when: ansible_system == "Linux"
     become: true
 
--   name: "(Linux only) Absent {{ brew_install_path }}/etc/openssl/cert.pem"
-    file:
-        path: "{{ brew_install_path }}/etc/openssl/cert.pem"
-        state: absent
-    when: ansible_system == "Linux"
-    become: true
-
 -   name: "Check if /etc/ssl/certs/ca-certificates.crt exists"
     stat:
         path: "/etc/ssl/certs/ca-certificates.crt"
@@ -98,6 +91,13 @@
     when: ansible_system == "Linux"
     become: true
 
+-   name: "(Linux only) Absent {{ brew_install_path }}/etc/openssl/cert.pem"
+    file:
+        path: "{{ brew_install_path }}/etc/openssl/cert.pem"
+        state: absent
+    when: ansible_system == "Linux"
+    become: true
+
 -   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/certs/ca-certificates.crt -> /etc/ssl/certs/ca-certificates.crt"
     file:
         src: "/etc/ssl/certs/ca-certificates.crt"
@@ -112,6 +112,13 @@
         dest: "{{ brew_install_path }}/etc/openssl/cert.pem"
         state: link
     when: ansible_system == "Linux" and ca_bundle_state.stat.exists and brew_etc_openssl_dir.stat.exists and not ca_certificates_state.stat.exists
+    become: true
+
+-   name: "(Linux only) Absent {{ brew_install_path }}/etc/openssl@1.1/cert.pem"
+    file:
+        path: "{{ brew_install_path }}/etc/openssl@1.1/cert.pem"
+        state: absent
+    when: ansible_system == "Linux"
     become: true
 
 -   name: "Check if openssl@1.1 folder exists"
@@ -135,6 +142,13 @@
         dest: "{{ brew_install_path }}/etc/openssl@1.1/cert.pem"
         state: link
     when: ansible_system == "Linux" and ca_bundle_state.stat.exists and brew_etc_openssl11_dir.stat.exists and not ca_certificates_state.stat.exists
+    become: true
+
+-   name: "(Linux only) Absent {{ brew_install_path }}/etc/openssl@3/cert.pem"
+    file:
+        path: "{{ brew_install_path }}/etc/openssl@3/cert.pem"
+        state: absent
+    when: ansible_system == "Linux"
     become: true
 
 -   name: "Check if openssl@3 folder exists"
