@@ -12,8 +12,7 @@ server {
     port_in_redirect off;
     
     server_name ~^(?<project_name>.+?)\.+(?<pool>{{item}}).{{root_domain}}$;
-    
-    ssl on;
+
     ssl_certificate {{ brew_install_path }}/etc/openssl/localCA/certs/{{item}}.{{root_domain}}_crt.pem;
     ssl_certificate_key {{ brew_install_path }}/etc/openssl/localCA/private/{{item}}.{{root_domain}}_key_encrypted.pem;
     

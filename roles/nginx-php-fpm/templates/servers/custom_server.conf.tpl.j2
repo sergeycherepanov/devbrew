@@ -19,7 +19,6 @@ server {
     set $project_name <? .Env.PROJECT_NAME ?>;
     set $pool <? .Env.POOL_NAME ?>;
 
-    ssl on;
     ssl_certificate {{ brew_install_path }}/etc/openssl/localCA/certs/<? .Env.HOSTNAME ?>_crt.pem;
     ssl_certificate_key {{ brew_install_path }}/etc/openssl/localCA/private/<? .Env.HOSTNAME ?>_key_encrypted.pem;
 

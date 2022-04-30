@@ -23,8 +23,6 @@ gzip_comp_level 1;
 # set default php version to {{ default_php }}
 set $php_version {{ default_php }};
 
-set $php_version_path "{{ brew_install_path }}/bin/php${php_version}";
-
 if ($project_name ~ ^www\.(.+)$) {
     set $project_name $1;
 }
@@ -59,15 +57,6 @@ if (!-d $documentRoot) {
 if (-f $projectDir/../bin/magento) {
     set $projectType "magento2";
 }
-
-{% for version in php_versions %}
-
-if (-f $documentRoot/.php{{ version }}) {
-  set $php_version_path "{{ brew_install_path }}/bin/php{{ version }}";
-  set $php_version {{ version }};
-}
-
-{% endfor %}
 
 include php[.]d/*.conf;
 
@@ -233,6 +222,5 @@ location ~ ^.+\.php {
     fastcgi_param                   MAGE_IS_DEVELOPER_MODE true;
     fastcgi_param                   SERVER_NAME $host;
     fastcgi_param                   HTTPS $fcgi_https;
-    fastcgi_param                   PHP_PATH $php_version_path;
     fastcgi_param                   PHP_VALUE "auto_prepend_file=$auto_prepend_file";
 }
