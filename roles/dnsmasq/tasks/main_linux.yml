@@ -102,15 +102,20 @@
   when: "'systemd-resolved.service' in ansible_facts.services and state_networkmanager_conf.stat.exists and is_wsl.rc > 0"
   become: yes
 
-- name: Postpone restart for systemd-resolved
+- name: Postpone restart for systemd-resolved.service
   set_fact:
     service_restarted: "{{ service_restarted + [ 'systemd-resolved' ] }}"
   when: "'systemd-resolved.service' in ansible_facts.services and is_wsl.rc > 0"
 
-- name: Postpone restart for network-manager
+- name: Postpone restart for network-manager.service
   set_fact:
     service_restarted: "{{ service_restarted + [ 'network-manager' ] }}"
-  when: state_networkmanager_conf is defined and state_networkmanager_conf.stat.exists and is_wsl.rc > 0
+  when: "'network-manager.service' in ansible_facts.services and state_networkmanager_conf is defined and state_networkmanager_conf.stat.exists and is_wsl.rc > 0"
+
+- name: Postpone restart for NetworkManager.service
+  set_fact:
+    service_restarted: "{{ service_restarted + [ 'NetworkManager' ] }}"
+  when: "'NetworkManager.service' in ansible_facts.services and state_networkmanager_conf is defined and state_networkmanager_conf.stat.exists and is_wsl.rc > 0"
 
 - name: Postpone restart for dnsmasq
   set_fact:
