@@ -190,6 +190,12 @@
     regexp: '^DEFAULT_USER=.*'
     line: 'DEFAULT_USER="$USER"'
 
+- name: "Setting ZSH_THEME=fino-time"
+  lineinfile:
+    path: '{{ brew_user_home_dir }}/.zshrc'
+    regexp: '^.*ZSH_THEME=.*'
+    line: 'ZSH_THEME="fino-time"'
+
 - name: "Adding Prezto modules to {{ brew_user_home_dir }}/.zpreztorc"
   blockinfile:
     dest: '{{ brew_user_home_dir }}/.zshrc'
@@ -277,7 +283,7 @@
     dest: '{{ brew_user_home_dir }}/.zshrc'
     marker: "# {mark} powerline"
     block: |
-      source $({{ local_python3_path }}/pip3 show powerline-status | grep Location | awk -F: '{print $2}')/powerline/bindings/zsh/powerline.zsh
+      # source $({{ local_python3_path }}/pip3 show powerline-status | grep Location | awk -F: '{print $2}')/powerline/bindings/zsh/powerline.zsh
 
 - name: "Adding ssh agent init to {{ brew_user_home_dir }}/.zshrc"
   blockinfile:
