@@ -35,9 +35,9 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 7. Update your network settings to use 127.0.1.1 as dns server
 
 ## Installation on Linux (OpenSUSE 15+)
-1. Install Homebrew
-2. Open the terminal
-3. Install dependencies: `sudo zypper install curl git patch systemtap-sdt-devel python`
+1. Install dependencies: `sudo zypper install curl git patch systemtap-sdt-devel python3` or `sudo transactional-update pkg install curl git patch systemtap-sdt-devel python3 gcc`
+2. Install Homebrew
+3. Open the terminal
 4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
 5. Execute: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
    (Wait for finish. Should be without "Fatal" messages)
