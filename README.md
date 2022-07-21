@@ -4,8 +4,8 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 [![Build Status](https://travis-ci.org/sergeycherepanov/devbrew.svg?branch=master)](https://travis-ci.org/sergeycherepanov/devbrew)
 
 ## Supported applications and frameworks
-* Magento Commerce, Magento Commerce 2
-* Symfony 2,3,4
+* Magento 1,2
+* Symfony 2,3,4,5,6
 * Laravel
 * Wordpress
 * OroPlatform, OroCRM, OroCommerce
@@ -16,30 +16,26 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 
 ## Installation on MacOS
 1. Install Homebrew
-1. Open the terminal (just type **terminal** into spotlight)
-1. Install cli tools: `xcode-select --install` (it's starts XCODE installation process)
-1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
-1. Execute: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
+1. Clone the repo: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
+1. Run the ansible playbook: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
 1. Execute: `brew link php80` (setting default php for cli, you can choose other version (php56 or php74))
 1. Add root crt to keychain `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain $(brew --prefix)/etc/openssl/localCA/cacert.pem`
 
 ## Installation on Linux (ElementaryOS/Ubuntu/Debian)
+1. Install dependencies: `sudo apt update && sudo apt install -yq curl git patch systemtap-sdt-dev python3 build-essential`
 1. Install Homebrew
-2. Open the terminal
-3. Install dependencies: `sudo apt update && sudo apt install -yq curl git patch systemtap-sdt-dev python3 build-essential`
-4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
-5. Execute: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
+1. Clone the repo: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
+1. Run the ansible playbook: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
-6. Execute: `brew link php74` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
-7. Update your network settings to use 127.0.1.1 as dns server
+1. Execute: `brew link php74` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
+1. Update your network settings to use 127.0.1.1 as dns server
 
 ## Installation on Linux (OpenSUSE 15+)
 1. Install dependencies: `sudo zypper install curl git patch systemtap-sdt-devel python3` or `sudo transactional-update pkg install curl git patch systemtap-sdt-devel python3 gcc`
-2. Install Homebrew
-3. Open the terminal
-4. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
-5. Execute: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
+1. Open the terminal
+1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
+1. Execute: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
    (Wait for finish. Should be without "Fatal" messages)
 6. Execute: `brew link php74` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
 7. Update your network settings to use 127.0.1.1 as dns server
@@ -62,6 +58,7 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 * `php73` - will install PHP version 7.3
 * `php74` - will install PHP version 7.4  
 * `php80` - will install PHP version 8.0
+* `php81` - will install PHP version 8.1
 * `percona56` - will install Percona Server (mysql) version 5.6
 * `percona57` - will install Percona Server (mysql) version 5.7
 * `mysql80` - will install Mysql Server 8.0
