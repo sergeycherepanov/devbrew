@@ -11,9 +11,6 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 * OroPlatform, OroCRM, OroCommerce
 * Akeneo PIM
 
-## Modules which will be enabled by default for all versions of php (5.6, 7.0, 7.1, 7.2)
-`apcu`, `bcmath`, `calendar`, `Core`, `ctype`, `curl`, `date`, `dba`, `dom`, `exif`, `fileinfo`, `filter`, `ftp`, `gd`, `gettext`, `hash`, `iconv`, `igbinary`, `intl`, `json`, `ldap`, `libxml`, `mbstring`, `mcrypt`, `mysqli`, `mysqlnd`, `odbc`, `openssl`, `pcntl`, `pcre`, `PDO`, `pdo_mysql`, `PDO_ODBC`, `pdo_pgsql`, `pdo_sqlite`, `Phar`, `posix`, `readline`, `redis`, `Reflection`, `session`, `shmop`, `SimpleXML`, `soap`, `sockets`, `sodium`, `SPL`, `sqlite3`, `standard`, `sysvmsg`, `sysvsem`, `sysvshm`, `tideways_xhprof`, `tidy`, `tokenizer`, `wddx`, `xml`, `xmlreader`, `xmlrpc`, `xmlwriter`, `Zend OPcache`, `zip`, `zlib`
-
 ## Installation on MacOS
 1. Install Homebrew
 1. Clone the repo: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
@@ -23,21 +20,21 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 1. Add root crt to keychain `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain $(brew --prefix)/etc/openssl/localCA/cacert.pem`
 
 ## Installation on Linux (ElementaryOS/Ubuntu/Debian)
-1. Install dependencies: `sudo apt update && sudo apt install -yq curl git patch systemtap-sdt-dev python3 build-essential`
+1. Install dependencies: `sudo apt update && sudo apt install -yq curl git patch systemtap-sdt-dev python3 build-essential tar`
 1. Install Homebrew
 1. Clone the repo: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
 1. Run the ansible playbook: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
-1. Execute: `brew link php74` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
+1. Execute: `brew link php74` (setting default php for cli, you can choose other version (php56, php70, php71, php72, etc))
 1. Update your network settings to use 127.0.1.1 as dns server
 
 ## Installation on Linux (OpenSUSE 15+)
-1. Install dependencies: `sudo zypper install curl git patch systemtap-sdt-devel python3` or `sudo transactional-update pkg install curl git patch systemtap-sdt-devel python3 gcc`
+1. Install dependencies: `sudo zypper install curl git patch systemtap-sdt-devel python3 tar` or `sudo transactional-update pkg install curl git patch systemtap-sdt-devel python3 gcc tar`
 1. Open the terminal
 1. Execute: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
 1. Execute: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
    (Wait for finish. Should be without "Fatal" messages)
-6. Execute: `brew link php74` (setting default php for cli, you can choose other version (php56, php70, php71 or php72))
+6. Execute: `brew link php74` (setting default php for cli, you can choose other version (php56, php70, php71, php72, etc))
 7. Update your network settings to use 127.0.1.1 as dns server
 
 ## Installation on Windows Subsystem for Linux
@@ -68,7 +65,6 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 ## Manage Services
 
 To start/stop/restart services you can use `supctl` (it's supervisorctl wrapper)
-
 
 ## Usage
 Put your source code into **www** folder in your home dir in following structure: **~/www/{pool}/{project_name}/**
@@ -104,6 +100,10 @@ Too force specific version of php just create a flag file in the project root di
 `~/www/dev/wordpress/.php70` (php 7.0)  
 `~/www/dev/wordpress/.php71` (php 7.1)  
 `~/www/dev/wordpress/.php72` (php 7.2)  
+`~/www/dev/wordpress/.php73` (php 7.3)  
+`~/www/dev/wordpress/.php74` (php 7.4)  
+`~/www/dev/wordpress/.php80` (php 8.0)  
+`~/www/dev/wordpress/.php81` (php 8.1)  
 
 ## Mysql
 
@@ -113,23 +113,3 @@ Too force specific version of php just create a flag file in the project root di
 ## PHP Mail
 
 In ~/mail directory will be drops letter what be sent via php **mail** function
-
-## Know Issues (macOS)
-
-### Error: /usr/local is not writable.
-
-> If you reach "Error: /usr/local is not writable.", you need to disable the "System Integrity Protection".  
-
-To enable or disable System Integrity Protection, you must boot to Recovery OS and run the csrutil(1) command from the Terminal.  
-
-Boot to Recovery OS by restarting your machine and holding down the Command and R keys at startup.  
-Launch Terminal from the Utilities menu.  
-Enter the following command: `$ csrutil disable`  
-
-After enabling or disabling System Integrity Protection on a machine, a reboot is required.  
-
-### Configure: error: Cannot find libz"
-This error happens sometime on Mojave, just reinstall headers:
-```
-sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
-```
