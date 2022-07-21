@@ -44,13 +44,20 @@
         dest: "{{ brew_install_path }}/etc/openssl/localCA/{{item}}_{{root_domain}}.cnf"
     with_items: "{{subdomains}}"
 
+-   name: "Check if /usr/share/ca-certificates exists"
+    stat:
+        path: "/usr/share/ca-certificates"
+    register: usr_share_ca_certificates_state
+    when: ansible_system == "Linux"
+
 -   name: "(Linux only) Ensure /usr/share/ca-certificates/extra"
     file:
         path: "/usr/share/ca-certificates/extra"
         state: directory
         mode: 0755
     become: yes
-    when: ansible_system == "Linux"
+    ignore_errors: yes
+    when: ansible_system == "Linux" and usr_share_ca_certificates_state.stat.exists
 
 -   name: "(Linux only) Ensure symlink: {{ brew_install_path }}/etc/openssl/openssl.cnf"
     file:
