@@ -227,7 +227,7 @@
       export LANG=en_US.UTF-8
       setopt +o nomatch
       if [[ -d $HOME/.fonts ]]; then
-        source $HOME/.fonts/*.sh
+        for f in $HOME/.fonts/*.sh; do source $f; done
       fi
       setopt -o nomatch
 
