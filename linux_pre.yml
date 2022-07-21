@@ -17,9 +17,10 @@
   shell: "{{ item }}"
   become: yes
   with_items:
-    - "ln -sf /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so"
-    - "ln -sf /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so"
+    - "ln -sf /usr/lib/x86_64-linux-gnu/libldap.so /var/lib/libldap.so"
+    - "ln -sf /usr/lib/x86_64-linux-gnu/liblber.so /var/lib/liblber.so"
     - "ln -sf /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h"
+  ignore_errors: yes
   tags:
   - always
 
