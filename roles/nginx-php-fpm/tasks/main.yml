@@ -35,6 +35,7 @@
     dest: "{{ brew_install_path }}/etc/nginx/dev.conf"
     owner: "{{ brew_user }}"
     group: "{{ brew_group }}"
+  when: php_version is defined
   tags:
     - always
 
@@ -45,6 +46,7 @@
     owner: "{{ brew_user }}"
     group: "{{ brew_group }}"
   with_items: "{{subdomains}}"
+  when: php_version is defined
   tags:
     - always
 
@@ -54,6 +56,7 @@
     dest: "{{ brew_install_path }}/etc/nginx/custom_server.conf.tpl"
     owner: "{{ brew_user }}"
     group: "{{ brew_group }}"
+  when: php_version is defined
   tags:
     - always
 
