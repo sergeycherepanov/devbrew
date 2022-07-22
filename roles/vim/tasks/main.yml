@@ -16,6 +16,7 @@
     state: link
     force: yes
   become: yes
+  ignore_errors: yes
   when: "ansible_system == 'Linux'"
 
 - name: "Remove outdated vim"
