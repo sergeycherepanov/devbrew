@@ -1,6 +1,7 @@
 ---
 - set_fact:
     default_php: "{{ php_versions[-1] }}"
+  when: php_versions | length > 0
   tags:
     - always
 
