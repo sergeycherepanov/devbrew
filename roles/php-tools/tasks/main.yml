@@ -1,4 +1,11 @@
 ---
+- name: Ensure php taps are tapped.
+  homebrew_tap: "tap={{ item }} state=present"
+  with_items:
+    - "digitalspacestdio/common"
+    - "digitalspacestdio/php"
+  when: default_php is defined
+
 - name: "Removing composer"
   homebrew:
     name: composer
@@ -6,6 +13,7 @@
   ignore_errors: yes
   retries: 3
   delay: 1
+  when: default_php is defined
 
 - name: "Installing composer@2.2"
   homebrew:
@@ -14,4 +22,5 @@
   ignore_errors: yes
   retries: 3
   delay: 1
+  when: default_php is defined
 
