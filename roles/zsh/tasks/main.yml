@@ -245,7 +245,7 @@
       # Customize to your needs...
 
 - name: "Resolve site-packages location"
-  shell: "{{ local_python3_path }}/python3 -c 'import site; print(site.getsitepackages())'"
+  shell: "{{ local_python3_path }}/python3.9 -c 'import site; print(site.getsitepackages())'"
   register: result
   tags:
     - always
@@ -261,7 +261,7 @@
     - always
 
 - name: "Resolve python user base dir"
-  shell: "{{ local_python3_path }}/python3 -m site --user-base"
+  shell: "{{ local_python3_path }}/python3.9 -m site --user-base"
   register: result
   tags:
     - always
