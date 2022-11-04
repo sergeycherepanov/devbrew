@@ -80,8 +80,8 @@
   when: 'ansible_system == "Linux" and which_fc_cache.rc == 0'
   become: yes
 
-- name: "Installing powerline-status via pip3"
-  shell: "$(brew --prefix python@3)/bin/pip3 install --user powerline-status"
+- name: "Installing powerline-status via pip3.9"
+  shell: "$(brew --prefix python@3.9)/bin/pip3.9 install --user powerline-status"
 #  pip:
 #    name: powerline-status
 #    state: latest

@@ -29,9 +29,9 @@
     name: vim
     state: latest
 
-- name: "Installing powerline-status via pip3"
+- name: "Installing powerline-status via pip3.9"
   shell: |
-    $(brew --prefix $($(brew --prefix vim)/bin/vim --version | tr '-' '\n' | grep '^L' | grep -o 'python@[0-9]\+.[0-9]\+'))/bin/pip3 install powerline-status
+    $(brew --prefix $($(brew --prefix vim)/bin/vim --version | tr '-' '\n' | grep '^L' | grep -o 'python@[0-9]\+.[0-9]\+'))/bin/pip3.9 install powerline-status
   ignore_errors: True
 
 - name: "Creating .vim/autoload folder"

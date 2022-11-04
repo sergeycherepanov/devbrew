@@ -12,7 +12,7 @@
   set_fact: local_python3_path="{{ result.stdout }}"
 
 - name: "Resolve local pip3 path"
-  shell: "echo $(brew --prefix python@3.9)/bin/pip3"
+  shell: "echo $(brew --prefix python@3.9)/bin/pip3.9"
   register: result
 
 - name: "Register local_pip3_path fact"
