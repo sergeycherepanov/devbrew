@@ -256,7 +256,7 @@
     - always
 
 - name: "Installing powerline-status"
-  shell: "{{ local_python3_path }}/pip3 install powerline-status"
+  shell: "{{ local_python3_path }}/pip3.9 install powerline-status"
   tags:
     - always
 
