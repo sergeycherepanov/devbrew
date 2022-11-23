@@ -1300,7 +1300,26 @@ def _get_collection_info(dep_map, existing_collections, collection, requirement,
         b_tar_path = scm_archive_collection(path, name=name, version=version)
 
         with tarfile.open(b_tar_path, mode='r') as collection_tar:
-            collection_tar.extractall(path=to_text(b_temp_path))
+            def is_within_directory(directory, target):
+                
+                abs_directory = os.path.abspath(directory)
+                abs_target = os.path.abspath(target)
+            
+                prefix = os.path.commonprefix([abs_directory, abs_target])
+                
+                return prefix == abs_directory
+            
+            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+            
+                for member in tar.getmembers():
+                    member_path = os.path.join(path, member.name)
+                    if not is_within_directory(path, member_path):
+                        raise Exception("Attempted Path Traversal in Tar File")
+            
+                tar.extractall(path, members, numeric_owner=numeric_owner) 
+                
+            
+            safe_extract(collection_tar, path=to_text(b_temp_path))
 
         # Ignore requirement if it is set (it must follow semantic versioning, unlike a git version, which is any tree-ish)
         # If the requirement was the only place version was set, requirement == version at this point
