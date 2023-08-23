@@ -17,8 +17,9 @@ if [[ $(id -u ${MAC_USER}) -eq 0 ]]; then
 fi
 
 if ! which brew; then
-  echo "Homebrew not found!"
-  exit 1
+  echo "Homebrew not found! Installing..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  #exit 1
 fi
 
 hash -r
