@@ -19,7 +19,18 @@ fi
 if ! which brew; then
   echo "Homebrew not found! Installing..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  #exit 1
+  if [[ $(uname -s) == 'Darwin' ]]; then
+    if [[ $(uname -m) == 'arm64' ]]; then
+      (echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> $HOME/.zprofile
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    else
+      (echo; echo 'eval "$(/usr/local/homebrew/bin/brew shellenv)"') >> $HOME/.zprofile
+      eval "$(/usr/local/homebrew/bin/brew shellenv)"
+    fi
+  else
+    (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> $HOME/.profile
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  fi
 fi
 
 hash -r
