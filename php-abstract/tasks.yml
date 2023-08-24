@@ -80,7 +80,7 @@
 
 - name: "{{ brew_install_path }}/etc/nginx/php.d"
   file:
-    path: "{{ brew_install_path }}/opt/xphp/{{ php_version_num }}/bin"
+    path: "{{ brew_install_path }}/etc/nginx/php.d"
     state: directory
 
 - name: "Ensure {{ brew_install_path }}/etc/nginx/php.d/{{ php_version }}.conf"
