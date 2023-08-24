@@ -5,7 +5,7 @@
     state: latest
 
 - name: "Resolve local python3 path"
-  shell: "cd $(brew --prefix python@3.9)/bin; cd $(dirname $(realpath python3.9)); pwd"
+  shell: "cd $(brew --prefix python@3.9)/bin; cd $(dirname $(readlink python3.9)); pwd"
   register: result
 
 - name: "Register local_python3_path fact"
