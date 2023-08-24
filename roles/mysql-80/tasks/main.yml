@@ -121,7 +121,7 @@
   register: result
   failed_when: result.rc == 1 and "No such process" not in result.stderr
 
-- name: "Starting mysql with --skip-grant-tables flag"
+- name: "Configuring mysql"
   shell: |
     {{ mysql_base_dir }}/bin/mysqld_safe --defaults-file={{ mysql_etc_dir }}/my.cnf --skip-grant-tables --log-error=/tmp/mysql.err > /tmp/mysql.log 2>&1 &
     timeout 60s bash -c "until grep 'ready for connections\|Server socket created on' /tmp/mysql.err; do sleep 1; done"
@@ -229,4 +229,18 @@
     dest: "{{ brew_install_path }}/etc/logrotate.d/mysql{{ mysql_version_num }}.conf"
     owner: "{{ brew_user }}"
     group: "{{ brew_group }}"
+
+- name: "Ensure mysql{{ mysql_version_num }} aliases"
+  lineinfile:
+    path: '{{ brew_user_home_dir }}/{{ item }}'
+    regexp: '^alias mysql{{ mysql_version_num }}='
+    line: 'alias mysql{{ mysql_version_num }}="{{ mysql_base_dir }}/bin/mysql -h127.0.0.1 -P{{ mysql_listen_port }}"'
+  with_items: ['.zshrc', '.bashrc']
+
+- name: "Ensure mysqldump{{ mysql_version_num }} aliases"
+  lineinfile:
+    path: '{{ brew_user_home_dir }}/{{ item }}'
+    regexp: '^alias mysqldump{{ mysql_version_num }}='
+    line: 'alias mysqldump{{ mysql_version_num }}="{{ mysql_base_dir }}/bin/mysqldump -h127.0.0.1 -P{{ mysql_listen_port }}"'
+  with_items: ['.zshrc', '.bashrc']
   
