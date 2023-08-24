@@ -1,14 +1,4 @@
 ---
-- name: Ensure vim tap are untapped.
-  homebrew_tap: "tap={{ item }} state=absent"
-  with_items:
-    - "sergeycherepanov/vim"
-
-#- name: Ensure vim taps are tapped.
-#  homebrew_tap: "tap={{ item }} state=present"
-#  with_items:
-#    - "digitalspacestdio/common"
-
 - name: "ln -s /usr/include/locale.h /usr/include/xlocale.h"
   file:
     dest: "/usr/include/xlocale.h"
@@ -76,3 +66,11 @@
       python3 powerline_setup()
       python3 del powerline_setup
       set laststatus=2
+
+- name: "Ensure vim alias"
+  lineinfile:
+    path: '{{ brew_user_home_dir }}/{{ item }}'
+    regexp: '^alias vim='
+    line: 'alias vim={{ brew_install_path }}/bin/vim'
+  with_items: ['.zshrc', '.bashrc']
+
