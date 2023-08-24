@@ -12,11 +12,11 @@ macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Hom
 * Akeneo PIM
 
 ## Installation on MacOS
-1. Install Homebrew
+1. Install Homebrew https://brew.sh/
 1. Clone the repo: `git clone https://github.com/SergeyCherepanov/devbrew.git ~/devbrew`
-1. Run the ansible playbook: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,mysql80,nodejs,zsh,dnsmasq"` to make full install  
+1. Run the ansible playbook: `bash ~/devbrew/run.sh --ask-become-pass --tags="php56,php70,php71,php72,php73,php74,php80,php81,php82,mysql80,nodejs,zsh,dnsmasq"` to make full install  
 (Wait for finish. Should be without "Fatal" messages)
-1. Execute: `brew link php80` (setting default php for cli, you can choose other version (php56 or php74))
+1. Execute: `brew link php82` (setting default php for cli, you can choose other version (php56 or php74))
 1. Add root crt to keychain `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain $(brew --prefix)/etc/openssl/localCA/cacert.pem`
 
 ## Installation on Linux (ElementaryOS/Ubuntu/Debian)
