@@ -78,6 +78,18 @@
     owner: "{{ brew_user }}"
     group: "{{ brew_group }}"
 
+- name: "{{ brew_install_path }}/etc/nginx/php.d"
+  file:
+    path: "{{ brew_install_path }}/opt/xphp/{{ php_version_num }}/bin"
+    state: directory
+
+- name: "Ensure {{ brew_install_path }}/etc/nginx/php.d/{{ php_version }}.conf"
+  template:
+    src: php_nginx_snippet.conf.j2
+    dest: "{{ brew_install_path }}/etc/nginx/php.d/{{ php_version }}.conf"
+    owner: "{{ brew_user }}"
+    group: "{{ brew_group }}"
+
 - name: "Disabling xdebug by default for {{ php_version }}"
   lineinfile:
     path: '{{ brew_install_path }}/etc/php/{{ php_version_num }}/conf.d/ext-xdebug.ini'

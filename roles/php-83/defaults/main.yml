@@ -1,0 +1,11 @@
+---
+php_version: php83
+php_version_num: 8.3
+php_version_num_int: 83
+php_flags: ""
+php_dependencies:
+php_modules:
+    - php83-common
+    - php83-xdebug
+    - php83-xhprof
+php_pear_packages: []

@@ -1,0 +1,4 @@
+---
+- import_tasks: php-abstract/tasks.yml
+  tags:
+    - php82
