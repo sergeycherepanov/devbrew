@@ -1,7 +1,7 @@
 # DevBrew
 macOS/Linux/Windows 10 LEMP (NGINX/PHP/JS/MySql) Development Environment via Homebrew(Linuxbrew) using Ansible
 
-$\color{red}!!! WARNING !!!$ For the Homebrew native environment please check this link https://github.com/digitalspacestdio/homebrew-nextgen-devenv
+$\color{red}!!! WARNING !!!$ Homebrew native environment available by this link https://github.com/digitalspacestdio/homebrew-nextgen-devenv
 
 ## Supported applications and frameworks
 * Magento 1,2
